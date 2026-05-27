@@ -13,30 +13,62 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 - [x] Rewrite PLANNING.md "What Is Changing" → "Build Approach" (fresh build framing)
 - [x] Delete prototype files (`app.jsx`, `components.jsx`, `mascot.jsx`, `screens-child.jsx`, `screens-parent.jsx`, `tweaks-panel.jsx`, `styles.css`, `Chorely Prototype.html`, `.DS_Store`)
 
-## Phase 1: Foundation (repo + skeleton)
+## Phase 1: Foundation (repo + skeleton) — completed 2026-05-27
 
-- [ ] Get GitHub repo URL from user (`https://github.com/doulosnexus-lang/Chorely.git`)
-- [ ] `git init` in `Chorely 2/`, add remote, set default branch to `main`
-- [ ] Add `.gitignore` (Node, Expo, EAS, `.env`, `.DS_Store`, `ios/`, `android/`)
-- [ ] Add `.env.example` (4 env vars from CLAUDE.md §3)
-- [ ] Audit `package.json` against required deps; add missing
-- [ ] Create directory skeleton (`src/{screens,components/{brand,ui,layout,modals},store,services,types,lib,theme,utils,navigation,hooks}`, `supabase/migrations/`)
-- [ ] Write `src/theme/tokens.ts` (extracted from DESIGN.md tokens)
-- [ ] Write `src/theme/ThemeProvider.tsx` (light default, dark optional)
-- [ ] Write `src/theme/index.ts` (re-exports for App.tsx)
-- [ ] `npm install` clean, `npx expo start` boots to a "Hello Chorely" placeholder screen on iOS Simulator
-- [ ] First commit + push to `main`
+- [x] Get GitHub repo URL from user (`https://github.com/doulosnexus-lang/Chorely.git`)
+- [x] `git init` in `Chorely 2/`, add remote, set default branch to `main`
+- [x] Add `.gitignore` (Node, Expo, EAS, `.env`, `.DS_Store`, `ios/`, `android/`)
+- [x] Add `.env.example` (4 env vars from CLAUDE.md §3)
+- [x] Audit `package.json` against required deps (RN Nav v7 confirmed, CLAUDE.md §2 corrected from v6)
+- [x] Create directory skeleton (`src/{screens/{auth,parent},components/{brand,ui,layout,modals},navigation,store,services,lib,theme,types,utils,hooks}`, `supabase/migrations/`)
+- [x] Write `src/theme/tokens.ts` (Lumina Bloom tokens)
+- [x] Write `src/theme/ThemeProvider.tsx` (light default, dark stub)
+- [x] Write `src/theme/index.ts` (re-exports for App.tsx)
+- [x] Write `src/navigation/RootNavigator.tsx` (Hello-Chorely placeholder via `@react-navigation/stack`)
+- [x] `npm install` clean (953 packages, 14s)
+- [x] `npx tsc --noEmit` clean (no type errors)
+- [x] First commit (`chore: scaffold Chorely v1.0 (Phase 1 foundation)`) pushed to `origin/main`
+- [ ] **Visual verification**: launch `npx expo start` and confirm the Hello-Chorely placeholder renders in iOS Simulator / Expo Go
 
 ## Phase 2: Supabase Wiring
 
-- [ ] Get Supabase URL + anon key from user; paste into `.env.local` (never committed)
-- [ ] Write `src/lib/supabase.ts` (typed client with AsyncStorage session persistence)
-- [ ] Run `supabase gen types typescript ...` → `src/types/database.types.ts`
-- [ ] Write `src/types/app.types.ts` (app-level interfaces + typed `NavigationParams`)
-- [ ] Smoke test: temporary "PingSupabase" screen calls `supabase.auth.getSession()` and renders status
-- [ ] Write `src/services/` — 8 service files (auth, families, children, chores, rewards, activity, settings, plus `client.ts`)
-- [ ] Write `src/store/` — 6 Zustand stores (auth, family, chore, reward, activity, settings) with persist middleware
-- [ ] Verify a temp screen can sign in with a real Supabase user and read families list
+### Phase 2a: Schema (completed 2026-05-27)
+
+- [x] Get Supabase URL + anon key from user; paste into `.env.local` (never committed)
+- [x] Verify Supabase project is reachable; discover it's empty (plan assumed schema existed; it didn't)
+- [x] Author migrations 001-010 implementing CLAUDE.md §5 schema (tables, FKs, RLS policies, RPCs)
+- [x] Author migration 011 (set search_path on helpers, revoke PUBLIC on SECURITY DEFINER fns)
+- [x] Author migration 012 (revoke anon EXECUTE on RPCs at GRANT layer; defense-in-depth)
+- [x] Apply migrations 001-012 to `kwwhuwegzdaqstqhmths` via MCP (all 12 succeeded)
+- [x] Verify all 11 tables exist with RLS enabled
+- [x] Verify anon role has zero SECURITY DEFINER access; authenticated has user-callable RPCs only
+- [x] Generate `src/types/database.types.ts` from live schema via MCP
+
+### Phase 2b: Client + smoke test (completed 2026-05-27)
+
+- [x] Write `src/lib/supabase.ts` (typed client with AsyncStorage session persistence)
+- [x] Write `src/types/app.types.ts` (Row aliases, ChoreStatus/Category/Frequency literal types, typed RootStackParamList)
+- [x] Update `RootNavigator` placeholder to call `supabase.auth.getSession()` on mount and render the connection state
+- [x] `tsc --noEmit` clean
+- [x] Commit + push (`49091b7`)
+
+### Phase 2c: Services + Stores (pending)
+
+- [ ] Write `src/services/auth.ts` (signUp, signIn, signOut, getSession)
+- [ ] Write `src/services/families.ts` (CRUD + invite code share)
+- [ ] Write `src/services/children.ts` (CRUD)
+- [ ] Write `src/services/chores.ts` (CRUD + assignment helpers)
+- [ ] Write `src/services/rewards.ts` (CRUD)
+- [ ] Write `src/services/activity.ts` (read-only feed)
+- [ ] Write `src/services/settings.ts` (CRUD on user_settings)
+- [ ] Write `src/services/rpc.ts` (typed wrappers for the 8 RPCs)
+- [ ] Write `src/store/authStore.ts` (session + profile)
+- [ ] Write `src/store/familyStore.ts` (current family + members + children)
+- [ ] Write `src/store/choreStore.ts` (chores + assignments + filters)
+- [ ] Write `src/store/rewardStore.ts` (rewards + redemptions)
+- [ ] Write `src/store/activityStore.ts` (activity feed)
+- [ ] Write `src/store/settingsStore.ts` (dark mode, notification prefs)
+- [ ] Verify temp smoke-test screen can sign up a real user end-to-end (auth → profile autocreate → onboarding RPC → families list reads back)
 
 ## Phase 3: UI Atoms + Layout
 
