@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Chorely",
+    "slug": "Chorely",
+    "version": "1.0.0",
+    "scheme": "chorely",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/chorely-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F3F0FF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.zad0k777.chorely",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "This app does not track you.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.zad0k777.chorely",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "81f24291-8c8a-497a-a464-6b09d6454468"
+      }
+    },
+    "owner": "zad0k777",
+    "plugins": [
+      "expo-secure-store",
+      "expo-font"
+    ],
+    "updates": {
+      "url": "https://u.expo.dev/81f24291-8c8a-497a-a464-6b09d6454468"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
+  }
+}
