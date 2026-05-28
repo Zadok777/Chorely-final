@@ -156,14 +156,17 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 
 Note: chore/assignment data only populates after Phase 6, so snapshot/progress show zeros today (by design). Activity is fetched into `activityStore` but not yet surfaced (no recent-activity card in the spec; revisit if added).
 
-## Phase 6: Chore Management
+## Phase 6: Chore Management (code complete 2026-05-28, tsc + Metro green)
 
-- [ ] `screens/parent/ChoresScreen.tsx` (list + filters: Active / Pending / All)
-- [ ] `modals/CreateChoreModal.tsx` (RHF + Yup; title, child pills, frequency, date/time, points, photo proof toggle, notes)
-- [ ] `modals/ChoreApprovalModal.tsx` (Approve → `approve_chore` RPC; Deny → `reject_chore` with note)
-- [ ] `ChoreRow` status-variant rendering integrated
-- [ ] Test: create chore → submit (via SQL) → approve → points credit
-- [ ] Test: create chore → submit → reject → status updates
+- [x] `screens/parent/ChoresScreen.tsx` — filter SegmentedControl (All / To do / Pending); assignment-centric list via ChoreRow; tap an assigned/returned row to submit-on-behalf (`submit_chore`), tap a submitted row to open approval; `+` header action + empty-state CTA open create; reloads on focus + pull-to-refresh
+- [x] `modals/CreateChoreModal.tsx` — RHF + Yup; title, child pills (multi-select), point value, frequency segmented, category pills (optional), due date (optional text), notes. Creates chore then one assignment per child. **Photo-proof toggle omitted — photo verification is v1.1 (CLAUDE.md §9) and there's no schema column for it.**
+- [x] `modals/ChoreApprovalModal.tsx` — child banner (avatar + relative submit time), chore detail chips, points-impact preview (Current → +N → After), Approve (`approve_chore`) / Send back (`reject_chore` with optional note)
+- [x] `ChoreRow` status-variant rendering integrated (To do / Pending / Approved / Returned)
+- [x] New reusable primitives: `ui/SegmentedControl.tsx`, `modals/ModalSheet.tsx` (glass bottom-sheet), `utils/date.ts` (formatDueLabel + formatRelativeTime); `ScreenContainer` already had refreshControl from Phase 5
+- [ ] Manual test in Simulator: create chore → tap to submit → approve → child points credit (verify on Dashboard/Family)
+- [ ] Manual test: create chore → submit → send back → status shows "Returned"
+
+Build note (2026-05-28): mid-phase, node_modules got truncated (expo-blur/build, supabase-js/dist `.d.ts` files missing — runtime JS intact so Metro bundled, but tsc broke). Disk is at 94%. Fixed with `npm ci`. Watch disk; if tsc shows mass "Cannot find module", run `npm ci`.
 
 ## Phase 7: Rewards & Points
 
