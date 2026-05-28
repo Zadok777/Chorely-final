@@ -66,7 +66,7 @@ function PlaceholderScreen() {
     };
 
     const ts = Date.now();
-    const email = `smoke-${ts}@chorely-test.local`;
+    const email = `smoke-${ts}@example.com`;
     const password = `Smoke!${ts}Pw`;
 
     push({ tone: 'info', text: `1. signUp ${email}` });
