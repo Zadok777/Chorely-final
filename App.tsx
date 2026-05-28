@@ -22,6 +22,7 @@ import { ThemeProvider, C } from './src/theme';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ToastProvider } from './src/components/ui/Toast';
 import { useAuthBootstrap } from './src/hooks/useAuthBootstrap';
+import { useFamilyBootstrap } from './src/hooks/useFamilyBootstrap';
 
 // Cap font scaling for accessibility without breaking layout.
 if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
@@ -46,12 +47,14 @@ export default function App() {
   });
 
   const { ready: authReady } = useAuthBootstrap();
+  const { ready: familyReady } = useFamilyBootstrap();
   const fontsReady =
     Platform.OS === 'web' ? true : fontsLoaded || !!fontError;
-  // Wait for both the fonts AND the persisted Supabase session restore
-  // before mounting the navigator. Otherwise a signed-in user would flash
-  // the Welcome screen for ~100ms while getSession() resolves.
-  const ready = fontsReady && authReady;
+  // Wait for fonts AND the persisted session restore AND the family-context
+  // load before mounting the navigator. Otherwise a signed-in user would flash
+  // the Welcome screen (session restore) or the Onboarding screen (family load)
+  // for ~100ms before landing on their real dashboard.
+  const ready = fontsReady && authReady && familyReady;
 
   useEffect(() => {
     if (!ready || Platform.OS === 'web') return;

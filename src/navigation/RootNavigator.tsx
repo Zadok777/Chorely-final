@@ -2,40 +2,50 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { ComponentShowcase } from '../screens/dev/ComponentShowcase';
-import { DashboardStub } from '../screens/parent/DashboardStub';
 import { LoginScreen } from '../screens/auth/LoginScreen';
+import { OnboardingWizard } from '../screens/auth/OnboardingWizard';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { WelcomeScreen } from '../screens/auth/WelcomeScreen';
+import { MainNavigator } from './MainNavigator';
 import { useAuthStore } from '../store/authStore';
+import { useFamilyStore } from '../store/familyStore';
 import type { RootStackParamList } from '../types/app.types';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-// Auth ↔ Main switch driven by `authStore.session`. When the session goes
-// from null → object (sign-in) or object → null (sign-out), React
-// Navigation transitions between the two screen sets automatically — no
-// imperative nav.navigate calls needed at the call sites.
+// Three mutually exclusive screen sets, chosen at runtime:
 //
-// useAuthBootstrap (mounted in App.tsx) is responsible for keeping
-// authStore.session in sync with supabase.auth via getSession() at launch
-// and onAuthStateChange afterwards.
+//   1. session === null            → Welcome / Login / SignUp
+//   2. session && family === null   → Onboarding (create the first family)
+//   3. session && family !== null   → Main (bottom-tab shell)
+//
+// The session/family transitions drive the swap automatically — no imperative
+// nav.navigate calls from sign-in, sign-out, or onboarding-complete paths.
+//
+// App.tsx blocks the navigator mount on useAuthBootstrap + useFamilyBootstrap,
+// so by the time we render here both stores reflect the persisted state and a
+// returning user lands straight on Main with no intermediate flash.
 
 export function RootNavigator() {
   const session = useAuthStore((s) => s.session);
+  const family = useFamilyStore((s) => s.family);
   const signedIn = session !== null;
+  const onboarded = family !== null;
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {signedIn ? (
-        <>
-          <Stack.Screen name="Home" component={DashboardStub} />
-          <Stack.Screen name="Showcase" component={ComponentShowcase} />
-        </>
-      ) : (
+      {!signedIn ? (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
+        </>
+      ) : !onboarded ? (
+        <Stack.Screen name="Onboarding" component={OnboardingWizard} />
+      ) : (
+        <>
+          <Stack.Screen name="Main" component={MainNavigator} />
+          <Stack.Screen name="Showcase" component={ComponentShowcase} />
         </>
       )}
     </Stack.Navigator>

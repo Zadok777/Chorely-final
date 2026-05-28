@@ -125,14 +125,24 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 - [ ] Test: sign in → land on DashboardStub
 - [ ] Test: kill + relaunch app while signed in → still on DashboardStub (no Welcome flash)
 
-### Batch 2 — Onboarding + Main shell (pending)
+### Batch 2 — Onboarding + Main shell (code complete 2026-05-28, ⏳ awaiting manual verification)
 
-- [ ] `src/screens/auth/OnboardingWizard.tsx` — family name → first child → DOB; calls `rpc.completeOnboarding`
-- [ ] Detect post-signup state (no family yet) and route to OnboardingWizard before DashboardStub
-- [ ] `src/navigation/MainNavigator.tsx` — bottom tabs (Home / Chores / Rewards / Family / Settings) using TabBar via a React Navigation adapter
-- [ ] Replace DashboardStub with a real Home tab placeholder (still pre-Phase 5)
-- [ ] Delete ComponentShowcase + Showcase route once real screens render the components
-- [ ] Add `@expo/vector-icons` as an explicit dependency (currently transitive)
+- [x] `src/screens/auth/OnboardingWizard.tsx` — 2-step wizard (family name → first child + optional DOB); calls `rpc.completeOnboarding`, hydrates familyStore, plus a "Not you? Sign out" escape hatch
+- [x] Detect post-signup state (no family yet) and route to OnboardingWizard — `useFamilyBootstrap` loads family context; RootNavigator gates session → Onboarding → Main
+- [x] `src/navigation/MainNavigator.tsx` — bottom tabs (Home / Chores / Rewards / Family / Settings) using TabBar via a `ChorelyTabBar` React Navigation adapter (emits `tabPress`)
+- [x] Replace DashboardStub with the tabbed Main shell — deleted `DashboardStub.tsx`; `HomeScreen` is minimal-real (family summary + roster + pending-approvals placeholder); Chores/Rewards stubs; Family read-only roster; Settings carries sign-out + dev showcase link
+- [x] `App.tsx` gates navigator on fontsReady && authReady && **familyReady** (no flash of Welcome or Onboarding for returning users)
+- [x] `src/screens/parent/layout.ts` — `TAB_BAR_CLEARANCE` so scroll content clears the floating glass tab bar
+- [~] Delete ComponentShowcase + Showcase route — **deferred** (condition not met: tab screens are still stubs in Batch 2). Showcase kept reachable from Settings; delete in Phase 5+ once real screens render the components in real contexts.
+- [ ] Add `@expo/vector-icons` as an explicit dependency (currently transitive) — still pending
+
+**Verification gate (run in iOS Simulator):**
+1. New signup → lands on OnboardingWizard (not Home)
+2. Step 1 family name → Continue → Step 2 child name (+ optional DOB) → Create my family → lands on Home tab
+3. Home shows family name, invite code, 1 child in roster, total points
+4. Tab bar switches between Home / Chores / Rewards / Family / Settings
+5. Settings → Sign out → Welcome; sign back in → lands straight on Home (no Onboarding flash)
+6. Settings → "View component showcase" still works and back returns to Settings
 
 ## Phase 5: Parent Dashboard
 

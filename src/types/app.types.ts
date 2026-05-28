@@ -3,6 +3,8 @@
 // the codebase can `import { Profile, Family, Child, ... } from '../types/app.types'`
 // without binding to the Supabase generator's `Tables<'name'>` helper.
 
+import type { NavigatorScreenParams } from '@react-navigation/native';
+
 import type { Tables } from './database.types';
 
 export type Profile = Tables<'profiles'>;
@@ -41,10 +43,13 @@ export type ChoreFrequency = 'once' | 'daily' | 'weekly';
 
 // Typed navigation routes. Never use string literals at navigation call sites.
 //
-// The navigator is split into two mutually exclusive sets gated by
-// `authStore.session`. React Navigation 7 doesn't model that split in the
-// type system, so all routes share the same param list at compile time —
-// runtime gating happens in RootNavigator.
+// The root navigator renders one of three mutually exclusive sets, gated at
+// runtime in RootNavigator:
+//   1. session === null            → auth screens (Welcome / Login / SignUp)
+//   2. session && no family yet     → Onboarding
+//   3. session && family present    → Main (the bottom-tab shell)
+// React Navigation 7 doesn't model that split in the type system, so the auth
+// routes and the post-auth routes share one param list at compile time.
 
 export type RootStackParamList = {
   // Auth stack — rendered when session is null
@@ -52,12 +57,23 @@ export type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
 
-  // Main stack — rendered when session !== null
-  // (Home is a stub in Phase 4 Batch 1; replaced by the real dashboard
-  // after Batch 2 wires OnboardingWizard + MainNavigator.)
-  Home: undefined;
+  // Rendered when signed in but the user belongs to no family yet.
+  Onboarding: undefined;
 
-  // Dev-only — accessible from Home for visual review.
-  // Removed once Phase 5 screens replace the need.
+  // The signed-in, onboarded shell. Hosts the bottom-tab navigator.
+  Main: NavigatorScreenParams<MainTabParamList> | undefined;
+
+  // Dev-only — reachable from Settings for visual review.
+  // Removed once Phase 5+ screens render every component in real contexts.
   Showcase: undefined;
+};
+
+// Bottom-tab routes inside the Main shell. Home is a minimal real screen in
+// Batch 2; the rest are stubs filled in by their respective phases.
+export type MainTabParamList = {
+  Home: undefined;
+  Chores: undefined;
+  Rewards: undefined;
+  Family: undefined;
+  Settings: undefined;
 };
