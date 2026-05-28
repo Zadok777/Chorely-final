@@ -8,6 +8,8 @@ import {
   View,
 } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 import { C, spacing, typography } from '../theme/tokens';
 import { supabase } from '../lib/supabase';
@@ -18,7 +20,10 @@ import {
 } from '../services/auth';
 import { listMyFamilies } from '../services/families';
 import { completeOnboarding } from '../services/rpc';
+import { ComponentShowcase } from '../screens/dev/ComponentShowcase';
 import type { RootStackParamList } from '../types/app.types';
+
+type Nav = StackNavigationProp<RootStackParamList>;
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -33,6 +38,7 @@ function PlaceholderScreen() {
   const [status, setStatus] = useState<SupabaseStatus>({ kind: 'checking' });
   const [running, setRunning] = useState(false);
   const [log, setLog] = useState<LogLine[]>([]);
+  const nav = useNavigation<Nav>();
 
   useEffect(() => {
     let mounted = true;
@@ -185,6 +191,16 @@ function PlaceholderScreen() {
         </Pressable>
       </View>
 
+      <Pressable
+        style={({ pressed }) => [
+          styles.showcaseButton,
+          pressed && styles.secondaryButtonPressed,
+        ]}
+        onPress={() => nav.navigate('Showcase')}
+      >
+        <Text style={styles.showcaseButtonText}>View component showcase →</Text>
+      </Pressable>
+
       <ScrollView
         style={styles.log}
         contentContainerStyle={styles.logContent}
@@ -217,6 +233,7 @@ export function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Placeholder" component={PlaceholderScreen} />
+      <Stack.Screen name="Showcase" component={ComponentShowcase} />
     </Stack.Navigator>
   );
 }
@@ -289,6 +306,21 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     ...typography.body,
     color: C.textMid,
+  },
+  showcaseButton: {
+    backgroundColor: C.pinkAlpha10,
+    borderWidth: 1,
+    borderColor: C.borderPink,
+    paddingVertical: spacing.s12,
+    paddingHorizontal: spacing.s20,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.s16,
+  },
+  showcaseButtonText: {
+    ...typography.button,
+    color: C.pink,
   },
   log: {
     flex: 1,

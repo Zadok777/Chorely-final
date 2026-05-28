@@ -45,6 +45,10 @@ export type RootStackParamList = {
   // Phase 1+2: placeholder smoke-test screen
   Placeholder: undefined;
 
+  // Phase 3 (temporary): visual showcase of all 18 UI primitives.
+  // Removed in Phase 4 when real screens replace this navigator.
+  Showcase: undefined;
+
   // Phase 4 (auth + onboarding) — wire when the screens exist:
   // Welcome: undefined;
   // Login: undefined;

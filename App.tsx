@@ -20,6 +20,7 @@ import {
 } from '@expo-google-fonts/dm-sans';
 import { ThemeProvider, C } from './src/theme';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { ToastProvider } from './src/components/ui/Toast';
 
 // Cap font scaling for accessibility without breaking layout.
 if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
@@ -62,10 +63,12 @@ export default function App() {
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <ThemeProvider>
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
-          <StatusBar style="dark" />
+          <ToastProvider>
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
+            <StatusBar style="dark" />
+          </ToastProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
