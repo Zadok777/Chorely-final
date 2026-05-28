@@ -15,7 +15,14 @@ import { assignChore, createChore } from '../../services/chores';
 import { useAuthStore } from '../../store/authStore';
 import { useChoreStore } from '../../store/choreStore';
 import { useFamilyStore } from '../../store/familyStore';
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import type { ChoreCategory, ChoreFrequency } from '../../types/app.types';
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -80,6 +87,8 @@ export function CreateChoreModal({
   onCreated,
 }: CreateChoreModalProps) {
   const toast = useToast();
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const family = useFamilyStore((s) => s.family);
   const children = useFamilyStore((s) => s.children);
   const session = useAuthStore((s) => s.session);
@@ -350,7 +359,8 @@ export function CreateChoreModal({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   fieldLabel: {
     ...typography.caption,
     color: C.textMid,

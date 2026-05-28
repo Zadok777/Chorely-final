@@ -3,7 +3,14 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import { Button } from './Button';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -26,6 +33,8 @@ export function EmptyState({
   onAction,
   style,
 }: EmptyStateProps) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const hasAction = actionLabel !== undefined && onAction !== undefined;
 
   return (
@@ -50,35 +59,36 @@ export function EmptyState({
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.s24,
-    paddingVertical: spacing.s32,
-  },
-  iconBubble: {
-    width: 64,
-    height: 64,
-    borderRadius: radii.rFull,
-    backgroundColor: C.pinkAlpha10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.s16,
-  },
-  title: {
-    ...typography.title,
-    color: C.textDark,
-    textAlign: 'center',
-    marginBottom: spacing.s8,
-  },
-  description: {
-    ...typography.body,
-    color: C.textMid,
-    textAlign: 'center',
-    maxWidth: 280,
-  },
-  action: {
-    marginTop: spacing.s20,
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    wrapper: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: spacing.s24,
+      paddingVertical: spacing.s32,
+    },
+    iconBubble: {
+      width: 64,
+      height: 64,
+      borderRadius: radii.rFull,
+      backgroundColor: C.pinkAlpha10,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: spacing.s16,
+    },
+    title: {
+      ...typography.title,
+      color: C.textDark,
+      textAlign: 'center',
+      marginBottom: spacing.s8,
+    },
+    description: {
+      ...typography.body,
+      color: C.textMid,
+      textAlign: 'center',
+      maxWidth: 280,
+    },
+    action: {
+      marginTop: spacing.s20,
+    },
+  });

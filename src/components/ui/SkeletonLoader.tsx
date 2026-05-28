@@ -9,7 +9,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { C, radii } from '../../theme/tokens';
+import { radii, useThemedStyles, type Palette } from '../../theme';
 
 export type SkeletonShape = 'block' | 'line' | 'circle';
 
@@ -38,6 +38,7 @@ export function SkeletonLoader({
   radius,
   style,
 }: SkeletonLoaderProps) {
+  const styles = useThemedStyles(makeStyles);
   const opacity = useSharedValue(0.4);
 
   useEffect(() => {
@@ -105,6 +106,7 @@ function defaultRadiusFor(shape: SkeletonShape, height: number): number {
 // Convenience composite — the typical "list row" skeleton used while a
 // page of chores/rewards/activity loads.
 export function SkeletonRow() {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.row}>
       <SkeletonLoader shape="circle" size={48} />
@@ -116,22 +118,23 @@ export function SkeletonRow() {
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    backgroundColor: C.mutedAlpha20,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: C.glass,
-    borderRadius: radii.r18,
-    borderWidth: 1,
-    borderColor: C.border,
-  },
-  rowBody: {
-    flex: 1,
-    marginLeft: 12,
-    gap: 8,
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    base: {
+      backgroundColor: C.mutedAlpha20,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 12,
+      backgroundColor: C.glass,
+      borderRadius: radii.r18,
+      borderWidth: 1,
+      borderColor: C.border,
+    },
+    rowBody: {
+      flex: 1,
+      marginLeft: 12,
+      gap: 8,
+    },
+  });

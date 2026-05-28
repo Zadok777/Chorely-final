@@ -18,11 +18,13 @@ import {
   DMSans_600SemiBold,
   DMSans_700Bold,
 } from '@expo-google-fonts/dm-sans';
-import { ThemeProvider, C } from './src/theme';
+import { ThemeProvider, C, lightC, darkC } from './src/theme';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ToastProvider } from './src/components/ui/Toast';
 import { useAuthBootstrap } from './src/hooks/useAuthBootstrap';
 import { useFamilyBootstrap } from './src/hooks/useFamilyBootstrap';
+import { useSettingsBootstrap } from './src/hooks/useSettingsBootstrap';
+import { useSettingsStore } from './src/store/settingsStore';
 
 // Cap font scaling for accessibility without breaking layout.
 if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
@@ -48,6 +50,8 @@ export default function App() {
 
   const { ready: authReady } = useAuthBootstrap();
   const { ready: familyReady } = useFamilyBootstrap();
+  useSettingsBootstrap();
+  const darkMode = useSettingsStore((s) => s.darkMode);
   const fontsReady =
     Platform.OS === 'web' ? true : fontsLoaded || !!fontError;
   // Wait for fonts AND the persisted session restore AND the family-context
@@ -63,7 +67,12 @@ export default function App() {
 
   if (!ready) {
     return (
-      <View style={styles.loading}>
+      <View
+        style={[
+          styles.loading,
+          { backgroundColor: darkMode ? darkC.bg : lightC.bg },
+        ]}
+      >
         <ActivityIndicator size="large" color={C.pink} />
       </View>
     );
@@ -77,7 +86,7 @@ export default function App() {
             <NavigationContainer>
               <RootNavigator />
             </NavigationContainer>
-            <StatusBar style="dark" />
+            <StatusBar style={darkMode ? 'light' : 'dark'} />
           </ToastProvider>
         </ThemeProvider>
       </SafeAreaProvider>

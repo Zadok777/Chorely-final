@@ -10,7 +10,14 @@ import {
 import type { StyleProp, ViewStyle } from 'react-native';
 import { BlurView } from 'expo-blur';
 
-import { C, radii, shadows, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  shadows,
+  spacing,
+  typography,
+  useTheme,
+  type Palette,
+} from '../../theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -56,6 +63,7 @@ export function Button({
   testID,
   accessibilityLabel,
 }: ButtonProps) {
+  const { C, mode } = useTheme();
   const isDisabled = disabled || loading;
 
   return (
@@ -73,7 +81,7 @@ export function Button({
           paddingHorizontal: horizontalPaddingFor[size],
           width: fullWidth ? '100%' : undefined,
         },
-        variantContainerStyle(variant),
+        variantContainerStyle(C, variant),
         variant === 'primary' && !isDisabled && shadows.pink,
         pressed && !isDisabled && styles.pressed,
         isDisabled && styles.disabled,
@@ -83,7 +91,7 @@ export function Button({
       {variant === 'secondary' && Platform.OS === 'ios' ? (
         <BlurView
           intensity={20}
-          tint="light"
+          tint={mode === 'dark' ? 'dark' : 'light'}
           style={StyleSheet.absoluteFillObject}
         />
       ) : null}
@@ -96,13 +104,15 @@ export function Button({
         />
       ) : null}
       {loading ? (
-        <ActivityIndicator color={textColorFor(variant)} />
+        <ActivityIndicator color={textColorFor(C, mode, variant)} />
       ) : (
         <View style={styles.content}>
           {iconLeft !== undefined ? (
             <View style={styles.iconLeft}>{iconLeft}</View>
           ) : null}
-          <Text style={[typography.button, { color: textColorFor(variant) }]}>
+          <Text
+            style={[typography.button, { color: textColorFor(C, mode, variant) }]}
+          >
             {label}
           </Text>
           {iconRight !== undefined ? (
@@ -114,7 +124,7 @@ export function Button({
   );
 }
 
-function variantContainerStyle(variant: ButtonVariant): ViewStyle {
+function variantContainerStyle(C: Palette, variant: ButtonVariant): ViewStyle {
   switch (variant) {
     case 'primary':
       return { backgroundColor: C.pink };
@@ -128,11 +138,19 @@ function variantContainerStyle(variant: ButtonVariant): ViewStyle {
     case 'ghost':
       return { backgroundColor: 'transparent' };
     case 'danger':
-      return { backgroundColor: C.redAlpha15, borderWidth: 1, borderColor: 'rgba(220, 38, 38, 0.40)' };
+      return {
+        backgroundColor: C.redAlpha15,
+        borderWidth: 1,
+        borderColor: 'rgba(220, 38, 38, 0.40)',
+      };
   }
 }
 
-function textColorFor(variant: ButtonVariant): string {
+function textColorFor(
+  C: Palette,
+  mode: 'light' | 'dark',
+  variant: ButtonVariant
+): string {
   switch (variant) {
     case 'primary':
       return C.textWhite;
@@ -141,7 +159,7 @@ function textColorFor(variant: ButtonVariant): string {
     case 'ghost':
       return C.pink;
     case 'danger':
-      return '#B91C1C';
+      return mode === 'dark' ? '#FF7A7A' : '#B91C1C';
   }
 }
 

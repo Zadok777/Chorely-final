@@ -24,7 +24,14 @@ import { useActivityStore } from '../../store/activityStore';
 import { useAuthStore } from '../../store/authStore';
 import { useChoreStore } from '../../store/choreStore';
 import { useFamilyStore } from '../../store/familyStore';
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import type { Child, MainTabParamList } from '../../types/app.types';
 import { TAB_BAR_CLEARANCE } from './layout';
 
@@ -39,6 +46,8 @@ type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 export function ParentDashboard() {
   const nav = useNavigation<Nav>();
   const toast = useToast();
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
 
   const profile = useAuthStore((s) => s.profile);
   const session = useAuthStore((s) => s.session);
@@ -182,6 +191,8 @@ interface PendingApprovalsProps {
 }
 
 function PendingApprovals({ count, onReview }: PendingApprovalsProps) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const caughtUp = count === 0;
   return (
     <GlassCard
@@ -231,18 +242,16 @@ interface StatTileProps {
   icon: IoniconName;
 }
 
-const STAT_COLOR: Record<StatTileProps['tone'], string> = {
-  pink: C.pink,
-  green: C.green,
-  orange: C.orange,
-};
-
 function StatTile({ label, value, tone, icon }: StatTileProps) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const statColor =
+    tone === 'pink' ? C.pink : tone === 'green' ? C.green : C.orange;
   return (
     <GlassCard padding={spacing.s12} style={styles.statTile}>
-      <Ionicons name={icon} size={18} color={STAT_COLOR[tone]} />
+      <Ionicons name={icon} size={18} color={statColor} />
       <Text
-        style={[styles.statValue, { color: STAT_COLOR[tone] }]}
+        style={[styles.statValue, { color: statColor }]}
         maxFontSizeMultiplier={1.4}
         numberOfLines={1}
       >
@@ -263,6 +272,8 @@ interface QuickActionProps {
 }
 
 function QuickAction({ label, icon, onPress, badge }: QuickActionProps) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <Pressable
       onPress={onPress}
@@ -302,6 +313,7 @@ function ChildProgressCard({
   total,
   done,
 }: ChildProgressCardProps) {
+  const styles = useThemedStyles(makeStyles);
   const ratio = total > 0 ? done / total : 0;
   return (
     <GlassCard padding={spacing.s12} style={styles.progressCard}>
@@ -336,7 +348,8 @@ function ChildProgressCard({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   content: {
     paddingBottom: TAB_BAR_CLEARANCE,
   },

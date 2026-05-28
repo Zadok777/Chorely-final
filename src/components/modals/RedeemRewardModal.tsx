@@ -8,7 +8,14 @@ import { GlassCard } from '../ui/GlassCard';
 import { useToast } from '../ui/Toast';
 import { ModalSheet } from './ModalSheet';
 import { redeemReward } from '../../services/rpc';
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import type { Child, Reward } from '../../types/app.types';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -30,6 +37,8 @@ export function RedeemRewardModal({
   onRedeemed,
 }: RedeemRewardModalProps) {
   const toast = useToast();
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const [busy, setBusy] = useState(false);
 
   const current = child?.points ?? 0;
@@ -143,13 +152,19 @@ function ImpactCell({
   tone?: 'neutral' | 'orange' | 'pink' | 'danger';
   prefix?: string;
 }) {
+  const { C, mode } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const color =
     tone === 'orange'
-      ? '#C36321'
+      ? mode === 'dark'
+        ? C.orange
+        : '#C36321'
       : tone === 'pink'
         ? C.pink
         : tone === 'danger'
-          ? '#B91C1C'
+          ? mode === 'dark'
+            ? '#FF7A7A'
+            : '#B91C1C'
           : C.textDark;
   return (
     <View style={styles.impactCell}>
@@ -164,7 +179,8 @@ function ImpactCell({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   body: {
     ...typography.body,
     color: C.textMid,

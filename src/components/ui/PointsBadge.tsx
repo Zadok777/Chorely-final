@@ -3,7 +3,14 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 
 export type PointsBadgeSize = 'sm' | 'md' | 'lg';
 
@@ -45,8 +52,11 @@ export function PointsBadge({
   tone = 'balance',
   style,
 }: PointsBadgeProps) {
+  const { C, mode } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const prefix = tone === 'earn' ? '+' : tone === 'spend' ? '−' : '';
   const formatted = `${prefix}${formatPoints(Math.abs(points))}`;
+  const textColor = mode === 'dark' ? C.orange : '#C36321';
 
   return (
     <View
@@ -68,7 +78,7 @@ export function PointsBadge({
       <Text
         style={[
           typography.button,
-          { color: '#C36321', fontSize: fontSizeFor[size] },
+          { color: textColor, fontSize: fontSizeFor[size] },
         ]}
         maxFontSizeMultiplier={1.5}
         numberOfLines={1}
@@ -86,16 +96,17 @@ function formatPoints(n: number): string {
   return n.toLocaleString('en-US');
 }
 
-const styles = StyleSheet.create({
-  base: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: C.orangeAlpha15,
-    borderRadius: radii.rFull,
-    alignSelf: 'flex-start',
-  },
-  icon: {
-    marginRight: spacing.s4,
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    base: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: C.orangeAlpha15,
+      borderRadius: radii.rFull,
+      alignSelf: 'flex-start',
+    },
+    icon: {
+      marginRight: spacing.s4,
+    },
+  });

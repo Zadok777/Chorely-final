@@ -13,7 +13,14 @@ import { createReward } from '../../services/rewards';
 import { useAuthStore } from '../../store/authStore';
 import { useFamilyStore } from '../../store/familyStore';
 import { useRewardStore } from '../../store/rewardStore';
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -30,10 +37,12 @@ const ICONS: ReadonlyArray<IoniconName> = [
   'football',
 ];
 
+// Fixed accent choices stored on the reward row — mode-independent, so these
+// are literal brand hex values rather than themed palette tokens.
 const COLORS: ReadonlyArray<string> = [
-  C.orange,
-  C.pink,
-  C.green,
+  '#FF8C42',
+  '#FF4D8D',
+  '#00A92A',
   '#6E61FF',
   '#42C9FF',
 ];
@@ -73,6 +82,8 @@ export function CreateRewardModal({
   onCreated,
 }: CreateRewardModalProps) {
   const toast = useToast();
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const family = useFamilyStore((s) => s.family);
   const session = useAuthStore((s) => s.session);
 
@@ -255,7 +266,8 @@ export function CreateRewardModal({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   fieldLabel: {
     ...typography.caption,
     color: C.textMid,

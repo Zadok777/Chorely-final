@@ -12,7 +12,7 @@ import {
   type Edge,
 } from 'react-native-safe-area-context';
 
-import { C, spacing } from '../../theme/tokens';
+import { spacing, useThemedStyles, type Palette } from '../../theme';
 
 interface ScreenContainerProps {
   children: React.ReactNode;
@@ -41,6 +41,7 @@ export function ScreenContainer({
   style,
   contentStyle,
 }: ScreenContainerProps) {
+  const styles = useThemedStyles(makeStyles);
   const paddingStyle: ViewStyle | undefined = noHorizontalPadding
     ? undefined
     : { paddingHorizontal: spacing.s16 };
@@ -77,15 +78,16 @@ export function ScreenContainer({
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: C.bg,
-  },
-  flex: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: spacing.s24,
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: C.bg,
+    },
+    flex: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingBottom: spacing.s24,
+    },
+  });

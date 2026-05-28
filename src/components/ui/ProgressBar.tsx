@@ -2,7 +2,14 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 
 interface ProgressBarProps {
   // 0..1. Values outside the range are clamped.
@@ -24,15 +31,19 @@ interface ProgressBarProps {
 export function ProgressBar({
   value,
   height = 8,
-  color = C.pink,
-  trackColor = C.mutedAlpha20,
+  color,
+  trackColor,
   label,
   valueLabel,
   style,
 }: ProgressBarProps) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const clamped = Math.max(0, Math.min(1, value));
   const percent = `${clamped * 100}%` as const;
   const hasHeader = label !== undefined || valueLabel !== undefined;
+  const fillColor = color ?? C.pink;
+  const resolvedTrack = trackColor ?? C.mutedAlpha20;
 
   return (
     <View style={style}>
@@ -57,7 +68,7 @@ export function ProgressBar({
           styles.track,
           {
             height,
-            backgroundColor: trackColor,
+            backgroundColor: resolvedTrack,
             borderRadius: height / 2,
           },
         ]}
@@ -66,7 +77,7 @@ export function ProgressBar({
           style={{
             height,
             width: percent,
-            backgroundColor: color,
+            backgroundColor: fillColor,
             borderRadius: height / 2,
           }}
         />
@@ -75,24 +86,25 @@ export function ProgressBar({
   );
 }
 
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.s8,
-  },
-  label: {
-    ...typography.caption,
-    color: C.textMid,
-  },
-  valueLabel: {
-    ...typography.caption,
-    color: C.textDark,
-    fontFamily: 'DMSans_700Bold',
-  },
-  track: {
-    overflow: 'hidden',
-    borderRadius: radii.rFull,
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing.s8,
+    },
+    label: {
+      ...typography.caption,
+      color: C.textMid,
+    },
+    valueLabel: {
+      ...typography.caption,
+      color: C.textDark,
+      fontFamily: 'DMSans_700Bold',
+    },
+    track: {
+      overflow: 'hidden',
+      borderRadius: radii.rFull,
+    },
+  });

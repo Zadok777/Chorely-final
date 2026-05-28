@@ -12,7 +12,12 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { signIn as authSignIn } from '../../services/auth';
-import { C, spacing, typography } from '../../theme/tokens';
+import {
+  spacing,
+  typography,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import type { RootStackParamList } from '../../types/app.types';
 
 type Nav = StackNavigationProp<RootStackParamList, 'Login'>;
@@ -33,6 +38,7 @@ type FormValues = yup.InferType<typeof schema>;
 export function LoginScreen() {
   const nav = useNavigation<Nav>();
   const toast = useToast();
+  const styles = useThemedStyles(makeStyles);
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -132,7 +138,8 @@ export function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   intro: {
     marginTop: spacing.s8,
     marginBottom: spacing.s16,

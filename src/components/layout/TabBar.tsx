@@ -5,7 +5,15 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { C, radii, shadows, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  shadows,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -34,6 +42,8 @@ interface TabBarProps {
 // reuse it if we ever swap navigation libraries.
 
 export function TabBar({ tabs, activeKey, onChange, style }: TabBarProps) {
+  const { C, mode } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const bottomPad = Math.max(insets.bottom, spacing.s12);
 
@@ -51,7 +61,7 @@ export function TabBar({ tabs, activeKey, onChange, style }: TabBarProps) {
           {Platform.OS === 'ios' ? (
             <BlurView
               intensity={24}
-              tint="light"
+              tint={mode === 'dark' ? 'dark' : 'light'}
               style={StyleSheet.absoluteFillObject}
             />
           ) : null}
@@ -101,7 +111,8 @@ export function TabBar({ tabs, activeKey, onChange, style }: TabBarProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   wrapper: {
     position: 'absolute',
     left: 0,
@@ -145,4 +156,4 @@ const styles = StyleSheet.create({
     color: C.pink,
     fontFamily: 'DMSans_700Bold',
   },
-});
+  });

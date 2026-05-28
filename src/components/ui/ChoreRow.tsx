@@ -3,7 +3,15 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { C, radii, shadows, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  shadows,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import type { ChoreStatus } from '../../types/app.types';
 import { Avatar } from './Avatar';
 import { Badge } from './Badge';
@@ -72,6 +80,8 @@ export function ChoreRow({
   onPress,
   style,
 }: ChoreRowProps) {
+  const { C, mode } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const visual = statusVisuals[status];
   const interactive = onPress !== undefined;
 
@@ -139,7 +149,7 @@ export function ChoreRow({
             <Ionicons
               name={visual.iconName}
               size={11}
-              color={badgeIconColorFor(visual.tone)}
+              color={badgeIconColorFor(C, mode, visual.tone)}
             />
           }
           style={styles.statusBadge}
@@ -149,72 +159,77 @@ export function ChoreRow({
   );
 }
 
-function badgeIconColorFor(tone: StatusVisual['tone']): string {
+function badgeIconColorFor(
+  C: Palette,
+  mode: 'light' | 'dark',
+  tone: StatusVisual['tone']
+): string {
   switch (tone) {
     case 'neutral':
       return C.textDark;
     case 'orange':
-      return '#C36321';
+      return mode === 'dark' ? C.orange : '#C36321';
     case 'green':
       return C.green;
     case 'danger':
-      return '#B91C1C';
+      return mode === 'dark' ? '#FF7A7A' : '#B91C1C';
   }
 }
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: C.glass,
-    borderRadius: radii.r18,
-    borderWidth: 1,
-    borderColor: C.border,
-    padding: spacing.s12,
-  },
-  pressed: {
-    transform: [{ scale: 0.98 }],
-    opacity: 0.95,
-  },
-  iconBubble: {
-    width: 48,
-    height: 48,
-    borderRadius: radii.rFull,
-    backgroundColor: C.pinkAlpha10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  body: {
-    flex: 1,
-    marginLeft: spacing.s12,
-    marginRight: spacing.s8,
-  },
-  title: {
-    ...typography.title,
-    fontSize: 16,
-    color: C.textDark,
-    marginBottom: 2,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  meta: {
-    ...typography.caption,
-    color: C.textMid,
-  },
-  dot: {
-    width: 3,
-    height: 3,
-    borderRadius: radii.rFull,
-    backgroundColor: C.textLight,
-    marginHorizontal: spacing.s8,
-  },
-  trailing: {
-    alignItems: 'flex-end',
-    gap: spacing.s4,
-  },
-  statusBadge: {
-    marginTop: 2,
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: C.glass,
+      borderRadius: radii.r18,
+      borderWidth: 1,
+      borderColor: C.border,
+      padding: spacing.s12,
+    },
+    pressed: {
+      transform: [{ scale: 0.98 }],
+      opacity: 0.95,
+    },
+    iconBubble: {
+      width: 48,
+      height: 48,
+      borderRadius: radii.rFull,
+      backgroundColor: C.pinkAlpha10,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    body: {
+      flex: 1,
+      marginLeft: spacing.s12,
+      marginRight: spacing.s8,
+    },
+    title: {
+      ...typography.title,
+      fontSize: 16,
+      color: C.textDark,
+      marginBottom: 2,
+    },
+    metaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    meta: {
+      ...typography.caption,
+      color: C.textMid,
+    },
+    dot: {
+      width: 3,
+      height: 3,
+      borderRadius: radii.rFull,
+      backgroundColor: C.textLight,
+      marginHorizontal: spacing.s8,
+    },
+    trailing: {
+      alignItems: 'flex-end',
+      gap: spacing.s4,
+    },
+    statusBadge: {
+      marginTop: 2,
+    },
+  });

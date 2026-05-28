@@ -18,7 +18,13 @@ import { listChildren } from '../../services/children';
 import { listRedemptionsForFamily, listRewards } from '../../services/rewards';
 import { useFamilyStore } from '../../store/familyStore';
 import { useRewardStore } from '../../store/rewardStore';
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import type { Reward } from '../../types/app.types';
 import { TAB_BAR_CLEARANCE } from './layout';
 
@@ -35,6 +41,7 @@ export function RewardsScreen() {
   const family = useFamilyStore((s) => s.family);
   const children = useFamilyStore((s) => s.children);
   const rewards = useRewardStore((s) => s.rewards);
+  const styles = useThemedStyles(makeStyles);
 
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
@@ -242,7 +249,8 @@ export function RewardsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   content: {
     paddingBottom: TAB_BAR_CLEARANCE,
   },

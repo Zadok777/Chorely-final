@@ -10,7 +10,15 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { C, radii, shadows, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  shadows,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 
 export type ToastTone = 'success' | 'error' | 'info';
 
@@ -142,26 +150,35 @@ interface ToneVisual {
   iconColor: string;
 }
 
-const toneVisuals: Record<ToastTone, ToneVisual> = {
-  success: {
-    background: C.greenAlpha15,
-    borderColor: 'rgba(0, 169, 42, 0.30)',
-    iconName: 'checkmark-circle',
-    iconColor: C.green,
-  },
-  error: {
-    background: C.redAlpha15,
-    borderColor: 'rgba(220, 38, 38, 0.30)',
-    iconName: 'alert-circle',
-    iconColor: '#B91C1C',
-  },
-  info: {
-    background: C.glass,
-    borderColor: C.border,
-    iconName: 'information-circle',
-    iconColor: C.pink,
-  },
-};
+function toneVisual(
+  C: Palette,
+  mode: 'light' | 'dark',
+  tone: ToastTone
+): ToneVisual {
+  switch (tone) {
+    case 'success':
+      return {
+        background: C.greenAlpha15,
+        borderColor: 'rgba(0, 169, 42, 0.30)',
+        iconName: 'checkmark-circle',
+        iconColor: C.green,
+      };
+    case 'error':
+      return {
+        background: C.redAlpha15,
+        borderColor: 'rgba(220, 38, 38, 0.30)',
+        iconName: 'alert-circle',
+        iconColor: mode === 'dark' ? '#FF7A7A' : '#B91C1C',
+      };
+    case 'info':
+      return {
+        background: C.glass,
+        borderColor: C.border,
+        iconName: 'information-circle',
+        iconColor: C.pink,
+      };
+  }
+}
 
 function ToastView({
   message,
@@ -171,7 +188,9 @@ function ToastView({
   onDismiss,
 }: ToastViewProps) {
   const insets = useSafeAreaInsets();
-  const visual = toneVisuals[tone];
+  const { C, mode } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const visual = toneVisual(C, mode, tone);
 
   return (
     <Animated.View
@@ -206,28 +225,29 @@ function ToastView({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    left: spacing.s16,
-    right: spacing.s16,
-    zIndex: 100,
-  },
-  toast: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.s12,
-    paddingHorizontal: spacing.s16,
-    borderRadius: radii.r16,
-    borderWidth: 1,
-    gap: spacing.s12,
-  },
-  message: {
-    ...typography.body,
-    color: C.textDark,
-    flex: 1,
-  },
-  spacer: {
-    width: spacing.s4,
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    container: {
+      position: 'absolute',
+      left: spacing.s16,
+      right: spacing.s16,
+      zIndex: 100,
+    },
+    toast: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: spacing.s12,
+      paddingHorizontal: spacing.s16,
+      borderRadius: radii.r16,
+      borderWidth: 1,
+      gap: spacing.s12,
+    },
+    message: {
+      ...typography.body,
+      color: C.textDark,
+      flex: 1,
+    },
+    spacer: {
+      width: spacing.s4,
+    },
+  });

@@ -7,7 +7,7 @@ import type { ViewStyle } from 'react-native';
 // Colors (C)
 // ---------------------------------------------------------------------------
 
-export const C = {
+export const lightC = {
   // Brand palette
   pink: '#FF4D8D',
   orange: '#FF8C42',
@@ -36,6 +36,63 @@ export const C = {
   mutedAlpha20: 'rgba(168, 168, 184, 0.20)',
   redAlpha15: 'rgba(220, 38, 38, 0.15)',
 } as const;
+
+// Public palette shape — every themed color the app consumes. Both the light
+// and dark palettes satisfy this; themed components receive it as `Palette`
+// (string-typed values) from useTheme().C.
+export type Palette = {
+  pink: string;
+  orange: string;
+  green: string;
+  bg: string;
+  textDark: string;
+  textMid: string;
+  textLight: string;
+  textWhite: string;
+  glass: string;
+  glassLight: string;
+  border: string;
+  borderPink: string;
+  pinkAlpha15: string;
+  pinkAlpha10: string;
+  orangeAlpha15: string;
+  orangeAlpha10: string;
+  greenAlpha15: string;
+  greenAlpha20: string;
+  mutedAlpha20: string;
+  redAlpha15: string;
+};
+
+// Dark glassmorphism palette. Brand accents stay constant; surfaces flip to a
+// deep violet ground with light-translucent glass and inverted text. Green is
+// brightened slightly for contrast on the dark ground.
+export const darkC: Palette = {
+  pink: '#FF4D8D',
+  orange: '#FF8C42',
+  green: '#1FBF44',
+  bg: '#171423',
+  textDark: '#F2EEFF',
+  textMid: '#A8A2BE',
+  textLight: '#6F6986',
+  textWhite: '#FFFFFF',
+  glass: 'rgba(255, 255, 255, 0.08)',
+  glassLight: 'rgba(255, 255, 255, 0.05)',
+  border: 'rgba(255, 255, 255, 0.14)',
+  borderPink: 'rgba(255, 77, 141, 0.45)',
+  pinkAlpha15: 'rgba(255, 77, 141, 0.22)',
+  pinkAlpha10: 'rgba(255, 77, 141, 0.15)',
+  orangeAlpha15: 'rgba(255, 140, 66, 0.22)',
+  orangeAlpha10: 'rgba(255, 140, 66, 0.15)',
+  greenAlpha15: 'rgba(31, 191, 68, 0.24)',
+  greenAlpha20: 'rgba(31, 191, 68, 0.30)',
+  mutedAlpha20: 'rgba(168, 168, 184, 0.22)',
+  redAlpha15: 'rgba(220, 38, 38, 0.24)',
+};
+
+// Backward-compatible default — the light palette. Theme-aware code should
+// prefer useTheme().C; this stays for mode-invariant module-scope use (e.g.
+// shadow colors) and not-yet-converted / dev-only screens.
+export const C = lightC;
 
 // ---------------------------------------------------------------------------
 // Avatar gradients (cycled for family members)

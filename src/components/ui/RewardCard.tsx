@@ -3,7 +3,15 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { C, radii, shadows, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  shadows,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import { PointsBadge } from './PointsBadge';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -14,9 +22,8 @@ interface RewardCardProps {
   pointCost: number;
   // Icon shown in the top-of-card art area. Defaults to a gift icon.
   iconName?: IoniconName;
-  // Optional accent color for the icon halo. Defaults to orange — secondary
-  // brand per DESIGN.md. Use sparingly; the value should come from a small
-  // curated palette, not arbitrary hex.
+  // Optional accent color for the icon halo. Defaults to the brand orange.
+  // Use sparingly; the value should come from a small curated palette.
   accentColor?: string;
   // When true, the card renders in muted "locked" state — used when the
   // currently-selected child can't afford the reward.
@@ -33,12 +40,15 @@ export function RewardCard({
   description,
   pointCost,
   iconName = 'gift',
-  accentColor = C.orange,
+  accentColor,
   locked = false,
   justUnlocked = false,
   onPress,
   style,
 }: RewardCardProps) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const accent = accentColor ?? C.orange;
   const interactive = onPress !== undefined && !locked;
   const labelForA11y = locked
     ? `${title}, locked, costs ${pointCost} points`
@@ -63,13 +73,13 @@ export function RewardCard({
       <View
         style={[
           styles.art,
-          { backgroundColor: withAlpha(accentColor, locked ? 0.06 : 0.15) },
+          { backgroundColor: withAlpha(accent, locked ? 0.06 : 0.15) },
         ]}
       >
         <Ionicons
           name={locked ? 'lock-closed' : iconName}
           size={36}
-          color={locked ? C.textLight : accentColor}
+          color={locked ? C.textLight : accent}
         />
       </View>
       <View style={styles.body}>
@@ -109,51 +119,52 @@ function withAlpha(color: string, alpha: number): string {
   return color;
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: C.glass,
-    borderRadius: radii.r20,
-    borderWidth: 1,
-    borderColor: C.border,
-    overflow: 'hidden',
-  },
-  cardLocked: {
-    opacity: 0.7,
-  },
-  cardUnlocked: {
-    borderColor: C.borderPink,
-  },
-  pressed: {
-    transform: [{ scale: 0.98 }],
-    opacity: 0.95,
-  },
-  art: {
-    height: 88,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  body: {
-    padding: spacing.s16,
-    gap: spacing.s8,
-  },
-  title: {
-    ...typography.title,
-    fontSize: 16,
-    color: C.textDark,
-  },
-  titleLocked: {
-    color: C.textMid,
-  },
-  description: {
-    ...typography.caption,
-    color: C.textMid,
-  },
-  descriptionLocked: {
-    color: C.textLight,
-  },
-  footer: {
-    marginTop: spacing.s4,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: C.glass,
+      borderRadius: radii.r20,
+      borderWidth: 1,
+      borderColor: C.border,
+      overflow: 'hidden',
+    },
+    cardLocked: {
+      opacity: 0.7,
+    },
+    cardUnlocked: {
+      borderColor: C.borderPink,
+    },
+    pressed: {
+      transform: [{ scale: 0.98 }],
+      opacity: 0.95,
+    },
+    art: {
+      height: 88,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    body: {
+      padding: spacing.s16,
+      gap: spacing.s8,
+    },
+    title: {
+      ...typography.title,
+      fontSize: 16,
+      color: C.textDark,
+    },
+    titleLocked: {
+      color: C.textMid,
+    },
+    description: {
+      ...typography.caption,
+      color: C.textMid,
+    },
+    descriptionLocked: {
+      color: C.textLight,
+    },
+    footer: {
+      marginTop: spacing.s4,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+  });

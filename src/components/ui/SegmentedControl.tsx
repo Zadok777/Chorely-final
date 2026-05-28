@@ -2,7 +2,13 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 
 export interface SegmentOption<T extends string> {
   value: T;
@@ -25,6 +31,7 @@ export function SegmentedControl<T extends string>({
   onChange,
   style,
 }: SegmentedControlProps<T>) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={[styles.track, style]}>
       {options.map((option) => {
@@ -52,33 +59,34 @@ export function SegmentedControl<T extends string>({
   );
 }
 
-const styles = StyleSheet.create({
-  track: {
-    flexDirection: 'row',
-    backgroundColor: C.glassLight,
-    borderRadius: radii.rFull,
-    borderWidth: 1,
-    borderColor: C.border,
-    padding: spacing.s4,
-    gap: spacing.s4,
-  },
-  segment: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.s8,
-    borderRadius: radii.rFull,
-  },
-  segmentActive: {
-    backgroundColor: C.pink,
-  },
-  label: {
-    ...typography.caption,
-    color: C.textMid,
-    fontFamily: 'DMSans_600SemiBold',
-  },
-  labelActive: {
-    color: C.textWhite,
-    fontFamily: 'DMSans_700Bold',
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    track: {
+      flexDirection: 'row',
+      backgroundColor: C.glassLight,
+      borderRadius: radii.rFull,
+      borderWidth: 1,
+      borderColor: C.border,
+      padding: spacing.s4,
+      gap: spacing.s4,
+    },
+    segment: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: spacing.s8,
+      borderRadius: radii.rFull,
+    },
+    segmentActive: {
+      backgroundColor: C.pink,
+    },
+    label: {
+      ...typography.caption,
+      color: C.textMid,
+      fontFamily: 'DMSans_600SemiBold',
+    },
+    labelActive: {
+      color: C.textWhite,
+      fontFamily: 'DMSans_700Bold',
+    },
+  });

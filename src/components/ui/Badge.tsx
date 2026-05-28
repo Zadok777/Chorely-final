@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import { radii, spacing, typography, useTheme, type Palette } from '../../theme';
 
 export type BadgeTone =
   | 'neutral'
@@ -27,14 +27,34 @@ interface TonePalette {
   text: string;
 }
 
-const palettes: Record<BadgeTone, TonePalette> = {
-  neutral: { background: C.glassLight, text: C.textDark },
-  pink: { background: C.pinkAlpha15, text: C.pink },
-  orange: { background: C.orangeAlpha15, text: '#C36321' },
-  green: { background: C.greenAlpha15, text: C.green },
-  danger: { background: C.redAlpha15, text: '#B91C1C' },
-  muted: { background: C.mutedAlpha20, text: C.textMid },
-};
+// Resolved per-render against the active palette. Orange/danger text get a
+// lighter tint in dark mode so they stay legible on the translucent fill.
+function tonePalette(
+  C: Palette,
+  mode: 'light' | 'dark',
+  tone: BadgeTone
+): TonePalette {
+  switch (tone) {
+    case 'neutral':
+      return { background: C.glassLight, text: C.textDark };
+    case 'pink':
+      return { background: C.pinkAlpha15, text: C.pink };
+    case 'orange':
+      return {
+        background: C.orangeAlpha15,
+        text: mode === 'dark' ? C.orange : '#C36321',
+      };
+    case 'green':
+      return { background: C.greenAlpha15, text: C.green };
+    case 'danger':
+      return {
+        background: C.redAlpha15,
+        text: mode === 'dark' ? '#FF7A7A' : '#B91C1C',
+      };
+    case 'muted':
+      return { background: C.mutedAlpha20, text: C.textMid };
+  }
+}
 
 const heightFor: Record<BadgeSize, number> = {
   sm: 22,
@@ -59,7 +79,8 @@ export function Badge({
   iconRight,
   style,
 }: BadgeProps) {
-  const palette = palettes[tone];
+  const { C, mode } = useTheme();
+  const palette = tonePalette(C, mode, tone);
 
   return (
     <View

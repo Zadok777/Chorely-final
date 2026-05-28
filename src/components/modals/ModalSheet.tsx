@@ -13,7 +13,15 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { C, radii, shadows, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  shadows,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 
 interface ModalSheetProps {
   visible: boolean;
@@ -35,6 +43,8 @@ export function ModalSheet({
   children,
   footer,
 }: ModalSheetProps) {
+  const { C, mode } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const insets = useSafeAreaInsets();
 
   return (
@@ -60,7 +70,7 @@ export function ModalSheet({
             {Platform.OS === 'ios' ? (
               <BlurView
                 intensity={28}
-                tint="light"
+                tint={mode === 'dark' ? 'dark' : 'light'}
                 style={StyleSheet.absoluteFillObject}
               />
             ) : null}
@@ -116,7 +126,8 @@ export function ModalSheet({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   fill: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -188,4 +199,4 @@ const styles = StyleSheet.create({
     borderTopColor: C.border,
     gap: spacing.s8,
   },
-});
+  });

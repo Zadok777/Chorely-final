@@ -178,14 +178,23 @@ Build note (2026-05-28): mid-phase, node_modules got truncated (expo-blur/build,
 
 Note: locked/available is computed against the selected child's balance. `CelebrationOverlay` is reusable for chore approval too (not yet wired there — optional polish).
 
-## Phase 8: Family + Settings
+## Phase 8: Family + Settings (code complete 2026-05-28, tsc + Metro green)
 
-- [ ] `screens/parent/FamilyScreen.tsx` (child cards, streaks, progress)
-- [ ] `modals/AddChildModal.tsx` (name + DOB only — COPPA)
-- [ ] Child detail view (point history, chore history, streak)
-- [ ] `screens/parent/SettingsScreen.tsx` (rename family, manage children, dark-mode toggle, sign out, delete account → `delete_user_account` RPC, invite code share)
-- [ ] Test: add child → appears in family → can assign chores
-- [ ] Test: dark mode toggle persists
+- [x] `screens/parent/FamilyScreen.tsx` — real screen (child cards: avatar, points, streak; invite-code card; add via header `+`; remove via per-card trash with Alert confirm); focus reload + pull-to-refresh
+- [x] `modals/AddChildModal.tsx` — name + optional DOB only (COPPA); auto-flags `is_under_13` + records parental consent when under 13
+- [~] Child detail view (point/chore history) — deferred to a later pass; not required for v1.0 core
+- [x] `screens/parent/SettingsScreen.tsx` — profile card, **dark-mode toggle**, notifications toggle, rename family (inline), sign out, delete account (`delete_user_account` RPC + Alert confirm → sign out), dev showcase link
+- [x] **Full dark mode** (this is the big one — see below)
+- [ ] Manual test in Simulator: toggle dark mode → whole app recolors + persists across relaunch; add child → appears + assignable; rename family; delete account
+
+### Full dark mode (2026-05-28)
+
+Added a complete dark theme, app-wide:
+- `theme/tokens.ts` — `lightC` + new `darkC` palette + `Palette` type; `C` kept as a light alias for mode-invariant/dev use
+- `theme/ThemeProvider.tsx` — reactive to `settingsStore.darkMode`; exposes active `C` + `mode`; new `useThemedStyles(makeStyles)` hook
+- Converted ~24 components/screens from static `C` to `useTheme().C` + `useThemedStyles` (primitives, layout, all 5 modals, auth + parent screens). `BlurView` tint + StatusBar + App loading bg now follow the mode.
+- `hooks/useSettingsBootstrap.ts` syncs `user_settings` → store on sign-in
+- Static `C` intentionally retained for: Avatar/ChorelyIcon/ChorelyLogo/CelebrationOverlay (mode-invariant brand colors), ComponentShowcase (dev-only), and shadow colors. ChoresScreen uses no colors (theme-agnostic).
 
 ## Phase 9: Paywall (RevenueCat)
 

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
-import { C, typography } from '../../theme/tokens';
+import { typography, useTheme } from '../../theme';
 
 interface ProgressRingProps {
   // 0..1. Out-of-range values are clamped.
@@ -33,11 +33,14 @@ export function ProgressRing({
   value,
   size = 96,
   strokeWidth = 8,
-  color = C.pink,
-  trackColor = C.mutedAlpha20,
+  color,
+  trackColor,
   centerLabel,
   style,
 }: ProgressRingProps) {
+  const { C } = useTheme();
+  const ringColor = color ?? C.pink;
+  const resolvedTrack = trackColor ?? C.mutedAlpha20;
   const clamped = Math.max(0, Math.min(1, value));
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -50,17 +53,15 @@ export function ProgressRing({
     return `chorelyRing${gradientCounter}`;
   }, []);
 
-  const stroke = color === 'gradient' ? `url(#${gradientId})` : color;
+  const stroke = ringColor === 'gradient' ? `url(#${gradientId})` : ringColor;
 
   const label =
     centerLabel === undefined ? `${Math.round(clamped * 100)}%` : centerLabel;
 
   return (
-    <View
-      style={[{ width: size, height: size }, styles.wrapper, style]}
-    >
+    <View style={[{ width: size, height: size }, styles.wrapper, style]}>
       <Svg width={size} height={size}>
-        {color === 'gradient' ? (
+        {ringColor === 'gradient' ? (
           <Defs>
             <LinearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
               <Stop offset="0" stopColor={C.pink} />
@@ -72,7 +73,7 @@ export function ProgressRing({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={trackColor}
+          stroke={resolvedTrack}
           strokeWidth={strokeWidth}
           fill="none"
         />

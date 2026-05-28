@@ -3,7 +3,14 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import { Avatar } from '../ui/Avatar';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -44,6 +51,8 @@ export function Header({
   actions = [],
   style,
 }: HeaderProps) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={[styles.row, style]}>
       <View style={styles.leading}>
@@ -106,7 +115,8 @@ export function Header({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -160,4 +170,4 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: C.bg,
   },
-});
+  });

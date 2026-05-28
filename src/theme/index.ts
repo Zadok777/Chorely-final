@@ -1,6 +1,8 @@
-export { ThemeProvider, useTheme } from './ThemeProvider';
+export { ThemeProvider, useTheme, useThemedStyles } from './ThemeProvider';
 export {
   C,
+  lightC,
+  darkC,
   AVATAR_GRADIENTS,
   radii,
   shadows,
@@ -8,4 +10,4 @@ export {
   typography,
   bracketThemes,
 } from './tokens';
-export type { AgeBracket, BracketTheme } from './tokens';
+export type { AgeBracket, BracketTheme, Palette } from './tokens';

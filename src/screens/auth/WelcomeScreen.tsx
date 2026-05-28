@@ -6,13 +6,19 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import { ChorelyLogo } from '../../components/brand/ChorelyLogo';
 import { ScreenContainer } from '../../components/layout/ScreenContainer';
 import { Button } from '../../components/ui/Button';
-import { C, spacing, typography } from '../../theme/tokens';
+import {
+  spacing,
+  typography,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import type { RootStackParamList } from '../../types/app.types';
 
 type Nav = StackNavigationProp<RootStackParamList, 'Welcome'>;
 
 export function WelcomeScreen() {
   const nav = useNavigation<Nav>();
+  const styles = useThemedStyles(makeStyles);
 
   return (
     <ScreenContainer>
@@ -49,7 +55,8 @@ export function WelcomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   root: {
     flex: 1,
     justifyContent: 'space-between',

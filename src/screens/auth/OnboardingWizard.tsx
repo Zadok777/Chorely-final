@@ -14,7 +14,12 @@ import { listChildren } from '../../services/children';
 import { listFamilyMembers } from '../../services/families';
 import { completeOnboarding } from '../../services/rpc';
 import { useFamilyStore } from '../../store/familyStore';
-import { C, spacing, typography } from '../../theme/tokens';
+import {
+  spacing,
+  typography,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 
 // First-run setup for a parent with no family. Two steps:
 //   1. Family name
@@ -64,6 +69,7 @@ type FormValues = yup.InferType<typeof schema>;
 
 export function OnboardingWizard() {
   const toast = useToast();
+  const styles = useThemedStyles(makeStyles);
   const [step, setStep] = useState<0 | 1>(0);
   const [submitting, setSubmitting] = useState(false);
 
@@ -240,7 +246,8 @@ export function OnboardingWizard() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   hero: {
     alignItems: 'center',
     paddingTop: spacing.s32,

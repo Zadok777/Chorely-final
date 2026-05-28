@@ -242,6 +242,16 @@ All screens must match these layouts. Pixel-level parity with the prototype is t
 
 ---
 
+## Dark Mode (added 2026-05-28)
+
+Chorely supports a full dark theme. The **Settings → Appearance** toggle flips `settingsStore.darkMode` (persisted locally and synced to `user_settings.dark_mode`), which `ThemeProvider` maps to the `darkC` palette in `tokens.ts`. The whole app recolors instantly because components read colors via `useTheme().C` and build styles with `useThemedStyles(makeStyles)` instead of importing the static `C`.
+
+- **Light is the default**; dark is opt-in per user and applies even before sign-in (the store rehydrates from AsyncStorage at launch).
+- Dark ground is deep violet `#171423` with light-translucent glass (`rgba(255,255,255,0.08)`) and inverted text. Brand pink/orange are unchanged; green is brightened (`#1FBF44`) for contrast. `BlurView` tint follows the mode.
+- **When adding new screens/components, do not import the static `C`.** Use `const { C } = useTheme()` for inline colors and `const makeStyles = (C: Palette) => StyleSheet.create({...})` + `useThemedStyles(makeStyles)` for stylesheets. The static `C` (= light palette) remains only for mode-invariant module-scope use (e.g. shadow colors) and the dev-only ComponentShowcase.
+
+---
+
 ## 12. Maintenance
 
 - Append new tokens, gradients, or rules **here**, not in CLAUDE.md.

@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import type {
   KeyboardTypeOptions,
   StyleProp,
@@ -12,7 +7,14 @@ import type {
   ViewStyle,
 } from 'react-native';
 
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 
 interface InputProps {
   value: string;
@@ -60,6 +62,8 @@ export function Input({
   style,
   testID,
 }: InputProps) {
+  const { C, mode } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const [focused, setFocused] = useState(false);
 
   const borderColor = error
@@ -67,6 +71,7 @@ export function Input({
     : focused
       ? C.borderPink
       : C.border;
+  const errorColor = mode === 'dark' ? '#FF7A7A' : '#B91C1C';
 
   const handleFocus = () => {
     setFocused(true);
@@ -114,7 +119,7 @@ export function Input({
         />
       </View>
       {error ? (
-        <Text style={[styles.helperText, styles.errorText]}>{error}</Text>
+        <Text style={[styles.helperText, { color: errorColor }]}>{error}</Text>
       ) : helper ? (
         <Text style={styles.helperText}>{helper}</Text>
       ) : null}
@@ -122,44 +127,42 @@ export function Input({
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    width: '100%',
-  },
-  label: {
-    ...typography.caption,
-    color: C.textMid,
-    marginBottom: spacing.s8,
-    marginLeft: spacing.s4,
-  },
-  field: {
-    backgroundColor: C.glass,
-    borderRadius: radii.r14,
-    borderWidth: 1,
-    paddingHorizontal: spacing.s16,
-    height: 48,
-    justifyContent: 'center',
-  },
-  fieldMultiline: {
-    height: undefined,
-    paddingVertical: spacing.s12,
-  },
-  fieldDisabled: {
-    opacity: 0.6,
-  },
-  input: {
-    ...typography.body,
-    color: C.textDark,
-    padding: 0, // Override RN's default platform padding
-    margin: 0,
-  },
-  helperText: {
-    ...typography.caption,
-    color: C.textMid,
-    marginTop: spacing.s4,
-    marginLeft: spacing.s4,
-  },
-  errorText: {
-    color: '#B91C1C',
-  },
-});
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    wrapper: {
+      width: '100%',
+    },
+    label: {
+      ...typography.caption,
+      color: C.textMid,
+      marginBottom: spacing.s8,
+      marginLeft: spacing.s4,
+    },
+    field: {
+      backgroundColor: C.glass,
+      borderRadius: radii.r14,
+      borderWidth: 1,
+      paddingHorizontal: spacing.s16,
+      height: 48,
+      justifyContent: 'center',
+    },
+    fieldMultiline: {
+      height: undefined,
+      paddingVertical: spacing.s12,
+    },
+    fieldDisabled: {
+      opacity: 0.6,
+    },
+    input: {
+      ...typography.body,
+      color: C.textDark,
+      padding: 0, // Override RN's default platform padding
+      margin: 0,
+    },
+    helperText: {
+      ...typography.caption,
+      color: C.textMid,
+      marginTop: spacing.s4,
+      marginLeft: spacing.s4,
+    },
+  });

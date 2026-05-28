@@ -9,7 +9,14 @@ import { Input } from '../ui/Input';
 import { useToast } from '../ui/Toast';
 import { ModalSheet } from './ModalSheet';
 import { approveChore, rejectChore } from '../../services/rpc';
-import { C, radii, spacing, typography } from '../../theme/tokens';
+import {
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
 import type { Child, Chore, ChoreAssignment } from '../../types/app.types';
 import { formatRelativeTime } from '../../utils/date';
 
@@ -32,6 +39,8 @@ export function ChoreApprovalModal({
   onResolved,
 }: ChoreApprovalModalProps) {
   const toast = useToast();
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const [mode, setMode] = useState<'choose' | 'deny'>('choose');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
@@ -200,6 +209,8 @@ export function ChoreApprovalModal({
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 function Chip({ icon, text }: { icon: IoniconName; text: string }) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.chip}>
       <Ionicons name={icon} size={13} color={C.textMid} />
@@ -221,6 +232,8 @@ function ImpactCell({
   tone?: 'neutral' | 'green' | 'pink';
   prefix?: string;
 }) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const color =
     tone === 'green' ? C.green : tone === 'pink' ? C.pink : C.textDark;
   return (
@@ -236,7 +249,8 @@ function ImpactCell({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
   body: {
     ...typography.body,
     color: C.textMid,
