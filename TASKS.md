@@ -52,7 +52,7 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 - [x] `tsc --noEmit` clean
 - [x] Commit + push (`49091b7`)
 
-### Phase 2c: Services + Stores (in progress 2026-05-28)
+### Phase 2c: Services + Stores (completed 2026-05-28)
 
 - [x] Write `src/types/result.ts` (`ServiceResult<T>` tagged union + ok/fail/fromError helpers)
 - [x] Write `src/services/auth.ts` (signUp, signIn, signOut, getSession, getUser, getMyProfile, updateMyProfile, onAuthStateChange)
@@ -70,7 +70,11 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 - [x] Write `src/store/activityStore.ts` (activity feed)
 - [x] Write `src/store/settingsStore.ts` (dark mode + notification prefs, with persist middleware)
 - [x] `tsc --noEmit` clean
-- [ ] Verify temp smoke-test screen can sign up a real user end-to-end (auth → profile autocreate → onboarding RPC → families list reads back)
+- [x] Wire smoke-test button into Placeholder screen (RootNavigator.tsx)
+- [x] Verify temp smoke-test screen can sign up a real user end-to-end — passed 2026-05-28 with invite code `Q7JQ6926` (auth → profile autocreate → onboarding RPC → families list reads back)
+- [x] Disable "Confirm email" in Supabase dev project (Auth → Providers → Email) so signups return a session immediately
+
+> The smoke-test button stays on the Placeholder screen until Phase 4 replaces RootNavigator with the real auth-gated flow. The orphan `smoke-*@example.com` users in `auth.users` can be cleared via the Supabase Dashboard or by calling `delete_user_account()` once we have a screen for it.
 
 ## Phase 3: UI Atoms + Layout
 
