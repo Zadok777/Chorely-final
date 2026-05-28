@@ -40,7 +40,7 @@ The content of the app is entirely secular. There are no religious references, f
 
 | Layer | Tool | Notes |
 |---|---|---|
-| Framework | React Native via Expo Managed Workflow | Do not eject to bare workflow |
+| Framework | React Native via Expo Managed Workflow | **Expo SDK 54 / RN 0.81 / React 19 / Reanimated 4** — do not change SDK versions independently; run `npx expo install --fix` if a bump is needed, then verify the full app boots in Expo Go before committing |
 | Language | TypeScript (strict) | No `.js` or `.jsx` files anywhere in the project |
 | Backend | Supabase | PostgreSQL, Auth, Storage, Realtime |
 | State | Zustand with persist middleware | AsyncStorage as the persistence adapter |
@@ -384,6 +384,8 @@ Record all architectural decisions here. Format: date and one-sentence reason.
 | 2026-05-27 | Fresh build in `~/Desktop/Chorely 2/`, new repo at `github.com/doulosnexus-lang/Chorely.git` | Previous `~/Desktop/Chorely-new` and other artifacts archived; this is a clean start matching the Lumina Bloom prototype |
 | 2026-05-27 | Visual system split into DESIGN.md | Reduces CLAUDE.md session-load footprint; matches the "design.md" pattern from `ai-design-prompt-template.md` |
 | 2026-05-27 | Fonts: Nunito + DM Sans (not Plus Jakarta + Manrope) | Already loaded in App.tsx; neither is in banned-fonts list; Nunito's rounded forms match elementary bracket |
+| 2026-05-28 | Upgraded to Expo SDK 54 (RN 0.81 / React 19 / Reanimated 4) | Workspace got the bump from `npx expo install --fix` and runs cleanly in Expo Go; reverting would risk breaking the working dev loop. Future SDK changes should go through `npx expo install --fix` together, not piecemeal. |
+| 2026-05-28 | ChorelyIcon supports an `animated` prop (blink + bob) | Brand wanted the smiley to feel alive on Welcome / Onboarding hero moments; the prop defaults off so small chrome uses stay still and cheap |
 | — | Expo Managed over React Native CLI | Faster builds, no native module conflicts for v1 scope |
 | — | RevenueCat over Stripe for IAP | Apple and Google require native IAP; Stripe is not permitted |
 | — | Zustand over Redux | Lower boilerplate for this app's state complexity |
