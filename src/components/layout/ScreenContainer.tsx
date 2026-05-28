@@ -25,6 +25,8 @@ interface ScreenContainerProps {
   noHorizontalPadding?: boolean;
   // On iOS the keyboard covers inputs by default. Set true on form screens.
   keyboardAvoiding?: boolean;
+  // Pull-to-refresh. Pass a <RefreshControl/>; only applied when `scroll`.
+  refreshControl?: React.ComponentProps<typeof ScrollView>['refreshControl'];
   style?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
 }
@@ -35,6 +37,7 @@ export function ScreenContainer({
   edges,
   noHorizontalPadding = false,
   keyboardAvoiding = false,
+  refreshControl,
   style,
   contentStyle,
 }: ScreenContainerProps) {
@@ -48,6 +51,7 @@ export function ScreenContainer({
       contentContainerStyle={[styles.scrollContent, paddingStyle, contentStyle]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
+      refreshControl={refreshControl}
     >
       {children}
     </ScrollView>

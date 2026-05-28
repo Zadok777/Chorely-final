@@ -7,7 +7,7 @@ import {
 import { TabBar, type TabItem } from '../components/layout/TabBar';
 import { ChoresScreen } from '../screens/parent/ChoresScreen';
 import { FamilyScreen } from '../screens/parent/FamilyScreen';
-import { HomeScreen } from '../screens/parent/HomeScreen';
+import { ParentDashboard } from '../screens/parent/ParentDashboard';
 import { RewardsScreen } from '../screens/parent/RewardsScreen';
 import { SettingsScreen } from '../screens/parent/SettingsScreen';
 import { C } from '../theme/tokens';
@@ -88,7 +88,7 @@ export function MainNavigator() {
         sceneStyle: { backgroundColor: C.bg },
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={ParentDashboard} />
       <Tab.Screen name="Chores" component={ChoresScreen} />
       <Tab.Screen name="Rewards" component={RewardsScreen} />
       <Tab.Screen name="Family" component={FamilyScreen} />

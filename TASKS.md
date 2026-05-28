@@ -144,15 +144,17 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 5. Settings → Sign out → Welcome; sign back in → lands straight on Home (no Onboarding flash)
 6. Settings → "View component showcase" still works and back returns to Settings
 
-## Phase 5: Parent Dashboard
+## Phase 5: Parent Dashboard (code complete 2026-05-28, tsc + Metro green)
 
-- [ ] `screens/parent/ParentDashboard.tsx` — greeting header
-- [ ] Pending Approvals card with counter and preview
-- [ ] Today's Snapshot (3 stat tiles)
-- [ ] Quick Actions grid
-- [ ] Family Progress cards (one per child)
-- [ ] Wire to `familyStore`, `choreStore`, `activityStore`
-- [ ] Pull-to-refresh on the dashboard
+- [x] `screens/parent/ParentDashboard.tsx` — greeting header (avatar + family name); replaces the minimal HomeScreen as the Home tab; HomeScreen deleted
+- [x] Pending Approvals card with counter + preview (green "all caught up" vs pink "N waiting" + Review button → Chores tab)
+- [x] Today's Snapshot — 3 stat tiles (Assigned/pink, Completed/green, Points/orange) computed from assignments + children points
+- [x] Quick Actions grid — Add chore / Create reward / View family / Review requests (navigate to tabs; modals arrive Phase 6/7; Review shows a pending-count badge)
+- [x] Family Progress cards — one per child: avatar, points, streak, completion ProgressRing (approved/total, gradient ring)
+- [x] Wire to `familyStore`, `choreStore`, `activityStore` — loads assignments/chores/activity/children on mount; toasts first error
+- [x] Pull-to-refresh — added `refreshControl` prop to `ScreenContainer`; dashboard re-fetches all four datasets
+
+Note: chore/assignment data only populates after Phase 6, so snapshot/progress show zeros today (by design). Activity is fetched into `activityStore` but not yet surfaced (no recent-activity card in the spec; revisit if added).
 
 ## Phase 6: Chore Management
 
