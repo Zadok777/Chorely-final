@@ -7,9 +7,7 @@ import {
 } from 'react-native';
 import type {
   KeyboardTypeOptions,
-  NativeSyntheticEvent,
   StyleProp,
-  TextInputFocusEventData,
   ViewStyle,
 } from 'react-native';
 
@@ -74,11 +72,11 @@ export function Input({
       ? C.borderPink
       : C.border;
 
-  const handleFocus = (_e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  const handleFocus = () => {
     setFocused(true);
     if (onFocus) onFocus();
   };
-  const handleBlur = (_e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  const handleBlur = () => {
     setFocused(false);
     if (onBlur) onBlur();
   };

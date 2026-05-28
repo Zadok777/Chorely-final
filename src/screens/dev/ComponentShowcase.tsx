@@ -66,15 +66,21 @@ export function ComponentShowcase() {
         showsVerticalScrollIndicator={false}
       >
         {/* Brand */}
-        <SectionTitle>Brand</SectionTitle>
+        <SectionTitle>Brand · animated</SectionTitle>
         <GlassCard style={styles.section}>
           <View style={styles.row}>
-            <ChorelyLogo variant="icon" iconSize={48} />
+            <ChorelyLogo variant="icon" iconSize={48} animated />
             <View style={styles.spacer16} />
-            <ChorelyLogo variant="horizontal" iconSize={40} />
+            <ChorelyLogo variant="horizontal" iconSize={40} animated />
           </View>
           <View style={styles.spacer20} />
-          <ChorelyLogo variant="full" iconSize={64} />
+          <ChorelyLogo variant="full" iconSize={80} animated />
+          <View style={styles.spacer16} />
+          <Text style={styles.caption}>
+            Eyes blink every ~3.5s; gentle bob loop. Pass{' '}
+            <Text style={styles.code}>animated</Text> to ChorelyLogo /
+            ChorelyIcon. Static by default elsewhere.
+          </Text>
         </GlassCard>
 
         {/* Surfaces */}
@@ -497,6 +503,10 @@ const styles = StyleSheet.create({
   caption: {
     ...typography.caption,
     color: C.textMid,
+  },
+  code: {
+    fontFamily: 'Courier',
+    color: C.textDark,
   },
   grid2: {
     flexDirection: 'row',

@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import Svg, {
-  Circle,
   Defs,
+  Ellipse,
   LinearGradient,
   Path,
   Rect,
@@ -20,19 +20,94 @@ interface ChorelyIconProps {
   faceFill?: string;
   // Override the dark feature color (eyes + smile).
   featureColor?: string;
+  // When true, eyes blink every few seconds and the icon bobs gently.
+  // Use on welcome screens and hero brand moments. Default off so smaller
+  // chrome uses (header avatars, list rows) stay still and cheap.
+  animated?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
-// The rounded-square smiley defined in DESIGN.md §1. Coordinates are in a
-// 100×100 viewBox so the SVG scales cleanly at any size.
+// Eye geometry. Eyes are always rendered as ellipses so the blink animation
+// can squash ry → 0.5 without swapping shapes mid-render. When the icon is
+// not animated, rx == ry == OPEN_RY which is visually identical to a circle.
+const OPEN_RY = 5;
+const CLOSED_RY = 0.5;
+const BLINK_CLOSE_MS = 90;
+const BLINK_INTERVAL_MS = 3500;
+
+// Bob geometry — kept subtle. Anything > 4px starts to feel like a marketing
+// site rather than an app icon. translateY uses native Animated so the loop
+// runs cheaply across iOS/Android/web.
+const BOB_RANGE = 2.5;
+const BOB_DURATION_MS = 2000;
+
 export function ChorelyIcon({
   size = 64,
   faceFill = C.textWhite,
   featureColor = C.textDark,
+  animated = false,
   style,
 }: ChorelyIconProps) {
+  const [eyeRy, setEyeRy] = useState(OPEN_RY);
+  const bobY = useRef(new Animated.Value(0)).current;
+
+  // Blink loop. We drive ry through React state rather than a Reanimated
+  // worklet because animating SVG props via reanimated has rough edges on
+  // web; a 100ms re-render every 3.5s is negligible.
+  useEffect(() => {
+    if (!animated) return undefined;
+    let cancelled = false;
+    let openTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const blink = () => {
+      if (cancelled) return;
+      setEyeRy(CLOSED_RY);
+      openTimer = setTimeout(() => {
+        if (cancelled) return;
+        setEyeRy(OPEN_RY);
+      }, BLINK_CLOSE_MS);
+    };
+
+    const interval = setInterval(blink, BLINK_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      if (openTimer !== null) clearTimeout(openTimer);
+    };
+  }, [animated]);
+
+  // Bob loop. Sinusoidal easing in both directions so the motion has no
+  // hard turn at the top/bottom — feels like a gentle breath.
+  useEffect(() => {
+    if (!animated) return undefined;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(bobY, {
+          toValue: -BOB_RANGE,
+          duration: BOB_DURATION_MS,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+        Animated.timing(bobY, {
+          toValue: 0,
+          duration: BOB_DURATION_MS,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [animated, bobY]);
+
   return (
-    <View style={[{ width: size, height: size }, style]}>
+    <Animated.View
+      style={[
+        { width: size, height: size },
+        animated && { transform: [{ translateY: bobY }] },
+        style,
+      ]}
+    >
       <Svg width={size} height={size} viewBox="0 0 100 100">
         <Defs>
           <LinearGradient id="chorelyBorder" x1="0" y1="0" x2="1" y2="1">
@@ -51,8 +126,8 @@ export function ChorelyIcon({
           stroke="url(#chorelyBorder)"
           strokeWidth={6}
         />
-        <Circle cx={36} cy={42} r={5} fill={featureColor} />
-        <Circle cx={64} cy={42} r={5} fill={featureColor} />
+        <Ellipse cx={36} cy={42} rx={5} ry={eyeRy} fill={featureColor} />
+        <Ellipse cx={64} cy={42} rx={5} ry={eyeRy} fill={featureColor} />
         <Path
           d="M30 62 Q50 82 70 62"
           stroke={featureColor}
@@ -61,11 +136,6 @@ export function ChorelyIcon({
           fill="none"
         />
       </Svg>
-    </View>
+    </Animated.View>
   );
 }
-
-// Style preserved as a sentinel — keeps consumers from accidentally giving the
-// icon a background that breaks the gradient stroke contrast.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _styles = StyleSheet.create({});

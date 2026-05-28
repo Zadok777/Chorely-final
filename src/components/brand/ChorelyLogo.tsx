@@ -14,16 +14,20 @@ interface ChorelyLogoProps {
   // Drives both the icon size and the wordmark font size. The wordmark is
   // proportional so the brand reads consistently.
   iconSize?: number;
+  // Forwarded to ChorelyIcon — when true, the smiley blinks and bobs.
+  // Use on Welcome / Onboarding hero moments.
+  animated?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
 export function ChorelyLogo({
   variant = 'full',
   iconSize = 64,
+  animated = false,
   style,
 }: ChorelyLogoProps) {
   if (variant === 'icon') {
-    return <ChorelyIcon size={iconSize} style={style} />;
+    return <ChorelyIcon size={iconSize} animated={animated} style={style} />;
   }
 
   const wordmarkFontSize = Math.round(iconSize * 0.55);
@@ -31,7 +35,7 @@ export function ChorelyLogo({
   if (variant === 'horizontal') {
     return (
       <View style={[styles.horizontal, style]}>
-        <ChorelyIcon size={iconSize} />
+        <ChorelyIcon size={iconSize} animated={animated} />
         <Text
           style={[
             styles.wordmark,
@@ -47,7 +51,7 @@ export function ChorelyLogo({
 
   return (
     <View style={[styles.stacked, style]}>
-      <ChorelyIcon size={iconSize} />
+      <ChorelyIcon size={iconSize} animated={animated} />
       <Text
         style={[
           styles.wordmark,
