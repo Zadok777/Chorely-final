@@ -21,6 +21,7 @@ import {
 import { ThemeProvider, C } from './src/theme';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ToastProvider } from './src/components/ui/Toast';
+import { useAuthBootstrap } from './src/hooks/useAuthBootstrap';
 
 // Cap font scaling for accessibility without breaking layout.
 if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
@@ -44,7 +45,13 @@ export default function App() {
     DMSans_700Bold,
   });
 
-  const ready = Platform.OS === 'web' ? true : fontsLoaded || !!fontError;
+  const { ready: authReady } = useAuthBootstrap();
+  const fontsReady =
+    Platform.OS === 'web' ? true : fontsLoaded || !!fontError;
+  // Wait for both the fonts AND the persisted Supabase session restore
+  // before mounting the navigator. Otherwise a signed-in user would flash
+  // the Welcome screen for ~100ms while getSession() resolves.
+  const ready = fontsReady && authReady;
 
   useEffect(() => {
     if (!ready || Platform.OS === 'web') return;

@@ -40,21 +40,24 @@ export type ChoreCategory =
 export type ChoreFrequency = 'once' | 'daily' | 'weekly';
 
 // Typed navigation routes. Never use string literals at navigation call sites.
-// Each phase below adds more entries as the screens come online.
+//
+// The navigator is split into two mutually exclusive sets gated by
+// `authStore.session`. React Navigation 7 doesn't model that split in the
+// type system, so all routes share the same param list at compile time —
+// runtime gating happens in RootNavigator.
+
 export type RootStackParamList = {
-  // Phase 1+2: placeholder smoke-test screen
-  Placeholder: undefined;
+  // Auth stack — rendered when session is null
+  Welcome: undefined;
+  Login: undefined;
+  SignUp: undefined;
 
-  // Phase 3 (temporary): visual showcase of all 18 UI primitives.
-  // Removed in Phase 4 when real screens replace this navigator.
+  // Main stack — rendered when session !== null
+  // (Home is a stub in Phase 4 Batch 1; replaced by the real dashboard
+  // after Batch 2 wires OnboardingWizard + MainNavigator.)
+  Home: undefined;
+
+  // Dev-only — accessible from Home for visual review.
+  // Removed once Phase 5 screens replace the need.
   Showcase: undefined;
-
-  // Phase 4 (auth + onboarding) — wire when the screens exist:
-  // Welcome: undefined;
-  // Login: undefined;
-  // SignUp: undefined;
-  // OnboardingWizard: undefined;
-
-  // Phase 5+ (main app) — wire when the tab navigator exists:
-  // Main: undefined;
 };

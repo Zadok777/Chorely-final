@@ -109,16 +109,30 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 
 ## Phase 4: Navigation + Auth + Onboarding
 
-- [ ] `src/navigation/RootNavigator.tsx` (Auth ↔ Main switch based on `authStore.session`)
-- [ ] `src/navigation/AuthNavigator.tsx` (Welcome → Login/SignUp → OnboardingWizard)
-- [ ] `src/navigation/MainNavigator.tsx` (bottom tabs with stacks)
-- [ ] `screens/auth/WelcomeScreen.tsx`
-- [ ] `screens/auth/LoginScreen.tsx`
-- [ ] `screens/auth/SignUpScreen.tsx`
-- [ ] `screens/auth/OnboardingWizard.tsx` (family name + first child; calls `complete_onboarding` RPC)
-- [ ] Test: sign up → onboarding → dashboard
-- [ ] Test: sign in → dashboard
-- [ ] Test: sign out → welcome
+### Batch 1 — Auth gate + Welcome / SignUp / SignIn (completed 2026-05-28)
+
+- [x] `src/hooks/useAuthBootstrap.ts` — restores session at launch + subscribes to onAuthStateChange; hydrates authStore
+- [x] `src/navigation/RootNavigator.tsx` — Auth ↔ Main switch driven by `authStore.session` (conditional `<Stack.Screen>` blocks; React Navigation 7 idiomatic)
+- [x] `src/screens/auth/WelcomeScreen.tsx` — animated ChorelyLogo hero + Create account / I already have an account CTAs
+- [x] `src/screens/auth/SignUpScreen.tsx` — RHF + Yup (displayName + email + password); calls `auth.signUp`; handles email-confirmation case by redirecting to Login with an info toast
+- [x] `src/screens/auth/LoginScreen.tsx` — RHF + Yup (email + password); calls `auth.signIn`; ghost "Create one" link to SignUp
+- [x] `src/screens/parent/DashboardStub.tsx` — placeholder post-sign-in landing; greeting + status card + showcase shortcut + sign-out
+- [x] `App.tsx` — wired `useAuthBootstrap()`; gates navigator on both fontsReady AND authReady so signed-in users don't flash Welcome
+- [x] Removed `PlaceholderScreen` + smoke-test code (the auth flow now exercises the same code paths end-to-end)
+- [x] `tsc --noEmit` clean
+- [ ] Test: sign up → land on DashboardStub
+- [ ] Test: sign out → return to Welcome
+- [ ] Test: sign in → land on DashboardStub
+- [ ] Test: kill + relaunch app while signed in → still on DashboardStub (no Welcome flash)
+
+### Batch 2 — Onboarding + Main shell (pending)
+
+- [ ] `src/screens/auth/OnboardingWizard.tsx` — family name → first child → DOB; calls `rpc.completeOnboarding`
+- [ ] Detect post-signup state (no family yet) and route to OnboardingWizard before DashboardStub
+- [ ] `src/navigation/MainNavigator.tsx` — bottom tabs (Home / Chores / Rewards / Family / Settings) using TabBar via a React Navigation adapter
+- [ ] Replace DashboardStub with a real Home tab placeholder (still pre-Phase 5)
+- [ ] Delete ComponentShowcase + Showcase route once real screens render the components
+- [ ] Add `@expo/vector-icons` as an explicit dependency (currently transitive)
 
 ## Phase 5: Parent Dashboard
 

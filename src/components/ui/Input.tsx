@@ -8,6 +8,7 @@ import {
 import type {
   KeyboardTypeOptions,
   StyleProp,
+  TextInputProps,
   ViewStyle,
 } from 'react-native';
 
@@ -25,13 +26,8 @@ interface InputProps {
   keyboardType?: KeyboardTypeOptions;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   autoCorrect?: boolean;
-  autoComplete?: 'off' | 'email' | 'password' | 'name' | 'tel';
-  textContentType?:
-    | 'none'
-    | 'emailAddress'
-    | 'password'
-    | 'username'
-    | 'oneTimeCode';
+  autoComplete?: TextInputProps['autoComplete'];
+  textContentType?: TextInputProps['textContentType'];
   multiline?: boolean;
   numberOfLines?: number;
   maxLength?: number;
