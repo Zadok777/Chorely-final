@@ -78,16 +78,24 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 
 ## Phase 3: UI Atoms + Layout
 
-- [ ] `layout/ScreenContainer.tsx` (safe-area + lavender bg + optional scroll)
+### Batch 1 — Everyday primitives (completed 2026-05-28)
+
+- [x] `layout/ScreenContainer.tsx` (safe-area + lavender bg + optional scroll + optional keyboardAvoiding)
+- [x] `ui/GlassCard.tsx` (two-layer pattern: outer shadow wrapper + inner BlurView-on-iOS clip; designed alphas via tint prop)
+- [x] `ui/Button.tsx` (primary/secondary/ghost/danger; sm/md/lg; loading + disabled; `scale(0.98)` press; secondary uses BlurView + glass tint)
+- [x] `ui/Input.tsx` (text input with label + helper + error; focus state lifts border to borderPink; multiline support)
+- [x] `ui/Avatar.tsx` (LinearGradient circle with initial; sm/md/lg/xl; stable hash assigns gradient when index omitted)
+- [x] `ui/Badge.tsx` (pill; neutral/pink/orange/green/danger/muted tones; sm/md sizes)
+- [x] `ui/PointsBadge.tsx` (star icon + formatted number; balance/earn/spend tones)
+- [x] `ui/EmptyState.tsx` (icon bubble + title + description + optional Button CTA)
+- [x] `tsc --noEmit` clean
+
+### Batch 2 — Composites + polish (pending)
+
 - [ ] `brand/ChorelyLogo.tsx`, `brand/ChorelyIcon.tsx` (3 variants)
-- [ ] `ui/GlassCard.tsx` (BlurView on iOS, fallback rgba on Android)
-- [ ] `ui/Button.tsx` (primary/secondary/ghost/danger; `scale(0.98)` press)
-- [ ] `ui/Input.tsx` (text/number/date with label + error)
-- [ ] `ui/Badge.tsx`, `ui/PointsBadge.tsx`
-- [ ] `ui/Avatar.tsx` (gradient circle + initial)
 - [ ] `ui/ProgressBar.tsx`, `ui/ProgressRing.tsx` (SVG)
 - [ ] `ui/ChoreRow.tsx`, `ui/RewardCard.tsx`
-- [ ] `ui/EmptyState.tsx`, `ui/SkeletonLoader.tsx`, `ui/Toast.tsx`
+- [ ] `ui/SkeletonLoader.tsx`, `ui/Toast.tsx`
 - [ ] `layout/Header.tsx`, `layout/TabBar.tsx` (glassmorphism pill)
 - [ ] Visual parity check against DESIGN.md §11 screen specs
 
