@@ -1,0 +1,98 @@
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
+
+import { C, radii, spacing, typography } from '../../theme/tokens';
+
+interface ProgressBarProps {
+  // 0..1. Values outside the range are clamped.
+  value: number;
+  // Bar height in px. Defaults to 8.
+  height?: number;
+  // Fill color. Defaults to pink (primary CTA tone per DESIGN.md).
+  color?: string;
+  // Track color behind the fill. Defaults to a translucent muted alpha.
+  trackColor?: string;
+  // Optional label above the bar (e.g. "Today's chores"). Caption tone.
+  label?: string;
+  // Optional value text rendered to the right of the label
+  // (e.g. "5 / 8" or "62%").
+  valueLabel?: string;
+  style?: StyleProp<ViewStyle>;
+}
+
+export function ProgressBar({
+  value,
+  height = 8,
+  color = C.pink,
+  trackColor = C.mutedAlpha20,
+  label,
+  valueLabel,
+  style,
+}: ProgressBarProps) {
+  const clamped = Math.max(0, Math.min(1, value));
+  const percent = `${clamped * 100}%` as const;
+  const hasHeader = label !== undefined || valueLabel !== undefined;
+
+  return (
+    <View style={style}>
+      {hasHeader ? (
+        <View style={styles.header}>
+          {label !== undefined ? (
+            <Text style={styles.label} maxFontSizeMultiplier={1.5}>
+              {label}
+            </Text>
+          ) : (
+            <View />
+          )}
+          {valueLabel !== undefined ? (
+            <Text style={styles.valueLabel} maxFontSizeMultiplier={1.5}>
+              {valueLabel}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
+      <View
+        style={[
+          styles.track,
+          {
+            height,
+            backgroundColor: trackColor,
+            borderRadius: height / 2,
+          },
+        ]}
+      >
+        <View
+          style={{
+            height,
+            width: percent,
+            backgroundColor: color,
+            borderRadius: height / 2,
+          }}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.s8,
+  },
+  label: {
+    ...typography.caption,
+    color: C.textMid,
+  },
+  valueLabel: {
+    ...typography.caption,
+    color: C.textDark,
+    fontFamily: 'DMSans_700Bold',
+  },
+  track: {
+    overflow: 'hidden',
+    borderRadius: radii.rFull,
+  },
+});

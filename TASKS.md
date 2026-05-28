@@ -90,14 +90,22 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 - [x] `ui/EmptyState.tsx` (icon bubble + title + description + optional Button CTA)
 - [x] `tsc --noEmit` clean
 
-### Batch 2 — Composites + polish (pending)
+### Batch 2 — Composites + polish (completed 2026-05-28)
 
-- [ ] `brand/ChorelyLogo.tsx`, `brand/ChorelyIcon.tsx` (3 variants)
-- [ ] `ui/ProgressBar.tsx`, `ui/ProgressRing.tsx` (SVG)
-- [ ] `ui/ChoreRow.tsx`, `ui/RewardCard.tsx`
-- [ ] `ui/SkeletonLoader.tsx`, `ui/Toast.tsx`
-- [ ] `layout/Header.tsx`, `layout/TabBar.tsx` (glassmorphism pill)
-- [ ] Visual parity check against DESIGN.md §11 screen specs
+- [x] `brand/ChorelyIcon.tsx` (SVG rounded-square smiley with pink→orange gradient stroke)
+- [x] `brand/ChorelyLogo.tsx` (3 variants: `full` stacked, `horizontal` inline, `icon` smiley-only)
+- [x] `ui/ProgressBar.tsx` (clamp + optional label/valueLabel header)
+- [x] `ui/ProgressRing.tsx` (SVG, optional gradient stroke, custom center label, unique gradient id per instance)
+- [x] `ui/ChoreRow.tsx` (status-tone Badge + PointsBadge + Avatar; pure-UI props decoupled from DB row shapes)
+- [x] `ui/RewardCard.tsx` (icon halo + locked/just-unlocked states + accentColor hex→rgba helper)
+- [x] `ui/SkeletonLoader.tsx` (Reanimated opacity pulse 0.4↔0.8; shapes: block/line/circle; `SkeletonRow` convenience composite)
+- [x] `ui/Toast.tsx` (`ToastProvider` + `useToast()` hook; tones success/error/info; safe-area aware; auto-dismiss + tap-to-dismiss)
+- [x] `layout/Header.tsx` (avatar OR back chevron leading + title/subtitle + up to 3 trailing icon actions with optional badge dot)
+- [x] `layout/TabBar.tsx` (glassmorphism pill, simple `tabs/activeKey/onChange` API — Phase 4 writes the React Navigation adapter)
+- [x] `tsc --noEmit` clean
+- [ ] Visual parity check against DESIGN.md §11 screen specs (deferred to when a real screen renders them — Phase 4)
+- [ ] Wire `<ToastProvider>` into `App.tsx` (do this in Phase 4 when App.tsx tree is set up)
+- [ ] Add `@expo/vector-icons` as an explicit dependency before TestFlight (currently transitive via `expo`)
 
 ## Phase 4: Navigation + Auth + Onboarding
 
