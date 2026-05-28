@@ -168,13 +168,15 @@ Note: chore/assignment data only populates after Phase 6, so snapshot/progress s
 
 Build note (2026-05-28): mid-phase, node_modules got truncated (expo-blur/build, supabase-js/dist `.d.ts` files missing — runtime JS intact so Metro bundled, but tsc broke). Disk is at 94%. Fixed with `npm ci`. Watch disk; if tsc shows mass "Cannot find module", run `npm ci`.
 
-## Phase 7: Rewards & Points
+## Phase 7: Rewards & Points (code complete 2026-05-28, tsc green; Metro verify deferred — dev server off)
 
-- [ ] `screens/parent/RewardsScreen.tsx` (filter tabs, grid)
-- [ ] `modals/CreateRewardModal.tsx`
-- [ ] `modals/RedeemRewardModal.tsx` (parent redeems on behalf of child in v1.0 via `redeem_reward` RPC)
-- [ ] `modals/CelebrationOverlay.tsx` (confetti + scale animation on approve/redeem)
-- [ ] Test: create reward → redeem → points decrement, redemption logged
+- [x] `screens/parent/RewardsScreen.tsx` — child picker (multi-child), balance card, filter (All/Available/Locked), 2-col RewardCard grid; create + redeem flows; reload on focus + pull-to-refresh
+- [x] `modals/CreateRewardModal.tsx` — RHF+Yup; title, point cost, curated icon picker, accent-color swatches, description → `createReward`
+- [x] `modals/RedeemRewardModal.tsx` — reward + child summary, points-impact preview (Balance → −Cost → After), guards affordability, `redeem_reward` RPC
+- [x] `modals/CelebrationOverlay.tsx` — RN Animated (no confetti lib): spring-in success badge + fan-out emoji particles, auto-dismiss ~1.6s; fired on redeem
+- [ ] Manual test in Simulator: create reward → redeem → child points decrement + redemption logged + celebration plays
+
+Note: locked/available is computed against the selected child's balance. `CelebrationOverlay` is reusable for chore approval too (not yet wired there — optional polish).
 
 ## Phase 8: Family + Settings
 

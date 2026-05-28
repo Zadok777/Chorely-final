@@ -1,0 +1,296 @@
+import React, { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { Ionicons } from '@expo/vector-icons';
+
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { useToast } from '../ui/Toast';
+import { ModalSheet } from './ModalSheet';
+import { createReward } from '../../services/rewards';
+import { useAuthStore } from '../../store/authStore';
+import { useFamilyStore } from '../../store/familyStore';
+import { useRewardStore } from '../../store/rewardStore';
+import { C, radii, spacing, typography } from '../../theme/tokens';
+
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+// Curated reward icons + accent colors so the data stays clean (no arbitrary
+// values reach the DB). icon_name / color are plain strings in the schema.
+const ICONS: ReadonlyArray<IoniconName> = [
+  'gift',
+  'game-controller',
+  'ice-cream',
+  'tv',
+  'bicycle',
+  'cash',
+  'pizza',
+  'football',
+];
+
+const COLORS: ReadonlyArray<string> = [
+  C.orange,
+  C.pink,
+  C.green,
+  '#6E61FF',
+  '#42C9FF',
+];
+
+const schema = yup.object({
+  title: yup
+    .string()
+    .trim()
+    .required('Give the reward a title')
+    .max(60, 'Keep it under 60 characters'),
+  description: yup
+    .string()
+    .trim()
+    .default('')
+    .max(200, 'Keep it under 200 characters'),
+  pointCost: yup
+    .string()
+    .trim()
+    .required('Add a point cost')
+    .test('positive-int', 'Enter a whole number above 0', (value) => {
+      const n = Number(value);
+      return Number.isInteger(n) && n > 0;
+    }),
+});
+
+type FormValues = yup.InferType<typeof schema>;
+
+interface CreateRewardModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onCreated: () => void;
+}
+
+export function CreateRewardModal({
+  visible,
+  onClose,
+  onCreated,
+}: CreateRewardModalProps) {
+  const toast = useToast();
+  const family = useFamilyStore((s) => s.family);
+  const session = useAuthStore((s) => s.session);
+
+  const [icon, setIcon] = useState<IoniconName>('gift');
+  const [color, setColor] = useState<string>(C.orange);
+  const [submitting, setSubmitting] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: yupResolver(schema),
+    defaultValues: { title: '', description: '', pointCost: '' },
+  });
+
+  const resetAll = () => {
+    reset({ title: '', description: '', pointCost: '' });
+    setIcon('gift');
+    setColor(C.orange);
+  };
+
+  const close = () => {
+    resetAll();
+    onClose();
+  };
+
+  const onSubmit = async (values: FormValues) => {
+    if (submitting) return;
+    if (family === null) {
+      toast.show({ message: 'No family loaded.', tone: 'error' });
+      return;
+    }
+    setSubmitting(true);
+    const res = await createReward({
+      family_id: family.id,
+      title: values.title,
+      description: values.description === '' ? null : values.description,
+      point_cost: Number(values.pointCost),
+      icon_name: icon,
+      color,
+      is_active: true,
+      created_by: session?.user?.id ?? null,
+    });
+    setSubmitting(false);
+
+    if (!res.success) {
+      toast.show({ message: res.error, tone: 'error', duration: 5000 });
+      return;
+    }
+    useRewardStore.getState().upsertReward(res.data);
+    toast.show({ message: 'Reward created.', tone: 'success' });
+    resetAll();
+    onCreated();
+    onClose();
+  };
+
+  return (
+    <ModalSheet
+      visible={visible}
+      onClose={close}
+      title="New reward"
+      footer={
+        <>
+          <Button
+            label="Create reward"
+            onPress={handleSubmit(onSubmit)}
+            loading={submitting}
+            fullWidth
+          />
+          <Button label="Cancel" variant="ghost" onPress={close} fullWidth />
+        </>
+      }
+    >
+      <Controller
+        name="title"
+        control={control}
+        render={({ field }) => (
+          <Input
+            label="Title"
+            placeholder="Movie night"
+            value={field.value}
+            onChangeText={field.onChange}
+            onBlur={field.onBlur}
+            autoCapitalize="sentences"
+            maxLength={60}
+            error={errors.title?.message}
+          />
+        )}
+      />
+
+      <Controller
+        name="pointCost"
+        control={control}
+        render={({ field }) => (
+          <Input
+            label="Point cost"
+            placeholder="100"
+            value={field.value}
+            onChangeText={field.onChange}
+            onBlur={field.onBlur}
+            keyboardType="number-pad"
+            maxLength={6}
+            error={errors.pointCost?.message}
+          />
+        )}
+      />
+
+      <View>
+        <Text style={styles.fieldLabel}>Icon</Text>
+        <View style={styles.chipWrap}>
+          {ICONS.map((name) => {
+            const selected = icon === name;
+            return (
+              <Pressable
+                key={name}
+                onPress={() => setIcon(name)}
+                accessibilityRole="button"
+                accessibilityLabel={name}
+                accessibilityState={{ selected }}
+                style={[styles.iconChip, selected && styles.iconChipActive]}
+              >
+                <Ionicons
+                  name={name}
+                  size={20}
+                  color={selected ? C.textWhite : C.textMid}
+                />
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      <View>
+        <Text style={styles.fieldLabel}>Accent color</Text>
+        <View style={styles.chipWrap}>
+          {COLORS.map((c) => {
+            const selected = color === c;
+            return (
+              <Pressable
+                key={c}
+                onPress={() => setColor(c)}
+                accessibilityRole="button"
+                accessibilityLabel={`Color ${c}`}
+                accessibilityState={{ selected }}
+                style={[
+                  styles.swatch,
+                  { backgroundColor: c },
+                  selected && styles.swatchActive,
+                ]}
+              >
+                {selected ? (
+                  <Ionicons name="checkmark" size={16} color={C.textWhite} />
+                ) : null}
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      <Controller
+        name="description"
+        control={control}
+        render={({ field }) => (
+          <Input
+            label="Description (optional)"
+            placeholder="What they get"
+            value={field.value}
+            onChangeText={field.onChange}
+            onBlur={field.onBlur}
+            multiline
+            numberOfLines={3}
+            maxLength={200}
+            error={errors.description?.message}
+          />
+        )}
+      />
+    </ModalSheet>
+  );
+}
+
+const styles = StyleSheet.create({
+  fieldLabel: {
+    ...typography.caption,
+    color: C.textMid,
+    marginBottom: spacing.s8,
+    marginLeft: spacing.s4,
+  },
+  chipWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.s8,
+  },
+  iconChip: {
+    width: 44,
+    height: 44,
+    borderRadius: radii.r14,
+    borderWidth: 1,
+    borderColor: C.border,
+    backgroundColor: C.glassLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconChipActive: {
+    backgroundColor: C.pink,
+    borderColor: C.pink,
+  },
+  swatch: {
+    width: 40,
+    height: 40,
+    borderRadius: radii.rFull,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  swatchActive: {
+    borderColor: C.textDark,
+  },
+});
