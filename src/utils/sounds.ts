@@ -10,13 +10,13 @@ import { useSettingsStore } from '../store/settingsStore';
 
 export type SoundName = 'celebrate' | 'success';
 
-// Audio assets are intentionally optional. Drop matching files into
-// assets/sounds/ and uncomment the matching line below. Until a file is
-// present, that sound is a silent no-op, so the bundle always builds. See
-// assets/sounds/README.md for filenames, format, and royalty-free sources.
+// Bundled, synthesized chimes (generated locally — no third-party license).
+// To swap in nicer SFX, drop a replacement at the same path (any of the
+// Metro-supported audio exts) and update the extension here. A missing/absent
+// entry just makes that sound a silent no-op. See assets/sounds/README.md.
 const SOURCES: Partial<Record<SoundName, number>> = {
-  // celebrate: require('../../assets/sounds/celebrate.mp3'),
-  // success: require('../../assets/sounds/success.mp3'),
+  celebrate: require('../../assets/sounds/celebrate.wav'),
+  success: require('../../assets/sounds/success.wav'),
 };
 
 const players: Partial<Record<SoundName, AudioPlayer>> = {};

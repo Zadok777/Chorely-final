@@ -5,18 +5,21 @@ Chorely plays short sound effects on celebratory moments, gated by the
 and routed through `src/utils/sounds.ts`. Playback respects the device's
 silent switch — we do not force audio in silent mode.
 
-## Required files
+## Bundled files (active)
 
-Drop these two files into this folder, then uncomment the matching lines in
-the `SOURCES` map in `src/utils/sounds.ts`:
+Two **locally synthesized** chimes ship today (generated with a small Python
+script — no third-party license, fully ours to bundle), wired up in the
+`SOURCES` map in `src/utils/sounds.ts`:
 
-| File | Plays when | Suggested feel |
+| File | Plays when | Feel |
 |---|---|---|
-| `celebrate.mp3` | A goal is reached or a reward is redeemed (via `CelebrationOverlay`) | Short, happy win — chime burst / sparkle / mini fanfare, ~0.8–1.5s |
-| `success.mp3` | A parent approves a chore (`ChoreApprovalModal`) | Light, positive confirmation ding, ~0.3–0.6s |
+| `celebrate.wav` | A goal is reached or a reward is redeemed (via `CelebrationOverlay`) | Bright ascending arpeggio + sparkle (~1s) |
+| `success.wav` | A parent approves a chore (`ChoreApprovalModal`) | Light two-note confirmation ding (~0.4s) |
 
-Until a file is present, that sound is a silent no-op, so the app still builds
-and runs (haptics still fire).
+These play in Expo Go (expo-audio ships with the SDK) and respect the silent
+switch. To swap in higher-fidelity SFX, drop a replacement at the same path
+(any Metro-supported audio ext) and update the extension in `SOURCES`. A
+missing entry makes that sound a silent no-op (haptics still fire).
 
 ## Format
 
