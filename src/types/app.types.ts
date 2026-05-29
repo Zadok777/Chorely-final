@@ -18,6 +18,10 @@ export type RewardRedemption = Tables<'reward_redemptions'>;
 export type PointTransaction = Tables<'point_transactions'>;
 export type ActivityLog = Tables<'activity_log'>;
 export type UserSettings = Tables<'user_settings'>;
+export type Goal = Tables<'goals'>;
+
+// Goal kind string literals matching the DB CHECK constraint.
+export type GoalKind = 'reward' | 'points';
 
 // Re-export the age-bracket type from the theme module so consumers don't have
 // to know it lives in tokens.ts. The theme module owns the type because the

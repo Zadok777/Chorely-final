@@ -13,8 +13,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { ScreenContainer } from '../../components/layout/ScreenContainer';
 import { AddChildModal } from '../../components/modals/AddChildModal';
+import { CelebrationOverlay } from '../../components/modals/CelebrationOverlay';
 import { CreateChoreModal } from '../../components/modals/CreateChoreModal';
 import { CreateRewardModal } from '../../components/modals/CreateRewardModal';
+import { SetGoalModal } from '../../components/modals/SetGoalModal';
 import { Avatar } from '../../components/ui/Avatar';
 import { GradientCard } from '../../components/ui/GradientCard';
 import { StreakFlame } from '../../components/ui/StreakFlame';
@@ -22,10 +24,12 @@ import { useToast } from '../../components/ui/Toast';
 import { listActivity } from '../../services/activity';
 import { listChildren } from '../../services/children';
 import { listAssignmentsForFamily, listChores } from '../../services/chores';
+import { deleteGoal, listGoals, markGoalReached } from '../../services/goals';
 import { useActivityStore } from '../../store/activityStore';
 import { useAuthStore } from '../../store/authStore';
 import { useChoreStore } from '../../store/choreStore';
 import { useFamilyStore } from '../../store/familyStore';
+import { useGoalStore } from '../../store/goalStore';
 import {
   AVATAR_GRADIENTS,
   GRADIENTS,
@@ -36,7 +40,7 @@ import {
   useThemedStyles,
   type Palette,
 } from '../../theme';
-import type { Child, MainTabParamList } from '../../types/app.types';
+import type { Child, Goal, MainTabParamList } from '../../types/app.types';
 import { TAB_BAR_CLEARANCE } from './layout';
 
 type Nav = BottomTabNavigationProp<MainTabParamList, 'Home'>;
@@ -67,11 +71,14 @@ export function ParentDashboard() {
   const children = useFamilyStore((s) => s.children);
   const chores = useChoreStore((s) => s.chores);
   const assignments = useChoreStore((s) => s.assignments);
+  const goals = useGoalStore((s) => s.goals);
 
   const [refreshing, setRefreshing] = useState(false);
   const [choreModal, setChoreModal] = useState(false);
   const [rewardModal, setRewardModal] = useState(false);
   const [childModal, setChildModal] = useState(false);
+  const [goalModal, setGoalModal] = useState(false);
+  const [celebration, setCelebration] = useState<string | null>(null);
 
   const displayName =
     profile?.display_name ?? session?.user?.email?.split('@')[0] ?? 'there';
@@ -82,16 +89,37 @@ export function ParentDashboard() {
     const { setAssignments, setChores } = useChoreStore.getState();
     const { setActivity } = useActivityStore.getState();
     const { setChildren } = useFamilyStore.getState();
-    const [a, c, act, kids] = await Promise.all([
+    const { setGoals, upsertGoal } = useGoalStore.getState();
+    const [a, c, act, kids, gs] = await Promise.all([
       listAssignmentsForFamily(familyId),
       listChores(familyId),
       listActivity(familyId, 20),
       listChildren(familyId),
+      listGoals(familyId),
     ]);
     if (a.success) setAssignments(a.data);
     if (c.success) setChores(c.data);
     if (act.success) setActivity(act.data);
     if (kids.success) setChildren(kids.data);
+    if (gs.success) {
+      setGoals(gs.data);
+      // Fire a one-time celebration for any goal whose target is now met.
+      // markGoalReached only stamps reached_at if still null, so it can't
+      // double-fire across reloads.
+      if (kids.success) {
+        for (const g of gs.data) {
+          if (g.reached_at !== null) continue;
+          const child = kids.data.find((k) => k.id === g.child_id);
+          if ((child?.points ?? 0) >= g.target_points) {
+            const mk = await markGoalReached(g.id);
+            if (mk.success && mk.data !== null) {
+              upsertGoal(mk.data);
+              setCelebration(`${child?.name ?? 'A child'} hit "${g.title}"! 🎉`);
+            }
+          }
+        }
+      }
+    }
   }, [familyId]);
 
   React.useEffect(() => {
@@ -103,6 +131,15 @@ export function ParentDashboard() {
     await load();
     setRefreshing(false);
   }, [load]);
+
+  const handleDeleteGoal = async (id: string) => {
+    const res = await deleteGoal(id);
+    if (res.success) {
+      useGoalStore.getState().removeGoal(id);
+    } else {
+      toast.show({ message: res.error, tone: 'error' });
+    }
+  };
 
   const pending = assignments.filter((a) => a.status === 'submitted');
   const assignedCount = assignments.filter((a) => a.status === 'assigned').length;
@@ -227,11 +264,28 @@ export function ParentDashboard() {
             label="Set Goal"
             icon="trophy"
             bg="#FFB020"
-            onPress={() =>
-              toast.show({ message: 'Goals are coming soon.', tone: 'info' })
-            }
+            onPress={() => setGoalModal(true)}
           />
         </View>
+
+        {/* Goals */}
+        {goals.length > 0 ? (
+          <>
+            <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
+              Goals
+            </Text>
+            <View style={styles.kidList}>
+              {goals.map((goal) => (
+                <GoalRow
+                  key={goal.id}
+                  goal={goal}
+                  child={children.find((c) => c.id === goal.child_id) ?? null}
+                  onDelete={handleDeleteGoal}
+                />
+              ))}
+            </View>
+          </>
+        ) : null}
 
         {/* Family progress */}
         <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
@@ -279,6 +333,16 @@ export function ParentDashboard() {
         visible={childModal}
         onClose={() => setChildModal(false)}
         onAdded={load}
+      />
+      <SetGoalModal
+        visible={goalModal}
+        onClose={() => setGoalModal(false)}
+        onCreated={load}
+      />
+      <CelebrationOverlay
+        visible={celebration !== null}
+        message={celebration ?? ''}
+        onDone={() => setCelebration(null)}
       />
     </>
   );
@@ -393,6 +457,64 @@ function KidProgress({
       <View style={styles.barTrack}>
         <LinearGradient
           colors={gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.barFill, { width: `${Math.round(ratio * 100)}%` }]}
+        />
+      </View>
+    </View>
+  );
+}
+
+function GoalRow({
+  goal,
+  child,
+  onDelete,
+}: {
+  goal: Goal;
+  child: Child | null;
+  onDelete: (id: string) => void;
+}) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const pts = child?.points ?? 0;
+  const ratio =
+    goal.target_points > 0 ? Math.min(1, pts / goal.target_points) : 0;
+  const remaining = Math.max(0, goal.target_points - pts);
+  const reached = goal.reached_at !== null || pts >= goal.target_points;
+
+  return (
+    <View style={styles.goalCard}>
+      <View style={styles.goalTop}>
+        <View style={styles.goalIcon}>
+          <Ionicons
+            name={goal.kind === 'reward' ? 'gift' : 'flag'}
+            size={16}
+            color={C.pink}
+          />
+        </View>
+        <View style={styles.goalMeta}>
+          <Text style={styles.goalTitle} numberOfLines={1} maxFontSizeMultiplier={1.3}>
+            {goal.title}
+          </Text>
+          <Text style={styles.goalSub} maxFontSizeMultiplier={1.3}>
+            {child?.name ?? 'Child'} ·{' '}
+            {reached ? 'Reached! 🎉' : `${remaining} pts to go`}
+          </Text>
+        </View>
+        <Pressable
+          onPress={() => onDelete(goal.id)}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={`Remove goal ${goal.title}`}
+          style={({ pressed }) => [pressed && styles.pressed]}
+        >
+          <Ionicons name="close" size={16} color={C.textLight} />
+        </Pressable>
+      </View>
+      <View style={styles.barTrack}>
+        <LinearGradient
+          colors={GRADIENTS.brand}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[styles.barFill, { width: `${Math.round(ratio * 100)}%` }]}
@@ -650,5 +772,40 @@ const makeStyles = (C: Palette) =>
     barFill: {
       height: 8,
       borderRadius: radii.rFull,
+    },
+    // Goals
+    goalCard: {
+      backgroundColor: C.glass,
+      borderRadius: radii.r18,
+      borderWidth: 1,
+      borderColor: C.border,
+      padding: spacing.s16,
+    },
+    goalTop: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.s12,
+      marginBottom: spacing.s12,
+    },
+    goalIcon: {
+      width: 36,
+      height: 36,
+      borderRadius: radii.rFull,
+      backgroundColor: C.pinkAlpha10,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    goalMeta: {
+      flex: 1,
+    },
+    goalTitle: {
+      ...typography.title,
+      fontSize: 16,
+      color: C.textDark,
+    },
+    goalSub: {
+      ...typography.caption,
+      color: C.textMid,
+      marginTop: 2,
     },
   });

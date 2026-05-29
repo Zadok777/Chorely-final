@@ -301,6 +301,77 @@ export type Database = {
           },
         ]
       }
+      goals: {
+        Row: {
+          child_id: string
+          created_at: string
+          created_by: string | null
+          family_id: string
+          id: string
+          is_active: boolean
+          kind: string
+          reached_at: string | null
+          reward_id: string | null
+          target_points: number
+          title: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          created_by?: string | null
+          family_id: string
+          id?: string
+          is_active?: boolean
+          kind: string
+          reached_at?: string | null
+          reward_id?: string | null
+          target_points: number
+          title: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          created_by?: string | null
+          family_id?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          reached_at?: string | null
+          reward_id?: string | null
+          target_points?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goals_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goals_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goals_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "rewards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       point_transactions: {
         Row: {
           amount: number
