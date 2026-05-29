@@ -1,0 +1,265 @@
+import React, { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+
+import { ChorelyIcon } from '../brand/ChorelyIcon';
+import { Avatar, AVATAR_FACE } from '../ui/Avatar';
+import { Button } from '../ui/Button';
+import { useToast } from '../ui/Toast';
+import { ModalSheet } from './ModalSheet';
+import { updateMyProfile } from '../../services/auth';
+import { updateChild } from '../../services/children';
+import { useAuthStore } from '../../store/authStore';
+import { useFamilyStore } from '../../store/familyStore';
+import { hapticLight } from '../../utils/haptics';
+import {
+  AVATAR_GRADIENTS,
+  radii,
+  spacing,
+  typography,
+  useTheme,
+  useThemedStyles,
+  type Palette,
+} from '../../theme';
+import type { Child } from '../../types/app.types';
+
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+// Curated, kid-friendly icon options. `null` = initials; AVATAR_FACE = the
+// Chorely smiley; anything else is an Ionicon name.
+const ICON_OPTIONS: ReadonlyArray<string | null> = [
+  null,
+  AVATAR_FACE,
+  'happy',
+  'star',
+  'paw',
+  'football',
+  'basketball',
+  'game-controller',
+  'rocket',
+  'heart',
+  'planet',
+  'ice-cream',
+  'musical-notes',
+  'flower',
+];
+
+export type ProfileEditTarget =
+  | { kind: 'parent' }
+  | { kind: 'child'; child: Child };
+
+interface ProfileEditModalProps {
+  visible: boolean;
+  onClose: () => void;
+  target: ProfileEditTarget | null;
+  onSaved: () => void;
+}
+
+export function ProfileEditModal({
+  visible,
+  onClose,
+  target,
+  onSaved,
+}: ProfileEditModalProps) {
+  const toast = useToast();
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const profile = useAuthStore((s) => s.profile);
+  const session = useAuthStore((s) => s.session);
+
+  const [gradient, setGradient] = useState<number>(0);
+  const [icon, setIcon] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const name =
+    target?.kind === 'child'
+      ? target.child.name
+      : (profile?.display_name ?? session?.user?.email ?? 'You');
+
+  // Seed the pickers from the current values whenever the sheet opens.
+  useEffect(() => {
+    if (!visible || target === null) return;
+    if (target.kind === 'child') {
+      setGradient(target.child.avatar_gradient ?? 0);
+      setIcon(target.child.avatar_icon);
+    } else {
+      setGradient(profile?.avatar_gradient ?? 0);
+      setIcon(profile?.avatar_icon ?? null);
+    }
+  }, [visible, target, profile]);
+
+  const onSave = async () => {
+    if (saving || target === null) return;
+    setSaving(true);
+
+    if (target.kind === 'child') {
+      const res = await updateChild(target.child.id, {
+        avatar_gradient: gradient,
+        avatar_icon: icon,
+      });
+      setSaving(false);
+      if (!res.success) {
+        toast.show({ message: res.error, tone: 'error', duration: 5000 });
+        return;
+      }
+      useFamilyStore.getState().upsertChild(res.data);
+    } else {
+      const res = await updateMyProfile({
+        avatar_gradient: gradient,
+        avatar_icon: icon,
+      });
+      setSaving(false);
+      if (!res.success) {
+        toast.show({ message: res.error, tone: 'error', duration: 5000 });
+        return;
+      }
+      useAuthStore.getState().setProfile(res.data);
+    }
+
+    hapticLight();
+    toast.show({ message: 'Avatar updated.', tone: 'success' });
+    onSaved();
+    onClose();
+  };
+
+  return (
+    <ModalSheet
+      visible={visible}
+      onClose={onClose}
+      title={target?.kind === 'child' ? `${name}'s avatar` : 'Your avatar'}
+      footer={
+        <>
+          <Button label="Save" onPress={onSave} loading={saving} fullWidth />
+          <Button label="Cancel" variant="ghost" onPress={onClose} fullWidth />
+        </>
+      }
+    >
+      <View style={styles.previewWrap}>
+        <Avatar name={name} gradientIndex={gradient} icon={icon} size="xl" />
+      </View>
+
+      <View>
+        <Text style={styles.label}>Color</Text>
+        <View style={styles.swatchRow}>
+          {AVATAR_GRADIENTS.map((g, i) => {
+            const selected = gradient === i;
+            return (
+              <Pressable
+                key={i}
+                onPress={() => setGradient(i)}
+                accessibilityRole="button"
+                accessibilityLabel={`Color ${i + 1}`}
+                accessibilityState={{ selected }}
+                style={[styles.swatch, selected && styles.swatchSelected]}
+              >
+                <LinearGradient
+                  colors={g}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.swatchFill}
+                >
+                  {selected ? (
+                    <Ionicons name="checkmark" size={16} color={C.textWhite} />
+                  ) : null}
+                </LinearGradient>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      <View>
+        <Text style={styles.label}>Icon</Text>
+        <View style={styles.iconWrap}>
+          {ICON_OPTIONS.map((opt, i) => {
+            const selected = icon === opt || (opt === null && icon == null);
+            return (
+              <Pressable
+                key={`${opt ?? 'initials'}-${i}`}
+                onPress={() => setIcon(opt)}
+                accessibilityRole="button"
+                accessibilityLabel={opt ?? 'Initials'}
+                accessibilityState={{ selected }}
+                style={[styles.iconChip, selected && styles.iconChipSelected]}
+              >
+                {opt === null ? (
+                  <Text style={styles.iconInitials} maxFontSizeMultiplier={1.2}>
+                    Aa
+                  </Text>
+                ) : opt === AVATAR_FACE ? (
+                  <ChorelyIcon size={26} />
+                ) : (
+                  <Ionicons
+                    name={opt as IoniconName}
+                    size={20}
+                    color={selected ? C.pink : C.textMid}
+                  />
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+    </ModalSheet>
+  );
+}
+
+const makeStyles = (C: Palette) =>
+  StyleSheet.create({
+    previewWrap: {
+      alignItems: 'center',
+      paddingVertical: spacing.s8,
+    },
+    label: {
+      ...typography.caption,
+      color: C.textMid,
+      marginBottom: spacing.s8,
+      marginLeft: spacing.s4,
+    },
+    swatchRow: {
+      flexDirection: 'row',
+      gap: spacing.s12,
+    },
+    swatch: {
+      width: 48,
+      height: 48,
+      borderRadius: radii.rFull,
+      borderWidth: 2,
+      borderColor: 'transparent',
+      padding: 2,
+    },
+    swatchSelected: {
+      borderColor: C.textDark,
+    },
+    swatchFill: {
+      flex: 1,
+      borderRadius: radii.rFull,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    iconWrap: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.s8,
+    },
+    iconChip: {
+      width: 46,
+      height: 46,
+      borderRadius: radii.r14,
+      borderWidth: 1,
+      borderColor: C.border,
+      backgroundColor: C.glassLight,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    iconChipSelected: {
+      borderColor: C.pink,
+      backgroundColor: C.pinkAlpha10,
+    },
+    iconInitials: {
+      ...typography.title,
+      fontSize: 15,
+      color: C.textMid,
+    },
+  });

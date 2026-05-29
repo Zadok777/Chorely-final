@@ -98,7 +98,9 @@ export async function getMyProfile(): Promise<ServiceResult<Profile | null>> {
 
 export async function updateMyProfile(patch: {
   display_name?: string;
-  avatar_url?: string;
+  avatar_url?: string | null;
+  avatar_gradient?: number | null;
+  avatar_icon?: string | null;
 }): Promise<ServiceResult<Profile>> {
   try {
     const userRes = await supabase.auth.getUser();

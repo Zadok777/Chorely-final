@@ -124,7 +124,7 @@ Chorely 2/
 
 ## 5. Database Schema
 
-These are the tables in the Supabase backend (migrations 001–014). Do not create new tables without updating this file. The frontend must align with this schema exactly. (Migrations 011–013 are security/perf hardening — function security, anon RPC revokes, RLS perf + FK indexes — and add no new tables.)
+These are the tables in the Supabase backend (migrations 001–015). Do not create new tables without updating this file. The frontend must align with this schema exactly. (Migrations 011–013 are security/perf hardening — function security, anon RPC revokes, RLS perf + FK indexes — and add no new tables. Migration 015 adds nullable `avatar_gradient integer` + `avatar_icon text` to profiles and children for customizable avatars — `avatar_gradient` indexes `AVATAR_GRADIENTS`, `avatar_icon` is an Ionicon name or `'face'` for the Chorely smiley.)
 
 ### profiles (001)
 ```sql
@@ -405,6 +405,7 @@ Record all architectural decisions here. Format: date and one-sentence reason.
 | 2026-05-28 | Full dark mode added (themed palette) — supersedes light-only | User requested a working dark mode option. Added `darkC` palette + `useThemedStyles`/`useTheme().C` so the whole app recolors via the Settings toggle. Light stays the default. See DESIGN.md §Dark Mode. |
 | 2026-05-29 | Parent nav restructured to Home / Review / Chores / Family / More (Rewards pushed from More) + full prototype visual alignment | User supplied the Lumina Bloom prototype screenshots as the original intent and asked to match them. Adopted the prototype's parent navigation + gradient/tinted-tile visual language. Kid screens stay v1.1. See DESIGN.md §11. |
 | 2026-05-29 | Added `goals` table (migration 014) — per-child reward-savings + custom-point goals with one-time "reached" celebration | Replaced the dashboard "Set Goal → coming-soon" stub with a functional feature; goals are read/written under the family-member RLS policy, no new RPC needed (no point mutations). |
+| 2026-05-29 | Customizable avatars (migration 015) — `avatar_gradient` + `avatar_icon` on profiles & children | Tap any avatar (parent or kid) -> `ProfileEditModal` to pick a gradient color + icon (incl. the Chorely face). Stored on the row under existing RLS; `Avatar` renders the chosen gradient/icon, falling back to name-hash gradient + initial. No photo upload (deferred). |
 | 2026-05-29 | Sound effects via `expo-audio` (~1.1.1); `soundEnabled` is local-only (not in `user_settings`); `expo-audio` config plugin removed from `app.json` | Adds celebration/approval SFX through `utils/sounds.ts` (mirrors `haptics.ts`). Kept the pref local to avoid a schema migration (so it does not sync across devices yet). Removed the config plugin because it injects an iOS microphone permission we don't need for playback — unwanted for a COPPA-sensitive kids' app. SFX respect the silent switch. Audio files are an optional drop-in (`assets/sounds/`), so the bundle builds without them. |
 | — | Expo Managed over React Native CLI | Faster builds, no native module conflicts for v1 scope |
 | — | RevenueCat over Stripe for IAP | Apple and Google require native IAP; Stripe is not permitted |

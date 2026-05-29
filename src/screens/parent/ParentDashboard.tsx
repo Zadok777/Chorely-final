@@ -16,6 +16,7 @@ import { AddChildModal } from '../../components/modals/AddChildModal';
 import { CelebrationOverlay } from '../../components/modals/CelebrationOverlay';
 import { CreateChoreModal } from '../../components/modals/CreateChoreModal';
 import { CreateRewardModal } from '../../components/modals/CreateRewardModal';
+import { ProfileEditModal } from '../../components/modals/ProfileEditModal';
 import { SetGoalModal } from '../../components/modals/SetGoalModal';
 import { Avatar } from '../../components/ui/Avatar';
 import { GradientCard } from '../../components/ui/GradientCard';
@@ -79,6 +80,7 @@ export function ParentDashboard() {
   const [rewardModal, setRewardModal] = useState(false);
   const [childModal, setChildModal] = useState(false);
   const [goalModal, setGoalModal] = useState(false);
+  const [editAvatar, setEditAvatar] = useState(false);
   const [celebration, setCelebration] = useState<string | null>(null);
   const [loading, setLoading] = useState(() => children.length === 0);
 
@@ -195,7 +197,18 @@ export function ParentDashboard() {
               <Ionicons name="notifications-outline" size={20} color={C.textDark} />
               {pending.length > 0 ? <View style={styles.bellDot} /> : null}
             </Pressable>
-            <Avatar name={displayName} size="md" />
+            <Pressable
+              onPress={() => setEditAvatar(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Edit your avatar"
+            >
+              <Avatar
+                name={displayName}
+                gradientIndex={profile?.avatar_gradient ?? undefined}
+                icon={profile?.avatar_icon}
+                size="md"
+              />
+            </Pressable>
           </View>
         </View>
 
@@ -355,6 +368,12 @@ export function ParentDashboard() {
         message={celebration ?? ''}
         onDone={() => setCelebration(null)}
       />
+      <ProfileEditModal
+        visible={editAvatar}
+        onClose={() => setEditAvatar(false)}
+        target={{ kind: 'parent' }}
+        onSaved={load}
+      />
     </>
   );
 }
@@ -439,7 +458,12 @@ function KidProgress({
   return (
     <View style={styles.kidCard}>
       <View style={styles.kidTop}>
-        <Avatar name={child.name} gradientIndex={gradientIndex} size="md" />
+        <Avatar
+          name={child.name}
+          gradientIndex={child.avatar_gradient ?? gradientIndex}
+          icon={child.avatar_icon}
+          size="md"
+        />
         <View style={styles.kidMeta}>
           <Text style={styles.kidName} maxFontSizeMultiplier={1.3} numberOfLines={1}>
             {child.name}

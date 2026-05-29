@@ -14,6 +14,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Header } from '../../components/layout/Header';
 import { ScreenContainer } from '../../components/layout/ScreenContainer';
 import { AddChildModal } from '../../components/modals/AddChildModal';
+import {
+  ProfileEditModal,
+  type ProfileEditTarget,
+} from '../../components/modals/ProfileEditModal';
 import { Avatar } from '../../components/ui/Avatar';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { GlassCard } from '../../components/ui/GlassCard';
@@ -65,6 +69,7 @@ export function FamilyScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
+  const [editTarget, setEditTarget] = useState<ProfileEditTarget | null>(null);
   const [loading, setLoading] = useState(() => children.length === 0);
 
   const familyId = family?.id ?? null;
@@ -212,7 +217,18 @@ export function FamilyScreen() {
               return (
                 <GlassCard key={child.id} style={styles.kidCard}>
                   <View style={styles.kidTop}>
-                    <Avatar name={child.name} gradientIndex={index} size="md" />
+                    <Pressable
+                      onPress={() => setEditTarget({ kind: 'child', child })}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Edit ${child.name}'s avatar`}
+                    >
+                      <Avatar
+                        name={child.name}
+                        gradientIndex={child.avatar_gradient ?? index}
+                        icon={child.avatar_icon}
+                        size="md"
+                      />
+                    </Pressable>
                     <View style={styles.kidMeta}>
                       <Text
                         style={styles.kidName}
@@ -273,6 +289,12 @@ export function FamilyScreen() {
         visible={addVisible}
         onClose={() => setAddVisible(false)}
         onAdded={load}
+      />
+      <ProfileEditModal
+        visible={editTarget !== null}
+        onClose={() => setEditTarget(null)}
+        target={editTarget}
+        onSaved={load}
       />
     </>
   );

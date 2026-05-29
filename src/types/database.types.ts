@@ -74,6 +74,8 @@ export type Database = {
       }
       children: {
         Row: {
+          avatar_gradient: number | null
+          avatar_icon: string | null
           avatar_url: string | null
           created_at: string
           date_of_birth: string | null
@@ -88,6 +90,8 @@ export type Database = {
           streak_days: number
         }
         Insert: {
+          avatar_gradient?: number | null
+          avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
           date_of_birth?: string | null
@@ -102,6 +106,8 @@ export type Database = {
           streak_days?: number
         }
         Update: {
+          avatar_gradient?: number | null
+          avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
           date_of_birth?: string | null
@@ -415,6 +421,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_gradient: number | null
+          avatar_icon: string | null
           avatar_url: string | null
           created_at: string
           display_name: string | null
@@ -422,6 +430,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          avatar_gradient?: number | null
+          avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
@@ -429,6 +439,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_gradient?: number | null
+          avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null

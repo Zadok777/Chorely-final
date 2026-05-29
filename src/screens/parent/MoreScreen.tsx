@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ChorelyIcon } from '../../components/brand/ChorelyIcon';
 import { Header } from '../../components/layout/Header';
 import { ScreenContainer } from '../../components/layout/ScreenContainer';
+import { ProfileEditModal } from '../../components/modals/ProfileEditModal';
 import { Avatar } from '../../components/ui/Avatar';
 import { Button } from '../../components/ui/Button';
 import { GlassCard } from '../../components/ui/GlassCard';
@@ -57,6 +58,7 @@ export function MoreScreen() {
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
   const [savingName, setSavingName] = useState(false);
+  const [editAvatar, setEditAvatar] = useState(false);
 
   const displayName = profile?.display_name ?? session?.user?.email ?? 'there';
   const email = session?.user?.email ?? '';
@@ -135,12 +137,24 @@ export function MoreScreen() {
     toast.show({ message: `${label} arrives in a later update.`, tone: 'info' });
 
   return (
+    <>
     <ScreenContainer scroll contentStyle={styles.content}>
       <Header title="Settings" />
 
       <GlassCard style={styles.profileCard}>
         <View style={styles.profileRow}>
-          <Avatar name={displayName} size="lg" />
+          <Pressable
+            onPress={() => setEditAvatar(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Edit your avatar"
+          >
+            <Avatar
+              name={displayName}
+              gradientIndex={profile?.avatar_gradient ?? undefined}
+              icon={profile?.avatar_icon}
+              size="lg"
+            />
+          </Pressable>
           <View style={styles.profileMeta}>
             <Text style={styles.profileName} maxFontSizeMultiplier={1.3} numberOfLines={1}>
               {displayName}
@@ -300,6 +314,13 @@ export function MoreScreen() {
         </Text>
       </View>
     </ScreenContainer>
+    <ProfileEditModal
+      visible={editAvatar}
+      onClose={() => setEditAvatar(false)}
+      target={{ kind: 'parent' }}
+      onSaved={() => {}}
+    />
+    </>
   );
 }
 

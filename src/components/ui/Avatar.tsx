@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
 import {
   AVATAR_GRADIENTS,
@@ -10,17 +11,26 @@ import {
   shadows,
   typography,
 } from '../../theme/tokens';
+import { ChorelyIcon } from '../brand/ChorelyIcon';
 
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
 
+// Sentinel `avatar_icon` value that renders the Chorely smiley instead of a
+// gradient circle. Anything else non-empty is treated as an Ionicon name.
+export const AVATAR_FACE = 'face';
+
 interface AvatarProps {
-  // Used to derive the initial when no image. Trimmed; first non-whitespace
+  // Used to derive the initial when no image/icon. Trimmed; first non-whitespace
   // grapheme becomes the badge letter.
   name: string;
   // 0..AVATAR_GRADIENTS.length-1. Out-of-range values wrap. If undefined,
   // a stable hash of `name` picks one — same name always lands on the same
   // gradient across the app.
   gradientIndex?: number;
+  // Optional override of the center content. `AVATAR_FACE` renders the Chorely
+  // smiley as the whole avatar; any other non-empty value is an Ionicon name
+  // rendered white-on-gradient; null/undefined falls back to the initial.
+  icon?: string | null;
   size?: AvatarSize;
   style?: StyleProp<ViewStyle>;
   withBorder?: boolean;
@@ -43,20 +53,26 @@ const fontSizeFor: Record<AvatarSize, number> = {
 export function Avatar({
   name,
   gradientIndex,
+  icon,
   size = 'md',
   style,
   withBorder = false,
 }: AvatarProps) {
   const px = sizePx[size];
+
+  // The Chorely face replaces the gradient circle entirely (it's the brand
+  // rounded-square smiley, not a circular badge).
+  if (icon === AVATAR_FACE) {
+    return <ChorelyIcon size={px} style={style} />;
+  }
+
   const idx =
     gradientIndex !== undefined
       ? Math.abs(gradientIndex) % AVATAR_GRADIENTS.length
       : hashIndex(name, AVATAR_GRADIENTS.length);
   const gradient = AVATAR_GRADIENTS[idx];
-  const initial = firstGrapheme(name);
+  const hasIcon = icon !== undefined && icon !== null && icon !== '';
 
-  // `LinearGradient` from expo-linear-gradient expects `readonly [string, string, ...]`.
-  // Our token is `readonly [string, string]`, which satisfies that constraint.
   return (
     <View
       style={[
@@ -80,15 +96,23 @@ export function Avatar({
           { width: px, height: px, borderRadius: radii.rFull },
         ]}
       >
-        <Text
-          style={[
-            typography.title,
-            { fontSize: fontSizeFor[size], color: C.textWhite },
-          ]}
-          maxFontSizeMultiplier={1.5}
-        >
-          {initial}
-        </Text>
+        {hasIcon ? (
+          <Ionicons
+            name={icon as React.ComponentProps<typeof Ionicons>['name']}
+            size={Math.round(px * 0.5)}
+            color={C.textWhite}
+          />
+        ) : (
+          <Text
+            style={[
+              typography.title,
+              { fontSize: fontSizeFor[size], color: C.textWhite },
+            ]}
+            maxFontSizeMultiplier={1.5}
+          >
+            {firstGrapheme(name)}
+          </Text>
+        )}
       </LinearGradient>
     </View>
   );
