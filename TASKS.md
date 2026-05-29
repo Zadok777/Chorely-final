@@ -202,13 +202,19 @@ Aligned the parent app to the prototype screenshots (the original design intent)
 
 - [x] **Nav restructure**: parent tabs now Home / Review / Chores / Family / More. Rewards moved OUT of tabs → pushed from More ("Reward catalog"). `MainNavigator` + `MainTabParamList` + `RootStackParamList` (added `Rewards`) updated; deleted `SettingsScreen.tsx` (replaced by `MoreScreen`).
 - [x] **Foundation**: `GRADIENTS` tokens (brand/violet/sky) + `ui/GradientCard.tsx` (LinearGradient surface).
-- [x] **ParentDashboard (Home)** rebuilt: date+greeting (name in pink)+bell(+dot)+avatar header; **gradient** approval hero (→Review); color-tinted snapshot tiles (Assigned/Done/Points); colored-icon quick actions (Add Chore/New Reward/Add Kid → modals; Set Goal → coming-soon toast); kid cards with **gradient progress bars**.
+- [x] **ParentDashboard (Home)** rebuilt: date+greeting (name in pink)+bell(+dot)+avatar header; **gradient** approval hero (→Review); color-tinted snapshot tiles (Assigned/Done/Points); colored-icon quick actions (Add Chore/New Reward/Add Kid → modals; Set Goal → `SetGoalModal`); kid cards with **gradient progress bars**.
 - [x] **ReviewScreen** (new tab): lists submitted chores → opens approval modal; "all caught up" empty state.
 - [x] **ChoreApprovalModal** restyled: gradient banner (white avatar + submitter + time), metadata chips, dashed photo-proof placeholder (v1.1), points-impact, approve/deny.
 - [x] **FamilyScreen** enhanced: invite-code card + **Share**, kid cards with 3 mini stat tiles (POINTS/STREAK/THIS WK) + gear (remove), **recent-activity feed**.
 - [x] **MoreScreen** (new, replaces Settings tab): grouped iOS-style list — Preferences (dark mode, notifications, Privacy & COPPA), Family (rename, manage kids→Family, reward catalog→Rewards), Subscription (Plus/Billing → Phase 9 toasts), Support (help/rate/showcase), sign out + delete account, footer.
 - [x] All new UI is theme-aware (dark mode intact). ChoresScreen left as-is (parent chore mgmt already on-brand).
 - [ ] Manual Simulator pass: verify the gradients/tiles/nav feel right in both light + dark.
+
+## Goals (2026-05-29)
+
+- [x] **`goals` table** (migration 014): per-child reward-savings (`kind='reward'`) + custom-point (`kind='points'`) goals; `reached_at` gates a one-time celebration; family-member RLS, no RPC (no point mutations).
+- [x] **`SetGoalModal`** + `goalStore` + `services/goals.ts` + `database.types.ts`/`app.types.ts` types; wired into ParentDashboard (replaced the "Set Goal → coming-soon" stub).
+- [ ] Manual pass: create both goal kinds, confirm the "reached" celebration fires exactly once.
 
 ## Phase 9: Paywall (RevenueCat)
 
@@ -222,7 +228,7 @@ Aligned the parent app to the prototype screenshots (the original design intent)
 
 - [ ] **Enable Supabase leaked-password protection** (Auth → Passwords; HaveIBeenPwned check) — ⚠️ requires the **Supabase Pro plan**, so do this once upgraded. (Flagged by security advisor 2026-05-29.)
 - [ ] Re-enable Supabase email confirmation (currently OFF in dev)
-- [ ] Skeleton loaders on every list screen (primitives `SkeletonLoader`/`SkeletonRow` already exist, currently unused)
+- [x] Skeleton loaders on every list screen (2026-05-29): `SkeletonRow` on Dashboard/Chores/Review/Family, `SkeletonLoader` blocks on Rewards grid. Each screen gates its primary list on a first-load `loading` flag (initialized from whether the store slice is already populated, so no skeleton flash when navigating back). Replaces the empty-state flash on cold load. (DESIGN.md §9: shimmer, not spinners.)
 - [ ] Pull-to-refresh everywhere lists appear
 - [ ] Haptics on key interactions (`expo-haptics`)
 - [ ] Touch-target audit (48px / 56px elementary)
@@ -230,7 +236,7 @@ Aligned the parent app to the prototype screenshots (the original design intent)
 - [ ] COPPA audit (no PII prompts for children data)
 - [ ] Verify RLS policies block cross-family reads (test with two accounts)
 - [ ] Replace placeholder app icons + add missing Android adaptive-icon assets (app.json)
-- [ ] Decide on `ProgressBar`/`SkeletonLoader` primitives (wire into loading states or remove)
+- [ ] Decide on `ProgressBar` primitive (still unused — wire in or remove); `SkeletonLoader`/`SkeletonRow` now wired into all list screens
 - [ ] EAS build → TestFlight + Google internal track
 
 ## Audit log (2026-05-29)

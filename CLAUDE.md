@@ -124,7 +124,7 @@ Chorely 2/
 
 ## 5. Database Schema
 
-These are the tables in the Supabase backend (migrations 001–010). Do not create new tables without updating this file. The frontend must align with this schema exactly.
+These are the tables in the Supabase backend (migrations 001–014). Do not create new tables without updating this file. The frontend must align with this schema exactly. (Migrations 011–013 are security/perf hardening — function security, anon RPC revokes, RLS perf + FK indexes — and add no new tables.)
 
 ### profiles (001)
 ```sql
@@ -261,6 +261,22 @@ notification_daily_summary boolean DEFAULT true
 updated_at timestamptz DEFAULT now()
 ```
 
+### goals (014)
+```sql
+id uuid PRIMARY KEY DEFAULT gen_random_uuid()
+family_id uuid NOT NULL REFERENCES families(id) ON DELETE CASCADE
+child_id uuid NOT NULL REFERENCES children(id) ON DELETE CASCADE
+kind text NOT NULL CHECK (kind IN ('reward', 'points'))  -- 'reward' saves toward a reward_id; 'points' is a custom target
+reward_id uuid REFERENCES rewards(id) ON DELETE SET NULL  -- set when kind='reward'; target_points snapshots the reward cost
+title text NOT NULL
+target_points integer NOT NULL CHECK (target_points > 0)
+is_active boolean NOT NULL DEFAULT true
+reached_at timestamptz  -- stamped once when the child's balance first meets target; gates the one-time celebration
+created_by uuid REFERENCES profiles(id) ON DELETE SET NULL
+created_at timestamptz NOT NULL DEFAULT now()
+```
+Per-child savings goals. `kind='reward'` saves toward a specific reward (target snapshots its `point_cost`); `kind='points'` is a custom point target. Indexed on `child_id` and `family_id`.
+
 ### RPC Functions (008–009)
 - `submit_chore(p_assignment_id)` — Mark chore done
 - `approve_chore(p_assignment_id)` — Parent approves, awards points, updates streak
@@ -388,6 +404,7 @@ Record all architectural decisions here. Format: date and one-sentence reason.
 | 2026-05-28 | ChorelyIcon supports an `animated` prop (blink + bob) | Brand wanted the smiley to feel alive on Welcome / Onboarding hero moments; the prop defaults off so small chrome uses stay still and cheap |
 | 2026-05-28 | Full dark mode added (themed palette) — supersedes light-only | User requested a working dark mode option. Added `darkC` palette + `useThemedStyles`/`useTheme().C` so the whole app recolors via the Settings toggle. Light stays the default. See DESIGN.md §Dark Mode. |
 | 2026-05-29 | Parent nav restructured to Home / Review / Chores / Family / More (Rewards pushed from More) + full prototype visual alignment | User supplied the Lumina Bloom prototype screenshots as the original intent and asked to match them. Adopted the prototype's parent navigation + gradient/tinted-tile visual language. Kid screens stay v1.1. See DESIGN.md §11. |
+| 2026-05-29 | Added `goals` table (migration 014) — per-child reward-savings + custom-point goals with one-time "reached" celebration | Replaced the dashboard "Set Goal → coming-soon" stub with a functional feature; goals are read/written under the family-member RLS policy, no new RPC needed (no point mutations). |
 | — | Expo Managed over React Native CLI | Faster builds, no native module conflicts for v1 scope |
 | — | RevenueCat over Stripe for IAP | Apple and Google require native IAP; Stripe is not permitted |
 | — | Zustand over Redux | Lower boilerplate for this app's state complexity |
