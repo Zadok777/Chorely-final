@@ -9,6 +9,7 @@ import { Input } from '../ui/Input';
 import { useToast } from '../ui/Toast';
 import { ModalSheet } from './ModalSheet';
 import { approveChore, rejectChore } from '../../services/rpc';
+import { hapticSuccess, hapticWarning } from '../../utils/haptics';
 import {
   GRADIENTS,
   radii,
@@ -69,6 +70,7 @@ export function ChoreApprovalModal({
       toast.show({ message: res.error, tone: 'error', duration: 5000 });
       return;
     }
+    hapticSuccess();
     toast.show({ message: 'Approved — points awarded.', tone: 'success' });
     onResolved();
     close();
@@ -87,6 +89,7 @@ export function ChoreApprovalModal({
       toast.show({ message: res.error, tone: 'error', duration: 5000 });
       return;
     }
+    hapticWarning();
     toast.show({ message: 'Sent back to your child.', tone: 'info' });
     onResolved();
     close();

@@ -9,6 +9,7 @@ import { useToast } from '../ui/Toast';
 import { ModalSheet } from './ModalSheet';
 import { createChild } from '../../services/children';
 import { useFamilyStore } from '../../store/familyStore';
+import { hapticLight } from '../../utils/haptics';
 
 // COPPA: we collect a child's display name and (optional) date of birth only —
 // never email, phone, or any other PII. When a DOB makes the child under 13,
@@ -105,6 +106,7 @@ export function AddChildModal({ visible, onClose, onAdded }: AddChildModalProps)
       return;
     }
     useFamilyStore.getState().upsertChild(res.data);
+    hapticLight();
     toast.show({ message: `${res.data.name} added.`, tone: 'success' });
     reset({ name: '', dob: '' });
     onAdded();

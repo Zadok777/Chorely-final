@@ -3,6 +3,7 @@ import { Animated, Modal, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { C, radii, shadows, spacing, typography } from '../../theme/tokens';
+import { hapticSuccess } from '../../utils/haptics';
 
 interface CelebrationOverlayProps {
   visible: boolean;
@@ -38,6 +39,7 @@ export function CelebrationOverlay({
 
   useEffect(() => {
     if (!visible) return;
+    hapticSuccess();
     scale.setValue(0);
     progress.setValue(0);
 

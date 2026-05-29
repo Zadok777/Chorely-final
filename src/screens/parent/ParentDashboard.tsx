@@ -17,6 +17,7 @@ import { CreateChoreModal } from '../../components/modals/CreateChoreModal';
 import { CreateRewardModal } from '../../components/modals/CreateRewardModal';
 import { Avatar } from '../../components/ui/Avatar';
 import { GradientCard } from '../../components/ui/GradientCard';
+import { StreakFlame } from '../../components/ui/StreakFlame';
 import { useToast } from '../../components/ui/Toast';
 import { listActivity } from '../../services/activity';
 import { listChildren } from '../../services/children';
@@ -371,10 +372,14 @@ function KidProgress({
               <Text style={styles.kidAge}>  ·  age {ageLabel}</Text>
             ) : null}
           </Text>
-          <Text style={styles.kidSub} maxFontSizeMultiplier={1.3}>
-            {done}/{total} chores today
-            {(child.streak_days ?? 0) > 0 ? ` · ${child.streak_days}🔥` : ''}
-          </Text>
+          <View style={styles.kidSubRow}>
+            <Text style={styles.kidSub} maxFontSizeMultiplier={1.3}>
+              {done}/{total} chores today
+            </Text>
+            {(child.streak_days ?? 0) > 0 ? (
+              <StreakFlame days={child.streak_days ?? 0} size={13} />
+            ) : null}
+          </View>
         </View>
         <View style={styles.kidPoints}>
           <Text style={styles.kidPointsValue} maxFontSizeMultiplier={1.2}>
@@ -612,10 +617,15 @@ const makeStyles = (C: Palette) =>
       ...typography.caption,
       color: C.textMid,
     },
+    kidSubRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.s8,
+      marginTop: 2,
+    },
     kidSub: {
       ...typography.caption,
       color: C.textMid,
-      marginTop: 2,
     },
     kidPoints: {
       alignItems: 'flex-end',

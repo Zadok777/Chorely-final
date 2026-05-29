@@ -15,6 +15,7 @@ import { assignChore, createChore } from '../../services/chores';
 import { useAuthStore } from '../../store/authStore';
 import { useChoreStore } from '../../store/choreStore';
 import { useFamilyStore } from '../../store/familyStore';
+import { hapticLight } from '../../utils/haptics';
 import {
   radii,
   spacing,
@@ -194,6 +195,7 @@ export function CreateChoreModal({
         duration: 5000,
       });
     } else {
+      hapticLight();
       toast.show({ message: 'Chore created.', tone: 'success' });
     }
     resetAll();

@@ -20,9 +20,9 @@ interface ChorelyIconProps {
   faceFill?: string;
   // Override the dark feature color (eyes + smile).
   featureColor?: string;
-  // When true, eyes blink every few seconds and the icon bobs gently.
-  // Use on welcome screens and hero brand moments. Default off so smaller
-  // chrome uses (header avatars, list rows) stay still and cheap.
+  // When true, the smiley winks (right eye) every few seconds and the icon
+  // bobs gently. Use on welcome screens and hero brand moments. Default off so
+  // smaller chrome uses (header avatars, list rows) stay still and cheap.
   animated?: boolean;
   style?: StyleProp<ViewStyle>;
 }
@@ -48,27 +48,29 @@ export function ChorelyIcon({
   animated = false,
   style,
 }: ChorelyIconProps) {
-  const [eyeRy, setEyeRy] = useState(OPEN_RY);
+  // Only the right eye animates → a wink (not a both-eye blink). The left eye
+  // stays open at OPEN_RY.
+  const [rightRy, setRightRy] = useState(OPEN_RY);
   const bobY = useRef(new Animated.Value(0)).current;
 
-  // Blink loop. We drive ry through React state rather than a Reanimated
+  // Wink loop. We drive ry through React state rather than a Reanimated
   // worklet because animating SVG props via reanimated has rough edges on
-  // web; a 100ms re-render every 3.5s is negligible.
+  // web; a ~100ms re-render every few seconds is negligible.
   useEffect(() => {
     if (!animated) return undefined;
     let cancelled = false;
     let openTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const blink = () => {
+    const wink = () => {
       if (cancelled) return;
-      setEyeRy(CLOSED_RY);
+      setRightRy(CLOSED_RY);
       openTimer = setTimeout(() => {
         if (cancelled) return;
-        setEyeRy(OPEN_RY);
+        setRightRy(OPEN_RY);
       }, BLINK_CLOSE_MS);
     };
 
-    const interval = setInterval(blink, BLINK_INTERVAL_MS);
+    const interval = setInterval(wink, BLINK_INTERVAL_MS);
     return () => {
       cancelled = true;
       clearInterval(interval);
@@ -126,8 +128,8 @@ export function ChorelyIcon({
           stroke="url(#chorelyBorder)"
           strokeWidth={6}
         />
-        <Ellipse cx={36} cy={42} rx={5} ry={eyeRy} fill={featureColor} />
-        <Ellipse cx={64} cy={42} rx={5} ry={eyeRy} fill={featureColor} />
+        <Ellipse cx={36} cy={42} rx={5} ry={OPEN_RY} fill={featureColor} />
+        <Ellipse cx={64} cy={42} rx={5} ry={rightRy} fill={featureColor} />
         <Path
           d="M30 62 Q50 82 70 62"
           stroke={featureColor}

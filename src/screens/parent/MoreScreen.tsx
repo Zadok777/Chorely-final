@@ -275,7 +275,7 @@ export function MoreScreen() {
       </View>
 
       <View style={styles.footer}>
-        <ChorelyIcon size={40} />
+        <ChorelyIcon size={40} animated />
         <Text style={styles.footerText} maxFontSizeMultiplier={1.2}>
           Chorely v1.0 · made with care
         </Text>

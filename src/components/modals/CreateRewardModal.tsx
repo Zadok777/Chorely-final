@@ -13,6 +13,7 @@ import { createReward } from '../../services/rewards';
 import { useAuthStore } from '../../store/authStore';
 import { useFamilyStore } from '../../store/familyStore';
 import { useRewardStore } from '../../store/rewardStore';
+import { hapticLight } from '../../utils/haptics';
 import {
   radii,
   spacing,
@@ -35,6 +36,18 @@ const ICONS: ReadonlyArray<IoniconName> = [
   'cash',
   'pizza',
   'football',
+  'basketball',
+  'musical-notes',
+  'headset',
+  'book',
+  'color-palette',
+  'paw',
+  'ticket',
+  'balloon',
+  'happy',
+  'star',
+  'planet',
+  'car-sport',
 ];
 
 // Fixed accent choices stored on the reward row — mode-independent, so these
@@ -136,6 +149,7 @@ export function CreateRewardModal({
       return;
     }
     useRewardStore.getState().upsertReward(res.data);
+    hapticLight();
     toast.show({ message: 'Reward created.', tone: 'success' });
     resetAll();
     onCreated();
