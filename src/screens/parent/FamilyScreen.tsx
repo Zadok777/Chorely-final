@@ -17,6 +17,7 @@ import { AddChildModal } from '../../components/modals/AddChildModal';
 import { Avatar } from '../../components/ui/Avatar';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { GlassCard } from '../../components/ui/GlassCard';
+import { SkeletonRow } from '../../components/ui/SkeletonLoader';
 import { useToast } from '../../components/ui/Toast';
 import { listActivity } from '../../services/activity';
 import { deleteChild, listChildren } from '../../services/children';
@@ -64,17 +65,22 @@ export function FamilyScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
+  const [loading, setLoading] = useState(() => children.length === 0);
 
   const familyId = family?.id ?? null;
 
   const load = useCallback(async () => {
-    if (familyId === null) return;
+    if (familyId === null) {
+      setLoading(false);
+      return;
+    }
     const [kids, act] = await Promise.all([
       listChildren(familyId),
       listActivity(familyId, 12),
     ]);
     if (kids.success) useFamilyStore.getState().setChildren(kids.data);
     if (act.success) useActivityStore.getState().setActivity(act.data);
+    setLoading(false);
   }, [familyId]);
 
   useFocusEffect(
@@ -185,7 +191,12 @@ export function FamilyScreen() {
         <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
           Kids
         </Text>
-        {children.length === 0 ? (
+        {loading ? (
+          <View style={styles.list}>
+            <SkeletonRow />
+            <SkeletonRow />
+          </View>
+        ) : children.length === 0 ? (
           <EmptyState
             icon="happy-outline"
             title="No kids yet"

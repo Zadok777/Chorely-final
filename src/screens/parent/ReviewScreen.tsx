@@ -10,6 +10,7 @@ import { Avatar } from '../../components/ui/Avatar';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { PointsBadge } from '../../components/ui/PointsBadge';
+import { SkeletonRow } from '../../components/ui/SkeletonLoader';
 import { listChildren } from '../../services/children';
 import { listAssignmentsForFamily, listChores } from '../../services/chores';
 import { useChoreStore } from '../../store/choreStore';
@@ -35,11 +36,15 @@ export function ReviewScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
   const [approvalId, setApprovalId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(() => assignments.length === 0);
 
   const familyId = family?.id ?? null;
 
   const load = useCallback(async () => {
-    if (familyId === null) return;
+    if (familyId === null) {
+      setLoading(false);
+      return;
+    }
     const { setAssignments, setChores } = useChoreStore.getState();
     const { setChildren } = useFamilyStore.getState();
     const [a, c, kids] = await Promise.all([
@@ -50,6 +55,7 @@ export function ReviewScreen() {
     if (a.success) setAssignments(a.data);
     if (c.success) setChores(c.data);
     if (kids.success) setChildren(kids.data);
+    setLoading(false);
   }, [familyId]);
 
   useFocusEffect(
@@ -93,7 +99,12 @@ export function ReviewScreen() {
       >
         <Header title="Review" subtitle="Approve completed chores" />
 
-        {pending.length === 0 ? (
+        {loading ? (
+          <View style={styles.list}>
+            <SkeletonRow />
+            <SkeletonRow />
+          </View>
+        ) : pending.length === 0 ? (
           <EmptyState
             icon="checkmark-done-outline"
             title="All caught up"

@@ -15,6 +15,7 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { PointsBadge } from '../../components/ui/PointsBadge';
 import { RewardCard } from '../../components/ui/RewardCard';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
+import { SkeletonLoader } from '../../components/ui/SkeletonLoader';
 import { listChildren } from '../../services/children';
 import { listRedemptionsForFamily, listRewards } from '../../services/rewards';
 import { useFamilyStore } from '../../store/familyStore';
@@ -51,6 +52,7 @@ export function RewardsScreen() {
   const [createVisible, setCreateVisible] = useState(false);
   const [redeemTarget, setRedeemTarget] = useState<Reward | null>(null);
   const [celebration, setCelebration] = useState<string | null>(null);
+  const [loading, setLoading] = useState(() => rewards.length === 0);
 
   const familyId = family?.id ?? null;
 
@@ -68,7 +70,10 @@ export function RewardsScreen() {
   }, [children]);
 
   const load = useCallback(async () => {
-    if (familyId === null) return;
+    if (familyId === null) {
+      setLoading(false);
+      return;
+    }
     const { setRewards, setRedemptions } = useRewardStore.getState();
     const { setChildren } = useFamilyStore.getState();
 
@@ -80,6 +85,7 @@ export function RewardsScreen() {
     if (rewardRes.success) setRewards(rewardRes.data);
     if (childrenRes.success) setChildren(childrenRes.data);
     if (redemptionRes.success) setRedemptions(redemptionRes.data);
+    setLoading(false);
   }, [familyId]);
 
   useFocusEffect(
@@ -131,7 +137,18 @@ export function RewardsScreen() {
           ]}
         />
 
-        {children.length === 0 ? (
+        {loading ? (
+          <>
+            <SkeletonLoader shape="block" height={72} style={styles.balanceCard} />
+            <View style={[styles.grid, styles.skeletonGrid]}>
+              {[0, 1, 2, 3].map((i) => (
+                <View key={i} style={styles.gridItem}>
+                  <SkeletonLoader shape="block" height={150} />
+                </View>
+              ))}
+            </View>
+          </>
+        ) : children.length === 0 ? (
           <EmptyState
             icon="happy-outline"
             title="No kids yet"
@@ -313,6 +330,9 @@ const makeStyles = (C: Palette) =>
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.s12,
+  },
+  skeletonGrid: {
+    marginTop: spacing.s16,
   },
   gridItem: {
     width: '47.5%',

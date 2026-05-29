@@ -9,6 +9,7 @@ import { CreateChoreModal } from '../../components/modals/CreateChoreModal';
 import { ChoreRow } from '../../components/ui/ChoreRow';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
+import { SkeletonRow } from '../../components/ui/SkeletonLoader';
 import { useToast } from '../../components/ui/Toast';
 import { listActivity } from '../../services/activity';
 import { listChildren } from '../../services/children';
@@ -47,11 +48,17 @@ export function ChoresScreen() {
   const [createVisible, setCreateVisible] = useState(false);
   const [approvalId, setApprovalId] = useState<string | null>(null);
   const [submittingId, setSubmittingId] = useState<string | null>(null);
+  // Show skeletons only on the very first load (when the store has no
+  // assignments yet); a populated store means we navigated back here, so skip.
+  const [loading, setLoading] = useState(() => assignments.length === 0);
 
   const familyId = family?.id ?? null;
 
   const load = useCallback(async () => {
-    if (familyId === null) return;
+    if (familyId === null) {
+      setLoading(false);
+      return;
+    }
     const { setAssignments, setChores } = useChoreStore.getState();
     const { setActivity } = useActivityStore.getState();
     const { setChildren } = useFamilyStore.getState();
@@ -66,6 +73,7 @@ export function ChoresScreen() {
     if (choreRes.success) setChores(choreRes.data);
     if (activityRes.success) setActivity(activityRes.data);
     if (childrenRes.success) setChildren(childrenRes.data);
+    setLoading(false);
   }, [familyId]);
 
   // Reload whenever the tab regains focus so changes made elsewhere (or by the
@@ -149,7 +157,13 @@ export function ChoresScreen() {
           style={styles.filter}
         />
 
-        {visible.length === 0 ? (
+        {loading ? (
+          <View style={styles.list}>
+            <SkeletonRow />
+            <SkeletonRow />
+            <SkeletonRow />
+          </View>
+        ) : visible.length === 0 ? (
           <EmptyState
             icon="checkbox-outline"
             title={

@@ -19,6 +19,7 @@ import { CreateRewardModal } from '../../components/modals/CreateRewardModal';
 import { SetGoalModal } from '../../components/modals/SetGoalModal';
 import { Avatar } from '../../components/ui/Avatar';
 import { GradientCard } from '../../components/ui/GradientCard';
+import { SkeletonRow } from '../../components/ui/SkeletonLoader';
 import { StreakFlame } from '../../components/ui/StreakFlame';
 import { useToast } from '../../components/ui/Toast';
 import { listActivity } from '../../services/activity';
@@ -79,13 +80,17 @@ export function ParentDashboard() {
   const [childModal, setChildModal] = useState(false);
   const [goalModal, setGoalModal] = useState(false);
   const [celebration, setCelebration] = useState<string | null>(null);
+  const [loading, setLoading] = useState(() => children.length === 0);
 
   const displayName =
     profile?.display_name ?? session?.user?.email?.split('@')[0] ?? 'there';
   const familyId = family?.id ?? null;
 
   const load = useCallback(async () => {
-    if (familyId === null) return;
+    if (familyId === null) {
+      setLoading(false);
+      return;
+    }
     const { setAssignments, setChores } = useChoreStore.getState();
     const { setActivity } = useActivityStore.getState();
     const { setChildren } = useFamilyStore.getState();
@@ -116,10 +121,11 @@ export function ParentDashboard() {
               upsertGoal(mk.data);
               setCelebration(`${child?.name ?? 'A child'} hit "${g.title}"! 🎉`);
             }
+            }
           }
         }
       }
-    }
+    setLoading(false);
   }, [familyId]);
 
   React.useEffect(() => {
@@ -291,7 +297,12 @@ export function ParentDashboard() {
         <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
           Family progress
         </Text>
-        {children.length === 0 ? (
+        {loading ? (
+          <View style={styles.kidList}>
+            <SkeletonRow />
+            <SkeletonRow />
+          </View>
+        ) : children.length === 0 ? (
           <Pressable
             onPress={() => setChildModal(true)}
             style={({ pressed }) => [styles.emptyKids, pressed && styles.pressed]}
