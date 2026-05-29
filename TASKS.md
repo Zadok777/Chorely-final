@@ -216,6 +216,15 @@ Aligned the parent app to the prototype screenshots (the original design intent)
 - [x] **`SetGoalModal`** + `goalStore` + `services/goals.ts` + `database.types.ts`/`app.types.ts` types; wired into ParentDashboard (replaced the "Set Goal → coming-soon" stub).
 - [ ] Manual pass: create both goal kinds, confirm the "reached" celebration fires exactly once.
 
+## Sound effects (2026-05-29)
+
+- [x] Installed `expo-audio` (~1.1.1, SDK 54 compatible); removed its auto-added config plugin from `app.json` (playback doesn't need the mic permission it injects).
+- [x] `src/utils/sounds.ts` — fire-and-forget `playSound(name)` mirroring `haptics.ts`; gated on `soundEnabled`; respects the silent switch; swallows errors. Audio files are an **optional** drop-in via a `SOURCES` registry, so the bundle builds without them.
+- [x] `settingsStore.soundEnabled` (default on, **local-only** — no `user_settings` column, so it doesn't sync across devices) + "Sound effects" toggle in MoreScreen → Preferences.
+- [x] Wired `playSound('celebrate')` into `CelebrationOverlay` (goal reached + reward redeem) and `playSound('success')` into `ChoreApprovalModal` approve. Reject path stays haptic-only by design (no punishing buzzer for kids).
+- [ ] **Drop in audio**: add `celebrate.mp3` + `success.mp3` to `assets/sounds/` and uncomment the two lines in `sounds.ts` (see `assets/sounds/README.md` for specs + CC0 sources). Couldn't auto-source from the sandbox (Pixabay is behind Cloudflare; OpenGameArt ships zips) and licenses need human verification before an App Store build.
+- [ ] Manual pass on device: toggle on/off, confirm celebrate fires on goal-reached/redeem and success on approve, and that silent-switch is respected.
+
 ## Phase 9: Paywall (RevenueCat)
 
 - [ ] Install `react-native-purchases`
