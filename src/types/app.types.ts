@@ -66,9 +66,6 @@ export type RootStackParamList = {
   // Reward catalog — pushed from the More tab (not a top-level tab, matching
   // the prototype where rewards live under More).
   Rewards: undefined;
-
-  // Dev-only — reachable from More for visual review.
-  Showcase: undefined;
 };
 
 // Bottom-tab routes inside the Main shell (parent navigation), matching the

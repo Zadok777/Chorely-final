@@ -191,6 +191,10 @@ function ToastView({
   const { C, mode } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const visual = toneVisual(C, mode, tone);
+  // Opaque base so the toast never lets the header text bleed through. The
+  // tonal tint is layered on top of this solid surface, not used as the
+  // (translucent) background itself.
+  const surface = mode === 'dark' ? '#221C31' : '#FFFFFF';
 
   return (
     <Animated.View
@@ -209,11 +213,18 @@ function ToastView({
           styles.toast,
           shadows.lg,
           {
-            backgroundColor: visual.background,
+            backgroundColor: surface,
             borderColor: visual.borderColor,
           },
         ]}
       >
+        <View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFillObject,
+            { backgroundColor: visual.background, borderRadius: radii.r16 },
+          ]}
+        />
         <Ionicons name={visual.iconName} size={20} color={visual.iconColor} />
         <Text style={styles.message} maxFontSizeMultiplier={1.5}>
           {message}

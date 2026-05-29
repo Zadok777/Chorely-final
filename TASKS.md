@@ -220,11 +220,23 @@ Aligned the parent app to the prototype screenshots (the original design intent)
 
 ## Phase 10: Polish + Pre-Submission
 
-- [ ] Skeleton loaders on every list screen
+- [ ] **Enable Supabase leaked-password protection** (Auth → Passwords; HaveIBeenPwned check) — ⚠️ requires the **Supabase Pro plan**, so do this once upgraded. (Flagged by security advisor 2026-05-29.)
+- [ ] Re-enable Supabase email confirmation (currently OFF in dev)
+- [ ] Skeleton loaders on every list screen (primitives `SkeletonLoader`/`SkeletonRow` already exist, currently unused)
 - [ ] Pull-to-refresh everywhere lists appear
 - [ ] Haptics on key interactions (`expo-haptics`)
 - [ ] Touch-target audit (48px / 56px elementary)
 - [ ] Strip all `console.log`
 - [ ] COPPA audit (no PII prompts for children data)
 - [ ] Verify RLS policies block cross-family reads (test with two accounts)
+- [ ] Replace placeholder app icons + add missing Android adaptive-icon assets (app.json)
+- [ ] Decide on `ProgressBar`/`SkeletonLoader` primitives (wire into loading states or remove)
 - [ ] EAS build → TestFlight + Google internal track
+
+## Audit log (2026-05-29)
+
+Ran a full security / dead-code / correctness audit. Findings + actions:
+- Fixed: **add-chore-not-saving** (client-side child-selection gate; auto-select single child) and **toast bleed-through** at top (opaque surface).
+- Applied **migration 013**: wrapped `auth.uid()` → `(select auth.uid())` in RLS policies (advisor `auth_rls_initplan`) + added 6 FK covering indexes (`unindexed_foreign_keys`).
+- Removed the dev **ComponentShowcase** screen + its nav route/links (was shipping in the bundle).
+- Security verdict: no critical vulns. No hardcoded secrets, no `console.log`, RLS verified. Remaining: enable leaked-password protection (Pro plan — see above); the "authenticated can call SECURITY DEFINER" advisor warnings are by-design (our RPC API, auth-checked internally).

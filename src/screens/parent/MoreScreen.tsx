@@ -267,13 +267,6 @@ export function MoreScreen() {
         <Row icon="help-circle-outline" label="Help center" onPress={() => soon('Help center')} />
         <Divider />
         <Row icon="heart-outline" label="Rate Chorely" onPress={() => soon('App rating')} />
-        <Divider />
-        <Row
-          icon="construct-outline"
-          label="Component showcase"
-          sub="Developer preview"
-          onPress={() => nav.navigate('Showcase')}
-        />
       </GlassCard>
 
       <View style={styles.dangerActions}>

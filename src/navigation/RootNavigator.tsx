@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { ComponentShowcase } from '../screens/dev/ComponentShowcase';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { OnboardingWizard } from '../screens/auth/OnboardingWizard';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
@@ -47,7 +46,6 @@ export function RootNavigator() {
         <>
           <Stack.Screen name="Main" component={MainNavigator} />
           <Stack.Screen name="Rewards" component={RewardsScreen} />
-          <Stack.Screen name="Showcase" component={ComponentShowcase} />
         </>
       )}
     </Stack.Navigator>

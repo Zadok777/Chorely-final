@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -107,6 +107,14 @@ export function CreateChoreModal({
     resolver: yupResolver(schema),
     defaultValues: { title: '', notes: '', points: '', dueDate: '' },
   });
+
+  // Single-child families are the common case — auto-select that child when the
+  // sheet opens so "Create chore" works without an easy-to-miss extra tap.
+  useEffect(() => {
+    if (visible && children.length === 1 && childIds.length === 0) {
+      setChildIds([children[0].id]);
+    }
+  }, [visible, children, childIds.length]);
 
   const resetAll = () => {
     reset({ title: '', notes: '', points: '', dueDate: '' });
