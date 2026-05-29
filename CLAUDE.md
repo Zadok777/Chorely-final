@@ -387,6 +387,7 @@ Record all architectural decisions here. Format: date and one-sentence reason.
 | 2026-05-28 | Upgraded to Expo SDK 54 (RN 0.81 / React 19 / Reanimated 4) | Workspace got the bump from `npx expo install --fix` and runs cleanly in Expo Go; reverting would risk breaking the working dev loop. Future SDK changes should go through `npx expo install --fix` together, not piecemeal. |
 | 2026-05-28 | ChorelyIcon supports an `animated` prop (blink + bob) | Brand wanted the smiley to feel alive on Welcome / Onboarding hero moments; the prop defaults off so small chrome uses stay still and cheap |
 | 2026-05-28 | Full dark mode added (themed palette) — supersedes light-only | User requested a working dark mode option. Added `darkC` palette + `useThemedStyles`/`useTheme().C` so the whole app recolors via the Settings toggle. Light stays the default. See DESIGN.md §Dark Mode. |
+| 2026-05-29 | Parent nav restructured to Home / Review / Chores / Family / More (Rewards pushed from More) + full prototype visual alignment | User supplied the Lumina Bloom prototype screenshots as the original intent and asked to match them. Adopted the prototype's parent navigation + gradient/tinted-tile visual language. Kid screens stay v1.1. See DESIGN.md §11. |
 | — | Expo Managed over React Native CLI | Faster builds, no native module conflicts for v1 scope |
 | — | RevenueCat over Stripe for IAP | Apple and Google require native IAP; Stripe is not permitted |
 | — | Zustand over Redux | Lower boilerplate for this app's state complexity |

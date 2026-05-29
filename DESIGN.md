@@ -207,6 +207,8 @@ These are the AI-default tells that make output look machine-made. Each item sho
 
 All screens must match these layouts. Pixel-level parity with the prototype is the bar.
 
+> **Prototype alignment (2026-05-29):** the parent app was aligned to the Lumina Bloom prototype screenshots. **Parent bottom nav is Home / Review / Chores / Family / More** (Rewards is pushed from More as "Reward catalog", not a tab). Visual language now applied app-wide: gradient hero cards (`GradientCard` + `GRADIENTS`), color-tinted stat tiles (pink/green/orange), colored quick-action icon squares, gradient kid progress bars, gradient approval banner + photo-proof placeholder in the approval modal, invite-code + Share + 3 mini stat tiles + recent-activity feed on Family, and a grouped iOS-style settings list on More. Kid-facing screens (Welcome kid mode, Kid Home, Squad, Profile, XP/levels/badges) remain **v1.1** per CLAUDE.md §9.
+
 ### Parent Home Dashboard
 - Personalized greeting header with parent avatar
 - Pending Approvals card with counter and contextual preview

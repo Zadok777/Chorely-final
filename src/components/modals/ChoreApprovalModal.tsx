@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { GlassCard } from '../ui/GlassCard';
+import { GradientCard } from '../ui/GradientCard';
 import { Input } from '../ui/Input';
 import { useToast } from '../ui/Toast';
 import { ModalSheet } from './ModalSheet';
 import { approveChore, rejectChore } from '../../services/rpc';
 import {
+  GRADIENTS,
   radii,
   spacing,
   typography,
@@ -144,19 +145,31 @@ export function ChoreApprovalModal({
         </Text>
       ) : (
         <>
-          <GlassCard tint="pink" padding={spacing.s12}>
+          <GradientCard
+            colors={GRADIENTS.brand}
+            padding={spacing.s16}
+            radius={radii.r18}
+          >
             <View style={styles.childRow}>
-              <Avatar name={child?.name ?? '?'} size="md" />
+              <View style={styles.bannerAvatar}>
+                <Text style={styles.bannerAvatarText} maxFontSizeMultiplier={1.3}>
+                  {(child?.name ?? '?').trim().charAt(0).toUpperCase()}
+                </Text>
+              </View>
               <View style={styles.childMeta}>
-                <Text style={styles.childName} maxFontSizeMultiplier={1.4} numberOfLines={1}>
+                <Text
+                  style={styles.childNameLight}
+                  maxFontSizeMultiplier={1.4}
+                  numberOfLines={1}
+                >
                   {child?.name ?? 'Child'}
                 </Text>
-                <Text style={styles.childSub} maxFontSizeMultiplier={1.4}>
+                <Text style={styles.childSubLight} maxFontSizeMultiplier={1.4}>
                   {submittedLabel === '' ? 'Submitted' : `Submitted ${submittedLabel}`}
                 </Text>
               </View>
             </View>
-          </GlassCard>
+          </GradientCard>
 
           <GlassCard padding={spacing.s16}>
             <Text style={styles.choreTitle} maxFontSizeMultiplier={1.4}>
@@ -175,6 +188,13 @@ export function ChoreApprovalModal({
               </Text>
             ) : null}
           </GlassCard>
+
+          <View style={styles.photoProof}>
+            <Ionicons name="camera-outline" size={22} color={C.textLight} />
+            <Text style={styles.photoProofText} maxFontSizeMultiplier={1.3}>
+              Photo proof — coming in v1.1
+            </Text>
+          </View>
 
           <GlassCard padding={spacing.s16}>
             <Text style={styles.impactLabel} maxFontSizeMultiplier={1.3}>
@@ -272,6 +292,43 @@ const makeStyles = (C: Palette) =>
     ...typography.caption,
     color: C.textMid,
     marginTop: 2,
+  },
+  bannerAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: radii.rFull,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bannerAvatarText: {
+    ...typography.title,
+    fontSize: 20,
+    color: C.pink,
+  },
+  childNameLight: {
+    ...typography.title,
+    fontSize: 18,
+    color: '#FFFFFF',
+  },
+  childSubLight: {
+    ...typography.caption,
+    color: 'rgba(255,255,255,0.9)',
+    marginTop: 2,
+  },
+  photoProof: {
+    borderWidth: 1,
+    borderColor: C.border,
+    borderStyle: 'dashed',
+    borderRadius: radii.r18,
+    paddingVertical: spacing.s24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.s8,
+  },
+  photoProofText: {
+    ...typography.caption,
+    color: C.textLight,
   },
   choreTitle: {
     ...typography.title,

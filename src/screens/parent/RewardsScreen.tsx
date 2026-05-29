@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Header } from '../../components/layout/Header';
@@ -25,7 +26,7 @@ import {
   useThemedStyles,
   type Palette,
 } from '../../theme';
-import type { Reward } from '../../types/app.types';
+import type { Reward, RootStackParamList } from '../../types/app.types';
 import { TAB_BAR_CLEARANCE } from './layout';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -42,6 +43,7 @@ export function RewardsScreen() {
   const children = useFamilyStore((s) => s.children);
   const rewards = useRewardStore((s) => s.rewards);
   const styles = useThemedStyles(makeStyles);
+  const nav = useNavigation<StackNavigationProp<RootStackParamList, 'Rewards'>>();
 
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
@@ -119,6 +121,7 @@ export function RewardsScreen() {
       >
         <Header
           title="Rewards"
+          onBack={() => nav.goBack()}
           actions={[
             {
               iconName: 'add',

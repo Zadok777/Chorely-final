@@ -196,6 +196,20 @@ Added a complete dark theme, app-wide:
 - `hooks/useSettingsBootstrap.ts` syncs `user_settings` → store on sign-in
 - Static `C` intentionally retained for: Avatar/ChorelyIcon/ChorelyLogo/CelebrationOverlay (mode-invariant brand colors), ComponentShowcase (dev-only), and shadow colors. ChoresScreen uses no colors (theme-agnostic).
 
+## Design Alignment — Lumina Bloom prototype (2026-05-29, tsc + Metro green)
+
+Aligned the parent app to the prototype screenshots (the original design intent). Kid screens stay v1.1.
+
+- [x] **Nav restructure**: parent tabs now Home / Review / Chores / Family / More. Rewards moved OUT of tabs → pushed from More ("Reward catalog"). `MainNavigator` + `MainTabParamList` + `RootStackParamList` (added `Rewards`) updated; deleted `SettingsScreen.tsx` (replaced by `MoreScreen`).
+- [x] **Foundation**: `GRADIENTS` tokens (brand/violet/sky) + `ui/GradientCard.tsx` (LinearGradient surface).
+- [x] **ParentDashboard (Home)** rebuilt: date+greeting (name in pink)+bell(+dot)+avatar header; **gradient** approval hero (→Review); color-tinted snapshot tiles (Assigned/Done/Points); colored-icon quick actions (Add Chore/New Reward/Add Kid → modals; Set Goal → coming-soon toast); kid cards with **gradient progress bars**.
+- [x] **ReviewScreen** (new tab): lists submitted chores → opens approval modal; "all caught up" empty state.
+- [x] **ChoreApprovalModal** restyled: gradient banner (white avatar + submitter + time), metadata chips, dashed photo-proof placeholder (v1.1), points-impact, approve/deny.
+- [x] **FamilyScreen** enhanced: invite-code card + **Share**, kid cards with 3 mini stat tiles (POINTS/STREAK/THIS WK) + gear (remove), **recent-activity feed**.
+- [x] **MoreScreen** (new, replaces Settings tab): grouped iOS-style list — Preferences (dark mode, notifications, Privacy & COPPA), Family (rename, manage kids→Family, reward catalog→Rewards), Subscription (Plus/Billing → Phase 9 toasts), Support (help/rate/showcase), sign out + delete account, footer.
+- [x] All new UI is theme-aware (dark mode intact). ChoresScreen left as-is (parent chore mgmt already on-brand).
+- [ ] Manual Simulator pass: verify the gradients/tiles/nav feel right in both light + dark.
+
 ## Phase 9: Paywall (RevenueCat)
 
 - [ ] Install `react-native-purchases`

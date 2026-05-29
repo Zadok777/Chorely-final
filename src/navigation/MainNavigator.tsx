@@ -7,16 +7,16 @@ import {
 import { TabBar, type TabItem } from '../components/layout/TabBar';
 import { ChoresScreen } from '../screens/parent/ChoresScreen';
 import { FamilyScreen } from '../screens/parent/FamilyScreen';
+import { MoreScreen } from '../screens/parent/MoreScreen';
 import { ParentDashboard } from '../screens/parent/ParentDashboard';
-import { RewardsScreen } from '../screens/parent/RewardsScreen';
-import { SettingsScreen } from '../screens/parent/SettingsScreen';
-import { C } from '../theme/tokens';
+import { ReviewScreen } from '../screens/parent/ReviewScreen';
+import { C } from '../theme';
 import type { MainTabParamList } from '../types/app.types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-// Icon + label metadata per route. Filled icon when active, outline when not
-// (DESIGN.md §9). Keyed by route name so the adapter is a direct lookup.
+// Parent navigation matching the Lumina Bloom prototype: Home / Review /
+// Chores / Family / More. Rewards is not a tab — it's pushed from More.
 const TAB_META: Record<keyof MainTabParamList, TabItem> = {
   Home: {
     key: 'Home',
@@ -24,17 +24,17 @@ const TAB_META: Record<keyof MainTabParamList, TabItem> = {
     iconActive: 'home',
     iconInactive: 'home-outline',
   },
+  Review: {
+    key: 'Review',
+    label: 'Review',
+    iconActive: 'checkmark-circle',
+    iconInactive: 'checkmark-circle-outline',
+  },
   Chores: {
     key: 'Chores',
     label: 'Chores',
-    iconActive: 'checkbox',
-    iconInactive: 'checkbox-outline',
-  },
-  Rewards: {
-    key: 'Rewards',
-    label: 'Rewards',
-    iconActive: 'gift',
-    iconInactive: 'gift-outline',
+    iconActive: 'list',
+    iconInactive: 'list-outline',
   },
   Family: {
     key: 'Family',
@@ -42,17 +42,14 @@ const TAB_META: Record<keyof MainTabParamList, TabItem> = {
     iconActive: 'people',
     iconInactive: 'people-outline',
   },
-  Settings: {
-    key: 'Settings',
-    label: 'Settings',
+  More: {
+    key: 'More',
+    label: 'More',
     iconActive: 'settings',
     iconInactive: 'settings-outline',
   },
 };
 
-// Adapter: turn React Navigation's tab state into our decoupled TabBar's
-// (tabs, activeKey, onChange) contract. Emits the standard `tabPress` event so
-// listeners (e.g. scroll-to-top) keep working, then navigates if not prevented.
 function ChorelyTabBar({ state, navigation }: BottomTabBarProps) {
   const tabs = state.routes.map(
     (route) => TAB_META[route.name as keyof MainTabParamList]
@@ -89,10 +86,10 @@ export function MainNavigator() {
       }}
     >
       <Tab.Screen name="Home" component={ParentDashboard} />
+      <Tab.Screen name="Review" component={ReviewScreen} />
       <Tab.Screen name="Chores" component={ChoresScreen} />
-      <Tab.Screen name="Rewards" component={RewardsScreen} />
       <Tab.Screen name="Family" component={FamilyScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen name="More" component={MoreScreen} />
     </Tab.Navigator>
   );
 }

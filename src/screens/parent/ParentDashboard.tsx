@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Pressable,
   RefreshControl,
@@ -9,13 +9,14 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import { Header } from '../../components/layout/Header';
 import { ScreenContainer } from '../../components/layout/ScreenContainer';
+import { AddChildModal } from '../../components/modals/AddChildModal';
+import { CreateChoreModal } from '../../components/modals/CreateChoreModal';
+import { CreateRewardModal } from '../../components/modals/CreateRewardModal';
 import { Avatar } from '../../components/ui/Avatar';
-import { GlassCard } from '../../components/ui/GlassCard';
-import { PointsBadge } from '../../components/ui/PointsBadge';
-import { ProgressRing } from '../../components/ui/ProgressRing';
+import { GradientCard } from '../../components/ui/GradientCard';
 import { useToast } from '../../components/ui/Toast';
 import { listActivity } from '../../services/activity';
 import { listChildren } from '../../services/children';
@@ -25,6 +26,8 @@ import { useAuthStore } from '../../store/authStore';
 import { useChoreStore } from '../../store/choreStore';
 import { useFamilyStore } from '../../store/familyStore';
 import {
+  AVATAR_GRADIENTS,
+  GRADIENTS,
   radii,
   spacing,
   typography,
@@ -38,10 +41,18 @@ import { TAB_BAR_CLEARANCE } from './layout';
 type Nav = BottomTabNavigationProp<MainTabParamList, 'Home'>;
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
-// The real parent dashboard (Phase 5), replacing the minimal HomeScreen. Reads
-// live data from the stores and refreshes on mount + pull-to-refresh. Chore and
-// reward data only populate once Phases 6–7 ship, so every section renders a
-// sensible zero/empty state today.
+function greetingPeriod(): string {
+  const h = new Date().getHours();
+  if (h < 12) return 'MORNING';
+  if (h < 17) return 'AFTERNOON';
+  return 'EVENING';
+}
+
+function weekday(): string {
+  return new Date()
+    .toLocaleDateString('en-US', { weekday: 'long' })
+    .toUpperCase();
+}
 
 export function ParentDashboard() {
   const nav = useNavigation<Nav>();
@@ -53,12 +64,16 @@ export function ParentDashboard() {
   const session = useAuthStore((s) => s.session);
   const family = useFamilyStore((s) => s.family);
   const children = useFamilyStore((s) => s.children);
+  const chores = useChoreStore((s) => s.chores);
   const assignments = useChoreStore((s) => s.assignments);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [choreModal, setChoreModal] = useState(false);
+  const [rewardModal, setRewardModal] = useState(false);
+  const [childModal, setChildModal] = useState(false);
 
   const displayName =
-    profile?.display_name ?? session?.user?.email ?? 'there';
+    profile?.display_name ?? session?.user?.email?.split('@')[0] ?? 'there';
   const familyId = family?.id ?? null;
 
   const load = useCallback(async () => {
@@ -66,28 +81,19 @@ export function ParentDashboard() {
     const { setAssignments, setChores } = useChoreStore.getState();
     const { setActivity } = useActivityStore.getState();
     const { setChildren } = useFamilyStore.getState();
-
-    const [assignRes, choreRes, activityRes, childrenRes] = await Promise.all([
+    const [a, c, act, kids] = await Promise.all([
       listAssignmentsForFamily(familyId),
       listChores(familyId),
       listActivity(familyId, 20),
       listChildren(familyId),
     ]);
+    if (a.success) setAssignments(a.data);
+    if (c.success) setChores(c.data);
+    if (act.success) setActivity(act.data);
+    if (kids.success) setChildren(kids.data);
+  }, [familyId]);
 
-    if (assignRes.success) setAssignments(assignRes.data);
-    if (choreRes.success) setChores(choreRes.data);
-    if (activityRes.success) setActivity(activityRes.data);
-    if (childrenRes.success) setChildren(childrenRes.data);
-
-    const firstError = [assignRes, choreRes, activityRes, childrenRes].find(
-      (r) => !r.success
-    );
-    if (firstError && !firstError.success) {
-      toast.show({ message: firstError.error, tone: 'error' });
-    }
-  }, [familyId, toast]);
-
-  useEffect(() => {
+  React.useEffect(() => {
     void load();
   }, [load]);
 
@@ -97,182 +103,229 @@ export function ParentDashboard() {
     setRefreshing(false);
   }, [load]);
 
-  const assignedCount = assignments.filter(
-    (a) => a.status === 'assigned'
-  ).length;
-  const completedCount = assignments.filter(
-    (a) => a.status === 'approved'
-  ).length;
-  const pendingCount = assignments.filter(
-    (a) => a.status === 'submitted'
-  ).length;
-  const totalPoints = children.reduce((sum, c) => sum + (c.points ?? 0), 0);
+  const pending = assignments.filter((a) => a.status === 'submitted');
+  const assignedCount = assignments.filter((a) => a.status === 'assigned').length;
+  const doneCount = assignments.filter((a) => a.status === 'approved').length;
+  const totalPoints = children.reduce((s, c) => s + (c.points ?? 0), 0);
+
+  const firstPending = pending[0];
+  const firstPendingChore = firstPending
+    ? chores.find((c) => c.id === firstPending.chore_id)
+    : undefined;
+  const firstPendingChild = firstPending
+    ? children.find((c) => c.id === firstPending.child_id)
+    : undefined;
 
   return (
-    <ScreenContainer
-      scroll
-      contentStyle={styles.content}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={C.pink}
-          colors={[C.pink]}
-        />
-      }
-    >
-      <Header
-        title={family?.name ?? 'Home'}
-        subtitle={`Hi, ${displayName}`}
-        avatarName={displayName}
-      />
-
-      <PendingApprovals
-        count={pendingCount}
-        onReview={() => nav.navigate('Chores')}
-      />
-
-      <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
-        Today's snapshot
-      </Text>
-      <View style={styles.statRow}>
-        <StatTile label="Assigned" value={assignedCount} tone="pink" icon="clipboard-outline" />
-        <StatTile label="Completed" value={completedCount} tone="green" icon="checkmark-circle-outline" />
-        <StatTile label="Points" value={totalPoints} tone="orange" icon="star-outline" />
-      </View>
-
-      <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
-        Quick actions
-      </Text>
-      <View style={styles.actionGrid}>
-        <QuickAction label="Add chore" icon="add-circle-outline" onPress={() => nav.navigate('Chores')} />
-        <QuickAction label="Create reward" icon="gift-outline" onPress={() => nav.navigate('Rewards')} />
-        <QuickAction label="View family" icon="people-outline" onPress={() => nav.navigate('Family')} />
-        <QuickAction label="Review requests" icon="checkbox-outline" onPress={() => nav.navigate('Chores')} badge={pendingCount} />
-      </View>
-
-      <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
-        Family progress
-      </Text>
-      {children.length === 0 ? (
-        <GlassCard style={styles.emptyCard}>
-          <Text style={styles.emptyText} maxFontSizeMultiplier={1.4}>
-            Add a child in the Family tab to start tracking progress.
-          </Text>
-        </GlassCard>
-      ) : (
-        <View style={styles.progressList}>
-          {children.map((child, index) => (
-            <ChildProgressCard
-              key={child.id}
-              child={child}
-              gradientIndex={index}
-              total={
-                assignments.filter((a) => a.child_id === child.id).length
-              }
-              done={
-                assignments.filter(
-                  (a) => a.child_id === child.id && a.status === 'approved'
-                ).length
-              }
-            />
-          ))}
+    <>
+      <ScreenContainer
+        scroll
+        contentStyle={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerText}>
+            <Text style={styles.dateLabel} maxFontSizeMultiplier={1.3}>
+              {weekday()} {greetingPeriod()}
+            </Text>
+            <Text style={styles.greeting} maxFontSizeMultiplier={1.4} numberOfLines={1}>
+              Hey <Text style={styles.greetingName}>{displayName}</Text>
+            </Text>
+            <Text style={styles.subGreeting} maxFontSizeMultiplier={1.3}>
+              {children.length} {children.length === 1 ? 'kid' : 'kids'}
+              {pending.length > 0
+                ? ` · ${pending.length} ${pending.length === 1 ? 'thing needs' : 'things need'} your eyes`
+                : ' · all caught up'}
+            </Text>
+          </View>
+          <View style={styles.headerActions}>
+            <Pressable
+              onPress={() => nav.navigate('Review')}
+              accessibilityRole="button"
+              accessibilityLabel="Review approvals"
+              style={({ pressed }) => [styles.bell, pressed && styles.pressed]}
+            >
+              <Ionicons name="notifications-outline" size={20} color={C.textDark} />
+              {pending.length > 0 ? <View style={styles.bellDot} /> : null}
+            </Pressable>
+            <Avatar name={displayName} size="md" />
+          </View>
         </View>
-      )}
-    </ScreenContainer>
+
+        {/* Approval hero */}
+        {pending.length > 0 ? (
+          <Pressable
+            onPress={() => nav.navigate('Review')}
+            accessibilityRole="button"
+            accessibilityLabel={`${pending.length} awaiting approval`}
+          >
+            <GradientCard colors={GRADIENTS.violet} style={styles.heroCard}>
+              <View style={styles.heroTop}>
+                <Text style={styles.heroLabel} maxFontSizeMultiplier={1.3}>
+                  AWAITING YOUR APPROVAL
+                </Text>
+                <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.9)" />
+              </View>
+              <View style={styles.heroBody}>
+                <Text style={styles.heroCount} maxFontSizeMultiplier={1.3}>
+                  {pending.length}
+                </Text>
+                <View style={styles.heroMeta}>
+                  <Text style={styles.heroChore} maxFontSizeMultiplier={1.3} numberOfLines={1}>
+                    {firstPendingChild?.name ?? 'A child'} ·{' '}
+                    {firstPendingChore?.title ?? 'a chore'}
+                  </Text>
+                  {pending.length > 1 ? (
+                    <Text style={styles.heroMore} maxFontSizeMultiplier={1.3}>
+                      +{pending.length - 1} more to review
+                    </Text>
+                  ) : null}
+                </View>
+              </View>
+            </GradientCard>
+          </Pressable>
+        ) : null}
+
+        {/* Today's snapshot */}
+        <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
+          Today's snapshot
+        </Text>
+        <View style={styles.snapshotRow}>
+          <SnapshotTile value={assignedCount} label="Assigned" tone="pink" />
+          <SnapshotTile value={doneCount} label="Done" tone="green" />
+          <SnapshotTile value={totalPoints} label="Points" tone="orange" />
+        </View>
+
+        {/* Quick actions */}
+        <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
+          Quick actions
+        </Text>
+        <View style={styles.actionGrid}>
+          <QuickAction
+            label="Add Chore"
+            icon="add"
+            bg={C.pink}
+            onPress={() => setChoreModal(true)}
+          />
+          <QuickAction
+            label="New Reward"
+            icon="gift"
+            bg="#4D9FFF"
+            onPress={() => setRewardModal(true)}
+          />
+          <QuickAction
+            label="Add Kid"
+            icon="person-add"
+            bg={C.green}
+            onPress={() => setChildModal(true)}
+          />
+          <QuickAction
+            label="Set Goal"
+            icon="trophy"
+            bg="#FFB020"
+            onPress={() =>
+              toast.show({ message: 'Goals are coming soon.', tone: 'info' })
+            }
+          />
+        </View>
+
+        {/* Family progress */}
+        <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
+          Family progress
+        </Text>
+        {children.length === 0 ? (
+          <Pressable
+            onPress={() => setChildModal(true)}
+            style={({ pressed }) => [styles.emptyKids, pressed && styles.pressed]}
+          >
+            <Text style={styles.emptyKidsText} maxFontSizeMultiplier={1.4}>
+              Add your first child to track progress here.
+            </Text>
+          </Pressable>
+        ) : (
+          <View style={styles.kidList}>
+            {children.map((child, index) => (
+              <KidProgress
+                key={child.id}
+                child={child}
+                gradientIndex={index}
+                total={assignments.filter((a) => a.child_id === child.id).length}
+                done={
+                  assignments.filter(
+                    (a) => a.child_id === child.id && a.status === 'approved'
+                  ).length
+                }
+              />
+            ))}
+          </View>
+        )}
+      </ScreenContainer>
+
+      <CreateChoreModal
+        visible={choreModal}
+        onClose={() => setChoreModal(false)}
+        onCreated={load}
+      />
+      <CreateRewardModal
+        visible={rewardModal}
+        onClose={() => setRewardModal(false)}
+        onCreated={load}
+      />
+      <AddChildModal
+        visible={childModal}
+        onClose={() => setChildModal(false)}
+        onAdded={load}
+      />
+    </>
   );
 }
 
 // ---------------------------------------------------------------------------
 
-interface PendingApprovalsProps {
-  count: number;
-  onReview: () => void;
-}
-
-function PendingApprovals({ count, onReview }: PendingApprovalsProps) {
-  const { C } = useTheme();
-  const styles = useThemedStyles(makeStyles);
-  const caughtUp = count === 0;
-  return (
-    <GlassCard
-      tint={caughtUp ? 'green' : 'pink'}
-      style={styles.pendingCard}
-    >
-      <View style={styles.pendingRow}>
-        <View style={styles.pendingIcon}>
-          <Ionicons
-            name={caughtUp ? 'checkmark-done-outline' : 'notifications-outline'}
-            size={22}
-            color={caughtUp ? C.green : C.pink}
-          />
-        </View>
-        <View style={styles.pendingMeta}>
-          <Text style={styles.pendingTitle} maxFontSizeMultiplier={1.4}>
-            {caughtUp ? 'All caught up' : 'Pending approvals'}
-          </Text>
-          <Text style={styles.pendingBody} maxFontSizeMultiplier={1.4}>
-            {caughtUp
-              ? 'No chores waiting on you right now.'
-              : `${count} chore${count === 1 ? '' : 's'} waiting for your review.`}
-          </Text>
-        </View>
-        {!caughtUp ? (
-          <Pressable
-            onPress={onReview}
-            accessibilityRole="button"
-            accessibilityLabel="Review pending approvals"
-            hitSlop={8}
-            style={({ pressed }) => [styles.reviewBtn, pressed && styles.pressed]}
-          >
-            <Text style={styles.reviewText} maxFontSizeMultiplier={1.3}>
-              Review
-            </Text>
-          </Pressable>
-        ) : null}
-      </View>
-    </GlassCard>
-  );
-}
-
-interface StatTileProps {
-  label: string;
+function SnapshotTile({
+  value,
+  label,
+  tone,
+}: {
   value: number;
+  label: string;
   tone: 'pink' | 'green' | 'orange';
-  icon: IoniconName;
-}
-
-function StatTile({ label, value, tone, icon }: StatTileProps) {
+}) {
   const { C } = useTheme();
   const styles = useThemedStyles(makeStyles);
-  const statColor =
-    tone === 'pink' ? C.pink : tone === 'green' ? C.green : C.orange;
+  const bg =
+    tone === 'pink'
+      ? C.pinkAlpha10
+      : tone === 'green'
+        ? C.greenAlpha15
+        : C.orangeAlpha10;
+  const color = tone === 'pink' ? C.pink : tone === 'green' ? C.green : C.orange;
   return (
-    <GlassCard padding={spacing.s12} style={styles.statTile}>
-      <Ionicons name={icon} size={18} color={statColor} />
-      <Text
-        style={[styles.statValue, { color: statColor }]}
-        maxFontSizeMultiplier={1.4}
-        numberOfLines={1}
-      >
+    <View style={[styles.snapTile, { backgroundColor: bg }]}>
+      <Text style={[styles.snapValue, { color }]} maxFontSizeMultiplier={1.3}>
         {value}
       </Text>
-      <Text style={styles.statLabel} maxFontSizeMultiplier={1.3} numberOfLines={1}>
+      <Text style={styles.snapLabel} maxFontSizeMultiplier={1.2} numberOfLines={1}>
         {label}
       </Text>
-    </GlassCard>
+    </View>
   );
 }
 
-interface QuickActionProps {
+function QuickAction({
+  label,
+  icon,
+  bg,
+  onPress,
+}: {
   label: string;
   icon: IoniconName;
+  bg: string;
   onPress: () => void;
-  badge?: number;
-}
-
-function QuickAction({ label, icon, onPress, badge }: QuickActionProps) {
-  const { C } = useTheme();
+}) {
   const styles = useThemedStyles(makeStyles);
   return (
     <Pressable
@@ -281,230 +334,311 @@ function QuickAction({ label, icon, onPress, badge }: QuickActionProps) {
       accessibilityLabel={label}
       style={({ pressed }) => [styles.actionItem, pressed && styles.pressed]}
     >
-      <GlassCard padding={spacing.s16} style={styles.actionCard}>
-        <View style={styles.actionIconWrap}>
-          <Ionicons name={icon} size={22} color={C.pink} />
-          {badge !== undefined && badge > 0 ? (
-            <View style={styles.actionBadge}>
-              <Text style={styles.actionBadgeText} maxFontSizeMultiplier={1.2}>
-                {badge}
-              </Text>
-            </View>
-          ) : null}
-        </View>
-        <Text style={styles.actionLabel} maxFontSizeMultiplier={1.3} numberOfLines={1}>
-          {label}
-        </Text>
-      </GlassCard>
+      <View style={[styles.actionIcon, { backgroundColor: bg }]}>
+        <Ionicons name={icon} size={20} color="#FFFFFF" />
+      </View>
+      <Text style={styles.actionLabel} maxFontSizeMultiplier={1.3} numberOfLines={2}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
 
-interface ChildProgressCardProps {
-  child: Child;
-  gradientIndex: number;
-  total: number;
-  done: number;
-}
-
-function ChildProgressCard({
+function KidProgress({
   child,
   gradientIndex,
   total,
   done,
-}: ChildProgressCardProps) {
+}: {
+  child: Child;
+  gradientIndex: number;
+  total: number;
+  done: number;
+}) {
   const styles = useThemedStyles(makeStyles);
   const ratio = total > 0 ? done / total : 0;
+  const gradient = AVATAR_GRADIENTS[gradientIndex % AVATAR_GRADIENTS.length];
+  const ageLabel = ageFromDob(child.date_of_birth);
+
   return (
-    <GlassCard padding={spacing.s12} style={styles.progressCard}>
-      <View style={styles.progressRow}>
+    <View style={styles.kidCard}>
+      <View style={styles.kidTop}>
         <Avatar name={child.name} gradientIndex={gradientIndex} size="md" />
-        <View style={styles.progressMeta}>
-          <Text style={styles.progressName} maxFontSizeMultiplier={1.4} numberOfLines={1}>
+        <View style={styles.kidMeta}>
+          <Text style={styles.kidName} maxFontSizeMultiplier={1.3} numberOfLines={1}>
             {child.name}
-          </Text>
-          <View style={styles.progressSub}>
-            <PointsBadge points={child.points ?? 0} size="sm" />
-            {(child.streak_days ?? 0) > 0 ? (
-              <Text style={styles.streak} maxFontSizeMultiplier={1.3}>
-                🔥 {child.streak_days}d
-              </Text>
+            {ageLabel !== null ? (
+              <Text style={styles.kidAge}>  ·  age {ageLabel}</Text>
             ) : null}
-          </View>
+          </Text>
+          <Text style={styles.kidSub} maxFontSizeMultiplier={1.3}>
+            {done}/{total} chores today
+            {(child.streak_days ?? 0) > 0 ? ` · ${child.streak_days}🔥` : ''}
+          </Text>
         </View>
-        <ProgressRing
-          value={ratio}
-          size={52}
-          strokeWidth={6}
-          color="gradient"
-          centerLabel={
-            <Text style={styles.ringLabel} maxFontSizeMultiplier={1.2}>
-              {done}/{total}
-            </Text>
-          }
+        <View style={styles.kidPoints}>
+          <Text style={styles.kidPointsValue} maxFontSizeMultiplier={1.2}>
+            {child.points ?? 0}
+          </Text>
+          <Text style={styles.kidPointsLabel} maxFontSizeMultiplier={1.1}>
+            POINTS
+          </Text>
+        </View>
+      </View>
+      <View style={styles.barTrack}>
+        <LinearGradient
+          colors={gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.barFill, { width: `${Math.round(ratio * 100)}%` }]}
         />
       </View>
-    </GlassCard>
+    </View>
   );
+}
+
+function ageFromDob(dob: string | null): number | null {
+  if (dob === null || dob === '') return null;
+  const d = new Date(`${dob}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
+  return age;
 }
 
 const makeStyles = (C: Palette) =>
   StyleSheet.create({
-  content: {
-    paddingBottom: TAB_BAR_CLEARANCE,
-  },
-  pressed: {
-    transform: [{ scale: 0.97 }],
-    opacity: 0.9,
-  },
-  sectionTitle: {
-    ...typography.title,
-    color: C.textDark,
-    marginTop: spacing.s24,
-    marginBottom: spacing.s12,
-  },
-  // Pending approvals
-  pendingCard: {
-    marginTop: spacing.s8,
-  },
-  pendingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.s12,
-  },
-  pendingIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radii.rFull,
-    backgroundColor: C.glass,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pendingMeta: {
-    flex: 1,
-  },
-  pendingTitle: {
-    ...typography.title,
-    fontSize: 16,
-    color: C.textDark,
-  },
-  pendingBody: {
-    ...typography.caption,
-    color: C.textMid,
-    marginTop: 2,
-  },
-  reviewBtn: {
-    paddingHorizontal: spacing.s16,
-    paddingVertical: spacing.s8,
-    borderRadius: radii.rFull,
-    backgroundColor: C.pink,
-  },
-  reviewText: {
-    ...typography.button,
-    color: C.textWhite,
-  },
-  // Stat tiles
-  statRow: {
-    flexDirection: 'row',
-    gap: spacing.s12,
-  },
-  statTile: {
-    flex: 1,
-    alignItems: 'flex-start',
-  },
-  statValue: {
-    ...typography.heroNum,
-    fontSize: 28,
-    marginTop: spacing.s4,
-  },
-  statLabel: {
-    ...typography.caption,
-    color: C.textMid,
-  },
-  // Quick actions
-  actionGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.s12,
-  },
-  actionItem: {
-    width: '47.5%',
-    flexGrow: 1,
-  },
-  actionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.s12,
-  },
-  actionIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: radii.rFull,
-    backgroundColor: C.pinkAlpha10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    minWidth: 18,
-    height: 18,
-    paddingHorizontal: 4,
-    borderRadius: radii.rFull,
-    backgroundColor: C.pink,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionBadgeText: {
-    ...typography.caption,
-    fontSize: 10,
-    color: C.textWhite,
-    fontFamily: 'DMSans_700Bold',
-  },
-  actionLabel: {
-    ...typography.button,
-    color: C.textDark,
-    flexShrink: 1,
-  },
-  // Family progress
-  progressList: {
-    gap: spacing.s12,
-  },
-  progressCard: {},
-  progressRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.s12,
-  },
-  progressMeta: {
-    flex: 1,
-  },
-  progressName: {
-    ...typography.title,
-    fontSize: 16,
-    color: C.textDark,
-  },
-  progressSub: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.s8,
-    marginTop: spacing.s4,
-  },
-  streak: {
-    ...typography.caption,
-    color: C.textMid,
-  },
-  ringLabel: {
-    ...typography.caption,
-    fontSize: 11,
-    color: C.textDark,
-    fontFamily: 'DMSans_700Bold',
-  },
-  emptyCard: {},
-  emptyText: {
-    ...typography.body,
-    color: C.textMid,
-    textAlign: 'center',
-  },
-});
+    content: {
+      paddingBottom: TAB_BAR_CLEARANCE,
+    },
+    pressed: {
+      opacity: 0.85,
+      transform: [{ scale: 0.98 }],
+    },
+    // Header
+    header: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      paddingTop: spacing.s8,
+      marginBottom: spacing.s16,
+    },
+    headerText: {
+      flex: 1,
+    },
+    dateLabel: {
+      ...typography.caption,
+      color: C.textMid,
+      letterSpacing: 1,
+      marginBottom: 2,
+    },
+    greeting: {
+      ...typography.headline,
+      fontSize: 28,
+      color: C.textDark,
+    },
+    greetingName: {
+      color: C.pink,
+    },
+    subGreeting: {
+      ...typography.caption,
+      color: C.textMid,
+      marginTop: 2,
+    },
+    headerActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.s8,
+    },
+    bell: {
+      width: 40,
+      height: 40,
+      borderRadius: radii.rFull,
+      backgroundColor: C.glass,
+      borderWidth: 1,
+      borderColor: C.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    bellDot: {
+      position: 'absolute',
+      top: 9,
+      right: 10,
+      width: 8,
+      height: 8,
+      borderRadius: radii.rFull,
+      backgroundColor: C.pink,
+      borderWidth: 2,
+      borderColor: C.bg,
+    },
+    // Hero
+    heroCard: {
+      marginBottom: spacing.s8,
+    },
+    heroTop: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    heroLabel: {
+      ...typography.caption,
+      color: 'rgba(255,255,255,0.85)',
+      letterSpacing: 1,
+    },
+    heroBody: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.s16,
+      marginTop: spacing.s12,
+    },
+    heroCount: {
+      ...typography.heroNum,
+      fontSize: 52,
+      color: '#FFFFFF',
+    },
+    heroMeta: {
+      flex: 1,
+    },
+    heroChore: {
+      ...typography.title,
+      fontSize: 17,
+      color: '#FFFFFF',
+    },
+    heroMore: {
+      ...typography.caption,
+      color: 'rgba(255,255,255,0.85)',
+      marginTop: 2,
+    },
+    // Sections
+    sectionTitle: {
+      ...typography.title,
+      color: C.textDark,
+      marginTop: spacing.s24,
+      marginBottom: spacing.s12,
+    },
+    // Snapshot
+    snapshotRow: {
+      flexDirection: 'row',
+      gap: spacing.s12,
+    },
+    snapTile: {
+      flex: 1,
+      borderRadius: radii.r18,
+      paddingVertical: spacing.s16,
+      paddingHorizontal: spacing.s12,
+      alignItems: 'flex-start',
+    },
+    snapValue: {
+      ...typography.heroNum,
+      fontSize: 30,
+    },
+    snapLabel: {
+      ...typography.caption,
+      color: C.textMid,
+      textTransform: 'uppercase',
+      letterSpacing: 0.6,
+      marginTop: spacing.s4,
+    },
+    // Quick actions
+    actionGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.s12,
+    },
+    actionItem: {
+      width: '47.5%',
+      flexGrow: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.s12,
+      backgroundColor: C.glass,
+      borderRadius: radii.r18,
+      borderWidth: 1,
+      borderColor: C.border,
+      padding: spacing.s12,
+    },
+    actionIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: radii.r12,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    actionLabel: {
+      ...typography.button,
+      color: C.textDark,
+      flexShrink: 1,
+    },
+    // Empty kids
+    emptyKids: {
+      backgroundColor: C.glass,
+      borderRadius: radii.r18,
+      borderWidth: 1,
+      borderColor: C.border,
+      padding: spacing.s20,
+    },
+    emptyKidsText: {
+      ...typography.body,
+      color: C.textMid,
+      textAlign: 'center',
+    },
+    // Kid progress
+    kidList: {
+      gap: spacing.s12,
+    },
+    kidCard: {
+      backgroundColor: C.glass,
+      borderRadius: radii.r18,
+      borderWidth: 1,
+      borderColor: C.border,
+      padding: spacing.s16,
+    },
+    kidTop: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.s12,
+      marginBottom: spacing.s12,
+    },
+    kidMeta: {
+      flex: 1,
+    },
+    kidName: {
+      ...typography.title,
+      fontSize: 16,
+      color: C.textDark,
+    },
+    kidAge: {
+      ...typography.caption,
+      color: C.textMid,
+    },
+    kidSub: {
+      ...typography.caption,
+      color: C.textMid,
+      marginTop: 2,
+    },
+    kidPoints: {
+      alignItems: 'flex-end',
+    },
+    kidPointsValue: {
+      ...typography.title,
+      fontSize: 20,
+      color: C.textDark,
+    },
+    kidPointsLabel: {
+      ...typography.caption,
+      fontSize: 10,
+      color: C.textMid,
+      letterSpacing: 0.6,
+    },
+    barTrack: {
+      height: 8,
+      borderRadius: radii.rFull,
+      backgroundColor: C.mutedAlpha20,
+      overflow: 'hidden',
+    },
+    barFill: {
+      height: 8,
+      borderRadius: radii.rFull,
+    },
+  });

@@ -4,6 +4,7 @@ export {
   lightC,
   darkC,
   AVATAR_GRADIENTS,
+  GRADIENTS,
   radii,
   shadows,
   spacing,

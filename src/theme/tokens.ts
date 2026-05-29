@@ -106,6 +106,14 @@ export const AVATAR_GRADIENTS: ReadonlyArray<readonly [string, string]> = [
   ['#A742FF', '#FF4D8D'], // Purple -> Pink   (child 5)
 ] as const;
 
+// Named gradients for hero cards and primary CTAs. Mode-invariant brand colors
+// (they read well on both light and dark grounds).
+export const GRADIENTS = {
+  brand: ['#FF4D8D', '#FF8C42'] as const, // pink → orange (primary CTAs, approve)
+  violet: ['#7A5CFF', '#4D9FFF'] as const, // purple → blue (approval hero)
+  sky: ['#4D9FFF', '#8C42FF'] as const, // blue → purple
+} as const;
+
 // ---------------------------------------------------------------------------
 // Border radius scale
 // ---------------------------------------------------------------------------

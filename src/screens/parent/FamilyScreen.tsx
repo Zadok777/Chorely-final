@@ -1,5 +1,13 @@
 import React, { useCallback, useState } from 'react';
-import { Alert, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  RefreshControl,
+  Share,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -9,9 +17,10 @@ import { AddChildModal } from '../../components/modals/AddChildModal';
 import { Avatar } from '../../components/ui/Avatar';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { GlassCard } from '../../components/ui/GlassCard';
-import { PointsBadge } from '../../components/ui/PointsBadge';
 import { useToast } from '../../components/ui/Toast';
+import { listActivity } from '../../services/activity';
 import { deleteChild, listChildren } from '../../services/children';
+import { useActivityStore } from '../../store/activityStore';
 import { useFamilyStore } from '../../store/familyStore';
 import {
   radii,
@@ -21,8 +30,29 @@ import {
   useThemedStyles,
   type Palette,
 } from '../../theme';
-import type { Child } from '../../types/app.types';
+import type { ActivityLog, Child } from '../../types/app.types';
+import { formatRelativeTime } from '../../utils/date';
 import { TAB_BAR_CLEARANCE } from './layout';
+
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+function bracketLabel(age: number | null): string | null {
+  if (age === null) return null;
+  if (age <= 10) return 'Elementary';
+  if (age <= 14) return 'Middle School';
+  return 'High School';
+}
+
+function ageFromDob(dob: string | null): number | null {
+  if (dob === null || dob === '') return null;
+  const d = new Date(`${dob}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
+  return age;
+}
 
 export function FamilyScreen() {
   const toast = useToast();
@@ -30,6 +60,7 @@ export function FamilyScreen() {
   const styles = useThemedStyles(makeStyles);
   const family = useFamilyStore((s) => s.family);
   const children = useFamilyStore((s) => s.children);
+  const activity = useActivityStore((s) => s.activity);
 
   const [refreshing, setRefreshing] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
@@ -38,8 +69,12 @@ export function FamilyScreen() {
 
   const load = useCallback(async () => {
     if (familyId === null) return;
-    const res = await listChildren(familyId);
-    if (res.success) useFamilyStore.getState().setChildren(res.data);
+    const [kids, act] = await Promise.all([
+      listChildren(familyId),
+      listActivity(familyId, 12),
+    ]);
+    if (kids.success) useFamilyStore.getState().setChildren(kids.data);
+    if (act.success) useActivityStore.getState().setActivity(act.data);
   }, [familyId]);
 
   useFocusEffect(
@@ -53,6 +88,17 @@ export function FamilyScreen() {
     await load();
     setRefreshing(false);
   }, [load]);
+
+  const onShare = async () => {
+    if (family?.invite_code == null) return;
+    try {
+      await Share.share({
+        message: `Join our family on Chorely! Use invite code ${family.invite_code}.`,
+      });
+    } catch {
+      // user dismissed share sheet — no-op
+    }
+  };
 
   const confirmRemove = (child: Child) => {
     Alert.alert(
@@ -77,6 +123,18 @@ export function FamilyScreen() {
     );
   };
 
+  const thisWeekPoints = (childId: string): number => {
+    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return activity
+      .filter(
+        (a) =>
+          a.child_id === childId &&
+          (a.point_value ?? 0) > 0 &&
+          new Date(a.created_at ?? '').getTime() >= weekAgo
+      )
+      .reduce((sum, a) => sum + (a.point_value ?? 0), 0);
+  };
+
   return (
     <>
       <ScreenContainer
@@ -87,8 +145,8 @@ export function FamilyScreen() {
         }
       >
         <Header
-          title={family?.name ?? 'Family'}
-          subtitle="Your family"
+          title="Family"
+          subtitle={`${children.length} ${children.length === 1 ? 'kid' : 'kids'}${family?.name != null ? ` · ${family.name}` : ''}`}
           actions={[
             {
               iconName: 'person-add',
@@ -101,19 +159,32 @@ export function FamilyScreen() {
         {family?.invite_code != null ? (
           <GlassCard tint="pink" style={styles.inviteCard}>
             <View style={styles.inviteRow}>
-              <Ionicons name="key-outline" size={18} color={C.pink} />
               <View style={styles.inviteMeta}>
                 <Text style={styles.inviteLabel} maxFontSizeMultiplier={1.3}>
-                  Family invite code
+                  FAMILY INVITE CODE
                 </Text>
                 <Text style={styles.inviteCode} maxFontSizeMultiplier={1.3}>
                   {family.invite_code}
                 </Text>
               </View>
+              <Pressable
+                onPress={onShare}
+                accessibilityRole="button"
+                accessibilityLabel="Share invite code"
+                style={({ pressed }) => [styles.shareBtn, pressed && styles.pressed]}
+              >
+                <Ionicons name="share-social" size={15} color={C.textWhite} />
+                <Text style={styles.shareText} maxFontSizeMultiplier={1.2}>
+                  Share
+                </Text>
+              </Pressable>
             </View>
           </GlassCard>
         ) : null}
 
+        <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
+          Kids
+        </Text>
         {children.length === 0 ? (
           <EmptyState
             icon="happy-outline"
@@ -124,48 +195,67 @@ export function FamilyScreen() {
           />
         ) : (
           <View style={styles.list}>
-            {children.map((child, index) => (
-              <GlassCard
-                key={child.id}
-                padding={spacing.s12}
-                style={styles.card}
-              >
-                <View style={styles.row}>
-                  <Avatar name={child.name} gradientIndex={index} size="md" />
-                  <View style={styles.meta}>
-                    <Text
-                      style={styles.name}
-                      maxFontSizeMultiplier={1.4}
-                      numberOfLines={1}
-                    >
-                      {child.name}
-                    </Text>
-                    <View style={styles.subRow}>
-                      <PointsBadge points={child.points ?? 0} size="sm" />
-                      {(child.streak_days ?? 0) > 0 ? (
-                        <Text style={styles.streak} maxFontSizeMultiplier={1.3}>
-                          🔥 {child.streak_days}d
+            {children.map((child, index) => {
+              const age = ageFromDob(child.date_of_birth);
+              const bracket = bracketLabel(age);
+              return (
+                <GlassCard key={child.id} style={styles.kidCard}>
+                  <View style={styles.kidTop}>
+                    <Avatar name={child.name} gradientIndex={index} size="md" />
+                    <View style={styles.kidMeta}>
+                      <Text
+                        style={styles.kidName}
+                        maxFontSizeMultiplier={1.3}
+                        numberOfLines={1}
+                      >
+                        {child.name}
+                      </Text>
+                      {age !== null ? (
+                        <Text style={styles.kidSub} maxFontSizeMultiplier={1.3}>
+                          Age {age}
+                          {bracket !== null ? ` · ${bracket}` : ''}
                         </Text>
                       ) : null}
                     </View>
+                    <Pressable
+                      onPress={() => confirmRemove(child)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Manage ${child.name}`}
+                      hitSlop={8}
+                      style={({ pressed }) => [pressed && styles.pressed]}
+                    >
+                      <Ionicons name="settings-outline" size={18} color={C.textLight} />
+                    </Pressable>
                   </View>
-                  <Pressable
-                    onPress={() => confirmRemove(child)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Remove ${child.name}`}
-                    hitSlop={8}
-                    style={({ pressed }) => [
-                      styles.removeBtn,
-                      pressed && styles.pressed,
-                    ]}
-                  >
-                    <Ionicons name="trash-outline" size={18} color={C.textMid} />
-                  </Pressable>
-                </View>
-              </GlassCard>
-            ))}
+                  <View style={styles.statRow}>
+                    <MiniStat label="POINTS" value={child.points ?? 0} tone="pink" />
+                    <MiniStat label="STREAK" value={`${child.streak_days ?? 0}d`} tone="orange" />
+                    <MiniStat label="THIS WK" value={thisWeekPoints(child.id)} tone="green" />
+                  </View>
+                </GlassCard>
+              );
+            })}
           </View>
         )}
+
+        {activity.length > 0 ? (
+          <>
+            <Text style={styles.sectionTitle} maxFontSizeMultiplier={1.5}>
+              Recent activity
+            </Text>
+            <View style={styles.list}>
+              {activity.slice(0, 8).map((entry) => (
+                <ActivityRow
+                  key={entry.id}
+                  entry={entry}
+                  childName={
+                    children.find((c) => c.id === entry.child_id)?.name ?? null
+                  }
+                />
+              ))}
+            </View>
+          </>
+        ) : null}
       </ScreenContainer>
 
       <AddChildModal
@@ -177,10 +267,108 @@ export function FamilyScreen() {
   );
 }
 
+// ---------------------------------------------------------------------------
+
+function MiniStat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number | string;
+  tone: 'pink' | 'orange' | 'green';
+}) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const bg =
+    tone === 'pink'
+      ? C.pinkAlpha10
+      : tone === 'orange'
+        ? C.orangeAlpha10
+        : C.greenAlpha15;
+  const color = tone === 'pink' ? C.pink : tone === 'orange' ? C.orange : C.green;
+  return (
+    <View style={[styles.miniStat, { backgroundColor: bg }]}>
+      <Text style={styles.miniLabel} maxFontSizeMultiplier={1.1} numberOfLines={1}>
+        {label}
+      </Text>
+      <Text style={[styles.miniValue, { color }]} maxFontSizeMultiplier={1.2}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
+const ACTIVITY_VISUAL: Record<string, { icon: IoniconName; tone: 'pink' | 'green' | 'orange' }> = {
+  chore_completed: { icon: 'checkmark-circle', tone: 'green' },
+  chore_approved: { icon: 'checkmark-circle', tone: 'green' },
+  chore_rejected: { icon: 'refresh', tone: 'orange' },
+  reward_redeemed: { icon: 'gift', tone: 'pink' },
+  points_earned: { icon: 'star', tone: 'orange' },
+  child_added: { icon: 'person-add', tone: 'pink' },
+  chore_created: { icon: 'list', tone: 'orange' },
+};
+
+function ActivityRow({
+  entry,
+  childName,
+}: {
+  entry: ActivityLog;
+  childName: string | null;
+}) {
+  const { C } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const visual = ACTIVITY_VISUAL[entry.type ?? ''] ?? {
+    icon: 'ellipse' as IoniconName,
+    tone: 'pink' as const,
+  };
+  const bg =
+    visual.tone === 'pink'
+      ? C.pinkAlpha10
+      : visual.tone === 'green'
+        ? C.greenAlpha15
+        : C.orangeAlpha10;
+  const iconColor =
+    visual.tone === 'pink' ? C.pink : visual.tone === 'green' ? C.green : C.orange;
+  const pts = entry.point_value ?? 0;
+
+  return (
+    <GlassCard padding={spacing.s12}>
+      <View style={styles.activityRow}>
+        <View style={[styles.activityIcon, { backgroundColor: bg }]}>
+          <Ionicons name={visual.icon} size={16} color={iconColor} />
+        </View>
+        <View style={styles.activityMeta}>
+          <Text style={styles.activityTitle} maxFontSizeMultiplier={1.3} numberOfLines={1}>
+            {childName !== null ? `${childName} · ` : ''}
+            {entry.title ?? entry.type ?? 'Activity'}
+          </Text>
+          <Text style={styles.activityTime} maxFontSizeMultiplier={1.2}>
+            {formatRelativeTime(entry.created_at)}
+          </Text>
+        </View>
+        {pts !== 0 ? (
+          <Text
+            style={[styles.activityPts, { color: pts > 0 ? C.green : C.textMid }]}
+            maxFontSizeMultiplier={1.2}
+          >
+            {pts > 0 ? '+' : ''}
+            {pts}
+          </Text>
+        ) : null}
+      </View>
+    </GlassCard>
+  );
+}
+
 const makeStyles = (C: Palette) =>
   StyleSheet.create({
     content: {
       paddingBottom: TAB_BAR_CLEARANCE,
+    },
+    pressed: {
+      opacity: 0.8,
+      transform: [{ scale: 0.96 }],
     },
     inviteCard: {
       marginTop: spacing.s8,
@@ -196,54 +384,107 @@ const makeStyles = (C: Palette) =>
     inviteLabel: {
       ...typography.caption,
       color: C.textMid,
+      letterSpacing: 0.8,
     },
     inviteCode: {
       ...typography.title,
-      fontSize: 18,
-      color: C.textDark,
-      letterSpacing: 1.5,
+      fontSize: 22,
+      color: C.pink,
+      letterSpacing: 2,
       marginTop: 2,
+    },
+    shareBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.s4,
+      backgroundColor: '#4D9FFF',
+      paddingHorizontal: spacing.s16,
+      paddingVertical: spacing.s8,
+      borderRadius: radii.rFull,
+    },
+    shareText: {
+      ...typography.button,
+      fontSize: 13,
+      color: C.textWhite,
+    },
+    sectionTitle: {
+      ...typography.title,
+      color: C.textDark,
+      marginTop: spacing.s24,
+      marginBottom: spacing.s12,
     },
     list: {
       gap: spacing.s12,
-      marginTop: spacing.s16,
     },
-    card: {},
-    row: {
+    kidCard: {},
+    kidTop: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.s12,
     },
-    meta: {
+    kidMeta: {
       flex: 1,
     },
-    name: {
+    kidName: {
       ...typography.title,
       fontSize: 16,
       color: C.textDark,
     },
-    subRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.s8,
-      marginTop: spacing.s4,
-    },
-    streak: {
+    kidSub: {
       ...typography.caption,
       color: C.textMid,
+      marginTop: 2,
     },
-    removeBtn: {
-      width: 40,
-      height: 40,
+    statRow: {
+      flexDirection: 'row',
+      gap: spacing.s8,
+      marginTop: spacing.s12,
+    },
+    miniStat: {
+      flex: 1,
+      borderRadius: radii.r12,
+      paddingVertical: spacing.s8,
+      paddingHorizontal: spacing.s8,
+      alignItems: 'flex-start',
+    },
+    miniLabel: {
+      ...typography.caption,
+      fontSize: 10,
+      color: C.textMid,
+      letterSpacing: 0.5,
+    },
+    miniValue: {
+      ...typography.title,
+      fontSize: 18,
+      marginTop: 2,
+    },
+    activityRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.s12,
+    },
+    activityIcon: {
+      width: 36,
+      height: 36,
       borderRadius: radii.rFull,
-      backgroundColor: C.glassLight,
-      borderWidth: 1,
-      borderColor: C.border,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    pressed: {
-      transform: [{ scale: 0.94 }],
-      opacity: 0.85,
+    activityMeta: {
+      flex: 1,
+    },
+    activityTitle: {
+      ...typography.body,
+      color: C.textDark,
+      fontFamily: 'DMSans_600SemiBold',
+    },
+    activityTime: {
+      ...typography.caption,
+      color: C.textMid,
+      marginTop: 2,
+    },
+    activityPts: {
+      ...typography.title,
+      fontSize: 15,
     },
   });

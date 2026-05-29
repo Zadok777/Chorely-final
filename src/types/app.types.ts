@@ -63,17 +63,20 @@ export type RootStackParamList = {
   // The signed-in, onboarded shell. Hosts the bottom-tab navigator.
   Main: NavigatorScreenParams<MainTabParamList> | undefined;
 
-  // Dev-only — reachable from Settings for visual review.
-  // Removed once Phase 5+ screens render every component in real contexts.
+  // Reward catalog — pushed from the More tab (not a top-level tab, matching
+  // the prototype where rewards live under More).
+  Rewards: undefined;
+
+  // Dev-only — reachable from More for visual review.
   Showcase: undefined;
 };
 
-// Bottom-tab routes inside the Main shell. Home is a minimal real screen in
-// Batch 2; the rest are stubs filled in by their respective phases.
+// Bottom-tab routes inside the Main shell (parent navigation), matching the
+// Lumina Bloom prototype: Home / Review / Chores / Family / More.
 export type MainTabParamList = {
   Home: undefined;
+  Review: undefined;
   Chores: undefined;
-  Rewards: undefined;
   Family: undefined;
-  Settings: undefined;
+  More: undefined;
 };
