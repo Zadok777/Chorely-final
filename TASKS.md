@@ -244,7 +244,8 @@ Aligned the parent app to the prototype screenshots (the original design intent)
 - [ ] Strip all `console.log`
 - [ ] COPPA audit (no PII prompts for children data)
 - [ ] Verify RLS policies block cross-family reads (test with two accounts)
-- [ ] Replace placeholder app icons + add missing Android adaptive-icon assets (app.json)
+- [x] Replace placeholder app icons + add missing Android adaptive-icon assets (2026-05-29): branded Chorely smiley generated via `scripts/gen-icons.py` (icon/adaptive fg+bg+mono/splash logo/favicon); expo-doctor config-schema check now passes.
+- [ ] Install `expo-asset` peer dep (`npx expo install expo-asset`) — flagged by expo-doctor (needed by expo-audio for non-Expo-Go builds); + resolve minor expo/expo-font patch drift via `npx expo install --check`
 - [ ] Decide on `ProgressBar` primitive (still unused — wire in or remove); `SkeletonLoader`/`SkeletonRow` now wired into all list screens
 - [ ] EAS build → TestFlight + Google internal track
 
