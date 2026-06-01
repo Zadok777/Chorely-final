@@ -58,7 +58,7 @@ export function ForgotPasswordScreen() {
       toast.show({ message: res.error, tone: 'error', duration: 5000 });
       return;
     }
-    toast.show({ message: 'Check your email for a 6-digit code.', tone: 'success' });
+    toast.show({ message: 'Check your email for a code.', tone: 'success' });
     nav.navigate('ResetPassword', { email });
   };
 
@@ -68,7 +68,7 @@ export function ForgotPasswordScreen() {
 
       <View style={styles.intro}>
         <Text style={styles.helper} maxFontSizeMultiplier={1.5}>
-          Enter your email and we&apos;ll send you a 6-digit code to reset your
+          Enter your email and we&apos;ll send you a code to reset your
           password.
         </Text>
       </View>

@@ -31,8 +31,8 @@ const schema = yup.object({
   token: yup
     .string()
     .trim()
-    .required('Enter the 6-digit code')
-    .min(6, 'The code is 6 digits'),
+    .required('Enter the code from your email')
+    .min(6, 'Enter the full code from your email'),
   password: yup
     .string()
     .required('Choose a new password')
@@ -99,7 +99,7 @@ export function ResetPasswordScreen() {
 
       <View style={styles.intro}>
         <Text style={styles.helper} maxFontSizeMultiplier={1.5}>
-          We sent a 6-digit code to {email}. Enter it below with your new
+          We sent a code to {email}. Enter the full code below with your new
           password.
         </Text>
       </View>
@@ -110,15 +110,15 @@ export function ResetPasswordScreen() {
           control={control}
           render={({ field }) => (
             <Input
-              label="6-digit code"
-              placeholder="123456"
+              label="Code from email"
+              placeholder="Enter the full code"
               value={field.value}
               onChangeText={field.onChange}
               onBlur={field.onBlur}
               keyboardType="number-pad"
               autoCapitalize="none"
               autoCorrect={false}
-              maxLength={6}
+              maxLength={10}
               textContentType="oneTimeCode"
               error={errors.token?.message}
             />
