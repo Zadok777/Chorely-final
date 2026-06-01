@@ -1,9 +1,8 @@
 <!--
-BEFORE PUBLISHING — fill in / confirm:
-- [Contact Email], [Website URL]
-Apple (Guideline 5.1.1(v)) and Google both require an account-deletion path that is easy to find,
-including a way to request it from outside the app. Host this page publicly and link it from your
-store listings and Data Safety / App Privacy sections.
+Contact email is filled in below. STILL TO DO: host this page at [Website URL].
+Apple (Guideline 5.1.1(v)) and Google both require an easy-to-find account-deletion path,
+including a way to request it from outside the app. Link this page from your store listings
+and Data Safety / App Privacy sections.
 -->
 
 # Delete Your Chorely Account
@@ -19,7 +18,7 @@ Chorely makes it easy to delete your account and associated data at any time.
 
 ## Request deletion by email
 
-If you can't access the app, email **[Contact Email]** from the address on your account with the subject **"Delete my account."** We will verify your request and delete your account, typically within **7 days** and no later than **30 days**.
+If you can't access the app, email **doulosnexus@gmail.com** from the address on your account with the subject **"Delete my account."** We will verify your request and delete your account, typically within **7 days** and no later than **30 days**.
 
 ## What gets deleted
 
@@ -42,4 +41,4 @@ If you have an active **Chorely Plus** subscription, cancel it in your **App Sto
 
 ## Questions
 
-Contact us at **[Contact Email]**.
+Contact us at **doulosnexus@gmail.com**.

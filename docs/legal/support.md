@@ -1,8 +1,7 @@
 <!--
-BEFORE PUBLISHING — fill in / confirm:
-- [Contact Email]  support@chorely.app (set up this inbox; in-app Help Center currently uses doulosnexus@gmail.com)
-- [Website URL]    where the privacy policy / terms / account-deletion pages are hosted
-Apple expects users to be able to find a way to reach you. Keep this page reachable from your store listing.
+Contact email is filled in below (doulosnexus@gmail.com, matching the in-app Help Center).
+STILL TO DO: host this page and the privacy/terms/account-deletion pages at [Website URL],
+and keep this page reachable from your store listing (Apple expects users to find a way to reach you).
 -->
 
 # Chorely Support
@@ -11,7 +10,7 @@ Need help with Chorely? You're in the right place.
 
 ## Contact us
 
-**Email:** [Contact Email]
+**Email:** doulosnexus@gmail.com
 We aim to respond within **2 business days**.
 
 When you write in, it helps to include:

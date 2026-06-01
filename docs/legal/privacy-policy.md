@@ -1,12 +1,11 @@
 <!--
-BEFORE PUBLISHING — fill in / confirm:
-- [Legal Entity Name]    e.g. "Doulos Nexus LLC" (the company that publishes Chorely)
-- [Business Address]     a real mailing address
-- [Contact Email]        support@chorely.app (set up this inbox; the in-app Help Center currently uses doulosnexus@gmail.com)
-- [Website URL]          where these pages are hosted
-- Governing law defaults to Florida, USA — change if your entity is elsewhere.
-This is a thorough starting template, not legal advice. Have counsel review before launch,
-especially the children's-data sections (COPPA).
+Entity (DS Santiago LLC d/b/a Doulos Nexus) and contact email are filled in below.
+STILL TO DO before publishing:
+- [Business Address]  — add a real mailing address
+- [Website URL]       — where these pages are hosted
+Then link the hosted privacy-policy URL inside the app, and in the App Store App Privacy /
+Google Play Data Safety forms. Governing law defaults to Florida, USA.
+Template, not legal advice — have counsel review, especially the COPPA sections.
 -->
 
 # Chorely Privacy Policy
@@ -14,7 +13,7 @@ especially the children's-data sections (COPPA).
 **Effective date:** June 1, 2026
 **Last updated:** June 1, 2026
 
-Chorely ("Chorely," "we," "us," or "our"), operated by **[Legal Entity Name]**, provides a family chore and reward management mobile app (the "App"). This Privacy Policy explains what information we collect, why we collect it, how we use and share it, and the choices you have.
+Chorely ("Chorely," "we," "us," or "our"), operated by **DS Santiago LLC (d/b/a Doulos Nexus)**, provides a family chore and reward management mobile app (the "App"). This Privacy Policy explains what information we collect, why we collect it, how we use and share it, and the choices you have.
 
 By creating an account or using the App, you agree to this Privacy Policy.
 
@@ -72,15 +71,15 @@ Protecting children's privacy is central to how Chorely is built.
 - We do not knowingly collect personal information **directly from children**. We do not request a child's email, phone number, precise location, photos, or contacts.
 - A parent or guardian controls all child profile data and can edit or delete it at any time, including by deleting the account.
 
-If you believe a child has provided us personal information directly, contact us at **[Contact Email]** and we will delete it.
+If you believe a child has provided us personal information directly, contact us at **doulosnexus@gmail.com** and we will delete it.
 
 ## 7. Your choices and rights
 
 - **Access and update** — view and edit your account, family, and child profiles in the App.
-- **Delete your account and data** — in the App, go to **More → Delete account**. This permanently deletes your family, children, chores, rewards, and history. You may also email **[Contact Email]** to request deletion. See our Account Deletion page for details.
+- **Delete your account and data** — in the App, go to **More → Delete account**. This permanently deletes your family, children, chores, rewards, and history. You may also email **doulosnexus@gmail.com** to request deletion. See our Account Deletion page for details.
 - **Subscriptions** — manage or cancel Chorely Plus through your Apple or Google account settings.
 
-Depending on where you live, you may have additional rights (such as access, correction, deletion, or portability). To exercise them, contact **[Contact Email]**.
+Depending on where you live, you may have additional rights (such as access, correction, deletion, or portability). To exercise them, contact **doulosnexus@gmail.com**.
 
 ## 8. Data security
 
@@ -98,9 +97,9 @@ We may update this Privacy Policy from time to time. We will revise the "Last up
 
 Questions or requests regarding this policy or your data:
 
-**[Legal Entity Name]**
+**DS Santiago LLC (d/b/a Doulos Nexus)**
 [Business Address]
-Email: **[Contact Email]**
+Email: **doulosnexus@gmail.com**
 
 ---
 *Governing law: this policy is governed by the laws of the State of Florida, USA, without regard to conflict-of-laws rules.*

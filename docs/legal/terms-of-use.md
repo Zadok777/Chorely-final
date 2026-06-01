@@ -1,8 +1,7 @@
 <!--
-BEFORE PUBLISHING — fill in / confirm:
-- [Legal Entity Name], [Business Address], [Contact Email], [Website URL]
-- Governing law / venue defaults to Florida, USA.
-This is a thorough starting template, not legal advice. Have counsel review before launch.
+Entity (DS Santiago LLC d/b/a Doulos Nexus) and contact email are filled in below.
+STILL TO DO before publishing: [Business Address], [Website URL], then host publicly.
+Governing law / venue defaults to Florida, USA. Template, not legal advice — have counsel review.
 -->
 
 # Chorely Terms of Use
@@ -10,7 +9,7 @@ This is a thorough starting template, not legal advice. Have counsel review befo
 **Effective date:** June 1, 2026
 **Last updated:** June 1, 2026
 
-These Terms of Use ("Terms") are a legal agreement between you and **[Legal Entity Name]** ("Chorely," "we," "us," or "our") governing your use of the Chorely mobile app and related services (the "App"). By creating an account or using the App, you agree to these Terms and to our Privacy Policy. If you do not agree, do not use the App.
+These Terms of Use ("Terms") are a legal agreement between you and **DS Santiago LLC (d/b/a Doulos Nexus)** ("Chorely," "we," "us," or "our") governing your use of the Chorely mobile app and related services (the "App"). By creating an account or using the App, you agree to these Terms and to our Privacy Policy. If you do not agree, do not use the App.
 
 ## 1. Eligibility
 
@@ -51,7 +50,7 @@ Points and rewards in Chorely are **virtual items with no monetary value**, are 
 
 ## 7. Intellectual property
 
-The App, including its design, branding, and content we provide, is owned by **[Legal Entity Name]** and protected by intellectual-property laws. You retain ownership of the content you create (such as chore and reward names); you grant us a limited license to host and process it to operate the App.
+The App, including its design, branding, and content we provide, is owned by **DS Santiago LLC (d/b/a Doulos Nexus)** and protected by intellectual-property laws. You retain ownership of the content you create (such as chore and reward names); you grant us a limited license to host and process it to operate the App.
 
 ## 8. Disclaimers
 
@@ -59,7 +58,7 @@ The App is provided "as is" and "as available," without warranties of any kind, 
 
 ## 9. Limitation of liability
 
-To the maximum extent permitted by law, **[Legal Entity Name]** will not be liable for any indirect, incidental, special, consequential, or punitive damages, or for lost data or profits, arising from your use of the App. Our total liability for any claim relating to the App will not exceed the amount you paid us for the App in the 12 months before the claim.
+To the maximum extent permitted by law, **DS Santiago LLC (d/b/a Doulos Nexus)** will not be liable for any indirect, incidental, special, consequential, or punitive damages, or for lost data or profits, arising from your use of the App. Our total liability for any claim relating to the App will not exceed the amount you paid us for the App in the 12 months before the claim.
 
 ## 10. Termination
 
@@ -75,6 +74,6 @@ These Terms are governed by the laws of the State of Florida, USA, without regar
 
 ## 13. Contact
 
-**[Legal Entity Name]**
+**DS Santiago LLC (d/b/a Doulos Nexus)**
 [Business Address]
-Email: **[Contact Email]**
+Email: **doulosnexus@gmail.com**
