@@ -6,6 +6,7 @@ import { OnboardingWizard } from '../screens/auth/OnboardingWizard';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { WelcomeScreen } from '../screens/auth/WelcomeScreen';
 import { RewardsScreen } from '../screens/parent/RewardsScreen';
+import { HelpCenterScreen } from '../screens/parent/HelpCenterScreen';
 import { MainNavigator } from './MainNavigator';
 import { useAuthStore } from '../store/authStore';
 import { useFamilyStore } from '../store/familyStore';
@@ -46,6 +47,7 @@ export function RootNavigator() {
         <>
           <Stack.Screen name="Main" component={MainNavigator} />
           <Stack.Screen name="Rewards" component={RewardsScreen} />
+          <Stack.Screen name="Help" component={HelpCenterScreen} />
         </>
       )}
     </Stack.Navigator>

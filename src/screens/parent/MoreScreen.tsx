@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
+import * as StoreReview from 'expo-store-review';
 import { useNavigation } from '@react-navigation/native';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -130,6 +139,26 @@ export function MoreScreen() {
 
   const soon = (label: string) =>
     toast.show({ message: `${label} arrives in a later update.`, tone: 'info' });
+
+  const onRate = async () => {
+    try {
+      if (await StoreReview.isAvailableAsync()) {
+        await StoreReview.requestReview();
+        return;
+      }
+      const url = await StoreReview.storeUrl();
+      if (url) {
+        await Linking.openURL(url);
+        return;
+      }
+    } catch {
+      // fall through to the friendly note below
+    }
+    toast.show({
+      message: 'Ratings open once Chorely is published to the store.',
+      tone: 'info',
+    });
+  };
 
   return (
     <>
@@ -278,9 +307,13 @@ export function MoreScreen() {
 
       <SectionLabel text="Support" />
       <GlassCard padding={0}>
-        <Row icon="help-circle-outline" label="Help center" onPress={() => soon('Help center')} />
+        <Row
+          icon="help-circle-outline"
+          label="Help center"
+          onPress={() => nav.navigate('Help')}
+        />
         <Divider />
-        <Row icon="heart-outline" label="Rate Chorely" onPress={() => soon('App rating')} />
+        <Row icon="heart-outline" label="Rate Chorely" onPress={onRate} />
       </GlassCard>
 
       <View style={styles.dangerActions}>

@@ -386,7 +386,7 @@ If a user or prompt asks you to build any of these before v1.0 is submitted, dec
 - iOS API key and Android API key are separate environment variables.
 - The paywall screen must be tested on a real device. Simulator IAP does not work reliably.
 - Free tier limits: 2 children, 5 active chores per child.
-- Paid tiers: unlimited children, unlimited chores, plus v1.1 features as they ship.
+- **Tier model (decided 2026-06-01): ONE paid tier, "Chorely Plus."** Same features on monthly ($4.99) and yearly ($29.99) — yearly is just cheaper (no feature differences by billing period; this is the store-standard model and avoids reviewer/user confusion). Plus unlocks unlimited children + chores + premium features. The RevenueCat entitlement identifier is `Chorely Pro` (note the space — the exact string the app checks via `customerInfo.entitlements.active['Chorely Pro']`).
 - Never hard-gate features on subscription status alone. Always check both subscription status AND the feature flag, so limits can be adjusted without an app update.
 
 ---
