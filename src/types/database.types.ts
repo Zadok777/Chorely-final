@@ -77,6 +77,7 @@ export type Database = {
           avatar_gradient: number | null
           avatar_icon: string | null
           avatar_url: string | null
+          age_tier_override: string | null
           created_at: string
           date_of_birth: string | null
           family_id: string
@@ -94,6 +95,7 @@ export type Database = {
           avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
+          age_tier_override?: string | null
           date_of_birth?: string | null
           family_id: string
           id?: string
@@ -110,6 +112,7 @@ export type Database = {
           avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
+          age_tier_override?: string | null
           date_of_birth?: string | null
           family_id?: string
           id?: string

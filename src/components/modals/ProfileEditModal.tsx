@@ -23,6 +23,12 @@ import {
   type Palette,
 } from '../../theme';
 import type { Child } from '../../types/app.types';
+import {
+  AGE_TIERS,
+  getAgeTier,
+  tierLabel,
+  type AgeTier,
+} from '../../utils/ageTier';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -70,6 +76,7 @@ export function ProfileEditModal({
 
   const [gradient, setGradient] = useState<number>(0);
   const [icon, setIcon] = useState<string | null>(null);
+  const [tierOverride, setTierOverride] = useState<AgeTier | null>(null);
   const [saving, setSaving] = useState(false);
 
   const name =
@@ -83,6 +90,7 @@ export function ProfileEditModal({
     if (target.kind === 'child') {
       setGradient(target.child.avatar_gradient ?? 0);
       setIcon(target.child.avatar_icon);
+      setTierOverride((target.child.age_tier_override as AgeTier | null) ?? null);
     } else {
       setGradient(profile?.avatar_gradient ?? 0);
       setIcon(profile?.avatar_icon ?? null);
@@ -97,6 +105,7 @@ export function ProfileEditModal({
       const res = await updateChild(target.child.id, {
         avatar_gradient: gradient,
         avatar_icon: icon,
+        age_tier_override: tierOverride,
       });
       setSaving(false);
       if (!res.success) {
@@ -118,7 +127,10 @@ export function ProfileEditModal({
     }
 
     hapticLight();
-    toast.show({ message: 'Avatar updated.', tone: 'success' });
+    toast.show({
+      message: target.kind === 'child' ? 'Profile updated.' : 'Avatar updated.',
+      tone: 'success',
+    });
     onSaved();
     onClose();
   };
@@ -127,7 +139,7 @@ export function ProfileEditModal({
     <ModalSheet
       visible={visible}
       onClose={onClose}
-      title={target?.kind === 'child' ? `${name}'s avatar` : 'Your avatar'}
+      title={target?.kind === 'child' ? `${name}'s profile` : 'Your avatar'}
       footer={
         <>
           <Button label="Save" onPress={onSave} loading={saving} fullWidth />
@@ -201,6 +213,56 @@ export function ProfileEditModal({
           })}
         </View>
       </View>
+
+      {target?.kind === 'child' ? (
+        <View>
+          <Text style={styles.label}>Age group</Text>
+          <Text style={styles.hint}>
+            Tailors suggested chores & rewards. Auto-detected from birthday.
+          </Text>
+          <View style={styles.tierWrap}>
+            <Pressable
+              onPress={() => setTierOverride(null)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: tierOverride === null }}
+              style={[
+                styles.tierChip,
+                tierOverride === null && styles.tierChipSelected,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.tierChipText,
+                  tierOverride === null && styles.tierChipTextSelected,
+                ]}
+              >
+                Auto ({tierLabel(getAgeTier(target.child.date_of_birth))})
+              </Text>
+            </Pressable>
+            {AGE_TIERS.map((t) => {
+              const selected = tierOverride === t;
+              return (
+                <Pressable
+                  key={t}
+                  onPress={() => setTierOverride(t)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
+                  style={[styles.tierChip, selected && styles.tierChipSelected]}
+                >
+                  <Text
+                    style={[
+                      styles.tierChipText,
+                      selected && styles.tierChipTextSelected,
+                    ]}
+                  >
+                    {tierLabel(t)}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      ) : null}
     </ModalSheet>
   );
 }
@@ -216,6 +278,37 @@ const makeStyles = (C: Palette) =>
       color: C.textMid,
       marginBottom: spacing.s8,
       marginLeft: spacing.s4,
+    },
+    hint: {
+      ...typography.caption,
+      color: C.textLight,
+      marginTop: -4,
+      marginBottom: spacing.s8,
+      marginLeft: spacing.s4,
+    },
+    tierWrap: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.s8,
+    },
+    tierChip: {
+      paddingHorizontal: spacing.s12,
+      paddingVertical: spacing.s8,
+      borderRadius: radii.r12,
+      borderWidth: 1,
+      borderColor: C.border,
+      backgroundColor: C.glassLight,
+    },
+    tierChipSelected: {
+      borderColor: C.pink,
+      backgroundColor: C.pinkAlpha10,
+    },
+    tierChipText: {
+      ...typography.caption,
+      color: C.textMid,
+    },
+    tierChipTextSelected: {
+      color: C.pink,
     },
     swatchRow: {
       flexDirection: 'row',
