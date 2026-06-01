@@ -219,7 +219,7 @@ export function ParentDashboard() {
             accessibilityRole="button"
             accessibilityLabel={`${pending.length} awaiting approval`}
           >
-            <GradientCard colors={GRADIENTS.violet} style={styles.heroCard}>
+            <GradientCard colors={GRADIENTS.brand} style={styles.heroCard}>
               <View style={styles.heroTop}>
                 <Text style={styles.heroLabel} maxFontSizeMultiplier={1.3}>
                   AWAITING YOUR APPROVAL
@@ -264,25 +264,21 @@ export function ParentDashboard() {
           <QuickAction
             label="Add Chore"
             icon="add"
-            bg={C.pink}
             onPress={() => setChoreModal(true)}
           />
           <QuickAction
             label="New Reward"
             icon="gift"
-            bg="#4D9FFF"
             onPress={() => setRewardModal(true)}
           />
           <QuickAction
             label="Add Kid"
             icon="person-add"
-            bg={C.green}
             onPress={() => setChildModal(true)}
           />
           <QuickAction
             label="Set Goal"
             icon="trophy"
-            bg="#FFB020"
             onPress={() => setGoalModal(true)}
           />
         </View>
@@ -391,16 +387,13 @@ function SnapshotTile({
 }) {
   const { C } = useTheme();
   const styles = useThemedStyles(makeStyles);
-  const bg =
-    tone === 'pink'
-      ? C.pinkAlpha10
-      : tone === 'green'
-        ? C.greenAlpha15
-        : C.orangeAlpha10;
-  const color = tone === 'pink' ? C.pink : tone === 'green' ? C.green : C.orange;
+  // Calm & refined: uniform surface tiles + big near-black numbers. Color is
+  // reserved — only Points (orange) pops, the rest stay neutral so the data
+  // reads through size, not a rainbow of backgrounds.
+  const valueColor = tone === 'orange' ? C.orange : C.textDark;
   return (
-    <View style={[styles.snapTile, { backgroundColor: bg }]}>
-      <Text style={[styles.snapValue, { color }]} maxFontSizeMultiplier={1.3}>
+    <View style={styles.snapTile}>
+      <Text style={[styles.snapValue, { color: valueColor }]} maxFontSizeMultiplier={1.3}>
         {value}
       </Text>
       <Text style={styles.snapLabel} maxFontSizeMultiplier={1.2} numberOfLines={1}>
@@ -413,14 +406,13 @@ function SnapshotTile({
 function QuickAction({
   label,
   icon,
-  bg,
   onPress,
 }: {
   label: string;
   icon: IoniconName;
-  bg: string;
   onPress: () => void;
 }) {
+  const { C } = useTheme();
   const styles = useThemedStyles(makeStyles);
   return (
     <Pressable
@@ -429,8 +421,8 @@ function QuickAction({
       accessibilityLabel={label}
       style={({ pressed }) => [styles.actionItem, pressed && styles.pressed]}
     >
-      <View style={[styles.actionIcon, { backgroundColor: bg }]}>
-        <Ionicons name={icon} size={20} color="#FFFFFF" />
+      <View style={[styles.actionIcon, { backgroundColor: C.pinkAlpha15 }]}>
+        <Ionicons name={icon} size={20} color={C.pink} />
       </View>
       <Text style={styles.actionLabel} maxFontSizeMultiplier={1.3} numberOfLines={2}>
         {label}
@@ -686,20 +678,21 @@ const makeStyles = (C: Palette) =>
     },
     snapTile: {
       flex: 1,
-      borderRadius: radii.r18,
+      borderRadius: radii.r16,
       paddingVertical: spacing.s16,
       paddingHorizontal: spacing.s12,
       alignItems: 'flex-start',
+      backgroundColor: C.glass,
+      borderWidth: 1,
+      borderColor: C.border,
     },
     snapValue: {
       ...typography.heroNum,
-      fontSize: 30,
+      fontSize: 36,
     },
     snapLabel: {
-      ...typography.caption,
+      ...typography.label,
       color: C.textMid,
-      textTransform: 'uppercase',
-      letterSpacing: 0.6,
       marginTop: spacing.s4,
     },
     // Quick actions

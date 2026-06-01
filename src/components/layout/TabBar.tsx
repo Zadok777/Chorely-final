@@ -1,7 +1,6 @@
 import React from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -42,7 +41,7 @@ interface TabBarProps {
 // reuse it if we ever swap navigation libraries.
 
 export function TabBar({ tabs, activeKey, onChange, style }: TabBarProps) {
-  const { C, mode } = useTheme();
+  const { C } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const insets = useSafeAreaInsets();
   const bottomPad = Math.max(insets.bottom, spacing.s12);
@@ -58,19 +57,6 @@ export function TabBar({ tabs, activeKey, onChange, style }: TabBarProps) {
     >
       <View style={[styles.pillOuter, shadows.lg]}>
         <View style={styles.pillInner}>
-          {Platform.OS === 'ios' ? (
-            <BlurView
-              intensity={24}
-              tint={mode === 'dark' ? 'dark' : 'light'}
-              style={StyleSheet.absoluteFillObject}
-            />
-          ) : null}
-          <View
-            style={[
-              StyleSheet.absoluteFillObject,
-              { backgroundColor: C.glass },
-            ]}
-          />
           <View style={styles.tabsRow}>
             {tabs.map((tab) => {
               const active = tab.key === activeKey;
@@ -128,6 +114,7 @@ const makeStyles = (C: Palette) =>
     borderRadius: radii.r24,
     borderWidth: 1,
     borderColor: C.border,
+    backgroundColor: C.glass,
     overflow: 'hidden',
   },
   tabsRow: {

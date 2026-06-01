@@ -254,7 +254,29 @@ Chorely supports a full dark theme. The **Settings → Appearance** toggle flips
 
 ---
 
-## 12. Maintenance
+## 12. Calm & Refined Refresh (2026-06-01)
+
+The Lumina Bloom glassmorphism was tuned toward a calmer, more premium feel after the glass-heavy look read as "AI-generated." The brand (pink/orange/green, Nunito + DM Sans, mascot) is unchanged; **surfaces and color usage** changed.
+
+- **Surfaces are now SOLID, not glass.** `glass`/`glassLight` are opaque (`#FFFFFF` / `#F3F1F7` light; `#221D31` / `#1B1726` dark). `GlassCard`, `Button` (secondary), `TabBar`, and `ModalSheet` no longer render `BlurView` — they paint a solid surface + a hairline `border`. Treat the name `GlassCard` as historical; it is a solid surface card.
+- **Canvas:** light `bg` is warm near-white `#FAF9FB` (was lavender `#F3F0FF`); dark ground deepened to `#141220`.
+- **Borders:** light `border` is a real hairline `rgba(24,20,40,0.06)` so solid cards have definition on near-white.
+- **Shadows** softened (md radius 12 / opacity 0.05; lg 24 / 0.07; pink glow 0.16) — premium = small, soft, low-opacity.
+- **One-accent rule.** Pink is the single accent. Orange is reserved for **points/rewards only**; green for **success only**. Do not color decorative UI (icons, tiles, backgrounds) with secondary hues.
+- **Avatar gradients** are one warm family (peach→pink→coral→amber), not a multi-hue rainbow.
+- **Hero gradient** uses `GRADIENTS.brand` (pink→orange); `GRADIENTS.violet`/`sky` are deprecated for hero use.
+- **Editorial typography:** big near-black display numbers + the new `typography.label` (11px, uppercase, tracked) for stat captions. Let data read through size, not color.
+- **Quick actions / icon tiles:** single calm treatment — soft `pinkAlpha15` tile + pink icon — not per-action colors.
+
+### §10 anti-pattern additions
+- Frosted glass as the default surface (use solid surfaces + hairline).
+- Multi-hue rainbows of unrelated gradients/colors (avatars, action tiles).
+- Pastel/lavender canvas (use warm near-white).
+- Coloring decorative UI with secondary hues (keep orange = points, green = success).
+
+---
+
+## 13. Maintenance
 
 - Append new tokens, gradients, or rules **here**, not in CLAUDE.md.
 - Add new anti-patterns to §10 whenever you catch the agent reaching for one.
@@ -264,5 +286,6 @@ Chorely supports a full dark theme. The **Settings → Appearance** toggle flips
 
 <!--
 CHANGELOG (newest first)
+- 2026-06-01 Calm & Refined refresh (§12): solid surfaces over glass, warm near-white canvas, softened shadows, one-accent rule (orange=points, green=success), warm avatar family, brand hero gradient, editorial number typography + typography.label, unified quick-action tiles.
 - 2026-05-27 Initial Lumina Bloom system split out of CLAUDE.md §6/§13. Fonts set to Nunito + DM Sans (matching App.tsx). Anti-patterns section added.
 -->

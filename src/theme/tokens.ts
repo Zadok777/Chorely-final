@@ -98,12 +98,15 @@ export const C = lightC;
 // Avatar gradients (cycled for family members)
 // ---------------------------------------------------------------------------
 
+// One cohesive warm family (peach → pink → coral → amber) instead of a
+// rainbow. Kids stay distinguishable via hue spread, but the set reads as a
+// single designed palette, not "an AI picked five random gradients."
 export const AVATAR_GRADIENTS: ReadonlyArray<readonly [string, string]> = [
-  ['#FF8C42', '#FF4D8D'], // Orange -> Pink   (child 1)
-  ['#4D9FFF', '#8C42FF'], // Blue   -> Purple (child 2)
-  ['#42FFB8', '#42C9FF'], // Green  -> Cyan   (child 3)
-  ['#FFD742', '#FF8C42'], // Gold   -> Orange (child 4)
-  ['#A742FF', '#FF4D8D'], // Purple -> Pink   (child 5)
+  ['#FF8C42', '#FF4D8D'], // Peach  -> Pink   (child 1)
+  ['#FF6F91', '#FF4D8D'], // Rose   -> Pink   (child 2)
+  ['#FFB36B', '#FF7A59'], // Amber  -> Coral  (child 3)
+  ['#FF9472', '#FF5C8A'], // Coral  -> Rose   (child 4)
+  ['#FFC04D', '#FF8C42'], // Gold   -> Orange (child 5)
 ] as const;
 
 // Named gradients for hero cards and primary CTAs. Mode-invariant brand colors
