@@ -2,6 +2,8 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { LoginScreen } from '../screens/auth/LoginScreen';
+import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
+import { ResetPasswordScreen } from '../screens/auth/ResetPasswordScreen';
 import { OnboardingWizard } from '../screens/auth/OnboardingWizard';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { WelcomeScreen } from '../screens/auth/WelcomeScreen';
@@ -40,6 +42,8 @@ export function RootNavigator() {
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         </>
       ) : !onboarded ? (
         <Stack.Screen name="Onboarding" component={OnboardingWizard} />

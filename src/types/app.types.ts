@@ -60,6 +60,8 @@ export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
   SignUp: undefined;
+  ForgotPassword: undefined;
+  ResetPassword: { email: string };
 
   // Rendered when signed in but the user belongs to no family yet.
   Onboarding: undefined;

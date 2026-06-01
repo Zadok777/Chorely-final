@@ -45,6 +45,43 @@ export async function signIn(
   }
 }
 
+// Sends a recovery email containing a 6-digit code. The Supabase "Reset
+// Password" email template must expose {{ .Token }} (see docs/launch). We use
+// a code (OTP) rather than a magic link so no deep-linking setup is needed.
+export async function requestPasswordReset(
+  email: string
+): Promise<ServiceResult<null>> {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) return fail(error.message);
+    return ok(null);
+  } catch (e) {
+    return fromError(e);
+  }
+}
+
+// Verifies the recovery code, which signs the user in, then sets the new
+// password. On success the user is authenticated (the app routes them in).
+export async function confirmPasswordReset(
+  email: string,
+  token: string,
+  newPassword: string
+): Promise<ServiceResult<null>> {
+  try {
+    const verify = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'recovery',
+    });
+    if (verify.error) return fail(verify.error.message);
+    const update = await supabase.auth.updateUser({ password: newPassword });
+    if (update.error) return fail(update.error.message);
+    return ok(null);
+  } catch (e) {
+    return fromError(e);
+  }
+}
+
 export async function signOut(): Promise<ServiceResult<null>> {
   try {
     const { error } = await supabase.auth.signOut();

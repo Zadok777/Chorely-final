@@ -11,7 +11,7 @@ import { ScreenContainer } from '../../components/layout/ScreenContainer';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
-import { signIn as authSignIn } from '../../services/auth';
+import { requestPasswordReset } from '../../services/auth';
 import {
   spacing,
   typography,
@@ -20,7 +20,7 @@ import {
 } from '../../theme';
 import type { RootStackParamList } from '../../types/app.types';
 
-type Nav = StackNavigationProp<RootStackParamList, 'Login'>;
+type Nav = StackNavigationProp<RootStackParamList, 'ForgotPassword'>;
 
 const schema = yup.object({
   email: yup
@@ -28,14 +28,11 @@ const schema = yup.object({
     .trim()
     .required('Email is required')
     .email('Enter a valid email'),
-  // Length validation is intentionally minimal on login — the server is the
-  // authority. We only need *some* input to call sign-in.
-  password: yup.string().required('Password is required'),
 });
 
 type FormValues = yup.InferType<typeof schema>;
 
-export function LoginScreen() {
+export function ForgotPasswordScreen() {
   const nav = useNavigation<Nav>();
   const toast = useToast();
   const styles = useThemedStyles(makeStyles);
@@ -47,30 +44,32 @@ export function LoginScreen() {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { email: '' },
   });
 
   const onSubmit = async (values: FormValues) => {
     if (submitting) return;
     setSubmitting(true);
-    const res = await authSignIn(values.email, values.password);
+    const email = values.email.trim();
+    const res = await requestPasswordReset(email);
     setSubmitting(false);
 
     if (!res.success) {
       toast.show({ message: res.error, tone: 'error', duration: 5000 });
       return;
     }
-    // onAuthStateChange will hydrate authStore and RootNavigator will swap
-    // to the main stack — no explicit nav.navigate needed.
+    toast.show({ message: 'Check your email for a 6-digit code.', tone: 'success' });
+    nav.navigate('ResetPassword', { email });
   };
 
   return (
     <ScreenContainer keyboardAvoiding scroll>
-      <Header title="Sign in" onBack={() => nav.goBack()} />
+      <Header title="Reset password" onBack={() => nav.goBack()} />
 
       <View style={styles.intro}>
         <Text style={styles.helper} maxFontSizeMultiplier={1.5}>
-          Welcome back.
+          Enter your email and we&apos;ll send you a 6-digit code to reset your
+          password.
         </Text>
       </View>
 
@@ -94,50 +93,13 @@ export function LoginScreen() {
             />
           )}
         />
-        <Controller
-          name="password"
-          control={control}
-          render={({ field }) => (
-            <Input
-              label="Password"
-              value={field.value}
-              onChangeText={field.onChange}
-              onBlur={field.onBlur}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="password"
-              textContentType="password"
-              error={errors.password?.message}
-            />
-          )}
-        />
 
         <View style={styles.submit}>
           <Button
-            label="Sign in"
+            label="Send code"
             onPress={handleSubmit(onSubmit)}
             loading={submitting}
             fullWidth
-          />
-        </View>
-
-        <Button
-          label="Forgot password?"
-          variant="ghost"
-          size="sm"
-          onPress={() => nav.navigate('ForgotPassword')}
-        />
-
-        <View style={styles.switchRow}>
-          <Text style={styles.switchText} maxFontSizeMultiplier={1.5}>
-            No account yet?
-          </Text>
-          <Button
-            label="Create one"
-            variant="ghost"
-            size="sm"
-            onPress={() => nav.navigate('SignUp')}
           />
         </View>
       </View>
@@ -147,29 +109,18 @@ export function LoginScreen() {
 
 const makeStyles = (C: Palette) =>
   StyleSheet.create({
-  intro: {
-    marginTop: spacing.s8,
-    marginBottom: spacing.s16,
-  },
-  helper: {
-    ...typography.body,
-    color: C.textMid,
-  },
-  form: {
-    gap: spacing.s16,
-  },
-  submit: {
-    marginTop: spacing.s8,
-  },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: spacing.s12,
-  },
-  switchText: {
-    ...typography.body,
-    color: C.textMid,
-    marginRight: spacing.s4,
-  },
-});
+    intro: {
+      marginTop: spacing.s8,
+      marginBottom: spacing.s16,
+    },
+    helper: {
+      ...typography.body,
+      color: C.textMid,
+    },
+    form: {
+      gap: spacing.s16,
+    },
+    submit: {
+      marginTop: spacing.s8,
+    },
+  });
