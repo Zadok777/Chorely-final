@@ -50,14 +50,15 @@ const ICONS: ReadonlyArray<IoniconName> = [
   'car-sport',
 ];
 
-// Fixed accent choices stored on the reward row — mode-independent, so these
-// are literal brand hex values rather than themed palette tokens.
+// Fixed accent choices stored on the reward row — mode-independent literals.
+// Refreshed for the teal brand: dropped the off-palette purple/cyan, kept
+// enough variety for users to tell rewards apart.
 const COLORS: ReadonlyArray<string> = [
-  '#FF8C42',
-  '#FF4D8D',
-  '#00A92A',
-  '#6E61FF',
-  '#42C9FF',
+  '#0EA5A4', // teal (brand)
+  '#FF8C42', // orange
+  '#00A92A', // green
+  '#FF5C8A', // rose
+  '#F4B400', // gold
 ];
 
 const schema = yup.object({

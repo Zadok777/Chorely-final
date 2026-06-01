@@ -16,6 +16,7 @@ import { PointsBadge } from '../../components/ui/PointsBadge';
 import { RewardCard } from '../../components/ui/RewardCard';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
 import { SkeletonLoader } from '../../components/ui/SkeletonLoader';
+import { useCountUp } from '../../hooks/useCountUp';
 import { listChildren } from '../../services/children';
 import { listRedemptionsForFamily, listRewards } from '../../services/rewards';
 import { useFamilyStore } from '../../store/familyStore';
@@ -103,6 +104,7 @@ export function RewardsScreen() {
   const selectedChild =
     children.find((c) => c.id === selectedChildId) ?? null;
   const balance = selectedChild?.points ?? 0;
+  const displayBalance = useCountUp(balance);
 
   const isLocked = (reward: Reward) => balance < reward.point_cost;
   const visibleRewards = rewards.filter((r) => {
@@ -189,7 +191,7 @@ export function RewardsScreen() {
                     {selectedChild?.name ?? 'Child'}'s balance
                   </Text>
                   <Text style={styles.balanceValue} maxFontSizeMultiplier={1.3}>
-                    {balance}
+                    {displayBalance}
                   </Text>
                 </View>
                 <PointsBadge points={balance} size="lg" />

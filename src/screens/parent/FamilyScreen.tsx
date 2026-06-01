@@ -255,9 +255,9 @@ export function FamilyScreen() {
                     </Pressable>
                   </View>
                   <View style={styles.statRow}>
-                    <MiniStat label="POINTS" value={child.points ?? 0} tone="pink" />
-                    <MiniStat label="STREAK" value={`${child.streak_days ?? 0}d`} tone="orange" />
-                    <MiniStat label="THIS WK" value={thisWeekPoints(child.id)} tone="green" />
+                    <MiniStat label="POINTS" value={child.points ?? 0} tone="accent" />
+                    <MiniStat label="STREAK" value={`${child.streak_days ?? 0}d`} tone="plain" />
+                    <MiniStat label="THIS WK" value={thisWeekPoints(child.id)} tone="plain" />
                   </View>
                 </GlassCard>
               );
@@ -309,24 +309,19 @@ function MiniStat({
 }: {
   label: string;
   value: number | string;
-  tone: 'pink' | 'orange' | 'green';
+  // 'accent' = the points figure (orange); 'plain' = neutral dark number.
+  tone: 'accent' | 'plain';
 }) {
   const { C } = useTheme();
   const styles = useThemedStyles(makeStyles);
-  const bg =
-    tone === 'pink'
-      ? C.pinkAlpha10
-      : tone === 'orange'
-        ? C.orangeAlpha10
-        : C.greenAlpha15;
-  const color = tone === 'pink' ? C.pink : tone === 'orange' ? C.orange : C.green;
+  const color = tone === 'accent' ? C.orange : C.textDark;
   return (
-    <View style={[styles.miniStat, { backgroundColor: bg }]}>
-      <Text style={styles.miniLabel} maxFontSizeMultiplier={1.1} numberOfLines={1}>
-        {label}
-      </Text>
+    <View style={styles.miniStat}>
       <Text style={[styles.miniValue, { color }]} maxFontSizeMultiplier={1.2}>
         {value}
+      </Text>
+      <Text style={styles.miniLabel} maxFontSizeMultiplier={1.1} numberOfLines={1}>
+        {label}
       </Text>
     </View>
   );
@@ -430,7 +425,7 @@ const makeStyles = (C: Palette) =>
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.s4,
-      backgroundColor: '#4D9FFF',
+      backgroundColor: C.pink,
       paddingHorizontal: spacing.s16,
       paddingVertical: spacing.s8,
       borderRadius: radii.rFull,
@@ -476,19 +471,21 @@ const makeStyles = (C: Palette) =>
     miniStat: {
       flex: 1,
       borderRadius: radii.r12,
-      paddingVertical: spacing.s8,
-      paddingHorizontal: spacing.s8,
+      paddingVertical: spacing.s12,
+      paddingHorizontal: spacing.s12,
       alignItems: 'flex-start',
-    },
-    miniLabel: {
-      ...typography.caption,
-      fontSize: 10,
-      color: C.textMid,
-      letterSpacing: 0.5,
+      backgroundColor: C.glass,
+      borderWidth: 1,
+      borderColor: C.border,
     },
     miniValue: {
-      ...typography.title,
-      fontSize: 18,
+      ...typography.heroNum,
+      fontSize: 22,
+    },
+    miniLabel: {
+      ...typography.label,
+      fontSize: 10,
+      color: C.textMid,
       marginTop: 2,
     },
     activityRow: {
