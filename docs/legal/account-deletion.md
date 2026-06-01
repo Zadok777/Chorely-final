@@ -1,0 +1,45 @@
+<!--
+BEFORE PUBLISHING — fill in / confirm:
+- [Contact Email], [Website URL]
+Apple (Guideline 5.1.1(v)) and Google both require an account-deletion path that is easy to find,
+including a way to request it from outside the app. Host this page publicly and link it from your
+store listings and Data Safety / App Privacy sections.
+-->
+
+# Delete Your Chorely Account
+
+Chorely makes it easy to delete your account and associated data at any time.
+
+## Delete in the app (fastest)
+
+1. Open Chorely and sign in.
+2. Go to the **More** tab.
+3. Tap **Delete account**.
+4. Confirm. Your account and family data are permanently deleted.
+
+## Request deletion by email
+
+If you can't access the app, email **[Contact Email]** from the address on your account with the subject **"Delete my account."** We will verify your request and delete your account, typically within **7 days** and no later than **30 days**.
+
+## What gets deleted
+
+Deleting your account permanently removes:
+- your account and profile (name, email/authentication record),
+- your family and its invite code,
+- all child profiles (names and birthdays),
+- all chores, assignments, rewards, redemptions, points balances, points history, streaks, and goals, and
+- your activity history.
+
+This action **cannot be undone**, and deleted data cannot be recovered.
+
+## What may be retained
+
+We may retain limited records where required for legal, security, or accounting reasons (for example, records of a transaction). Routine backups are rotated on a schedule and then purged. Subscription/billing records held by **Apple** or **Google** are governed by their policies — deleting your Chorely account does **not** cancel an active subscription.
+
+## Cancel your subscription separately
+
+If you have an active **Chorely Plus** subscription, cancel it in your **App Store** (Apple ID → Subscriptions) or **Google Play** (Payments & subscriptions) settings. Deleting your Chorely account does not automatically cancel billing managed by the app stores.
+
+## Questions
+
+Contact us at **[Contact Email]**.
