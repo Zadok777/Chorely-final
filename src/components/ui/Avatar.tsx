@@ -34,6 +34,9 @@ interface AvatarProps {
   size?: AvatarSize;
   style?: StyleProp<ViewStyle>;
   withBorder?: boolean;
+  // When the avatar is the Chorely face (AVATAR_FACE), make it wink + bob.
+  // No-op for gradient/initial avatars.
+  animated?: boolean;
 }
 
 const sizePx: Record<AvatarSize, number> = {
@@ -57,13 +60,14 @@ export function Avatar({
   size = 'md',
   style,
   withBorder = false,
+  animated = false,
 }: AvatarProps) {
   const px = sizePx[size];
 
   // The Chorely face replaces the gradient circle entirely (it's the brand
   // rounded-square smiley, not a circular badge).
   if (icon === AVATAR_FACE) {
-    return <ChorelyIcon size={px} style={style} />;
+    return <ChorelyIcon size={px} animated={animated} style={style} />;
   }
 
   const idx =

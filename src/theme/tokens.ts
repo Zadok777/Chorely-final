@@ -9,7 +9,10 @@ import type { ViewStyle } from 'react-native';
 
 export const lightC = {
   // Brand palette
-  pink: '#FF4D8D',
+  // PRIMARY accent — now teal (was hot pink). Token key kept as `pink` so the
+  // ~24 files reading C.pink need no change; it is the primary-accent slot.
+  // See DESIGN.md §12.
+  pink: '#0EA5A4',
   orange: '#FF8C42',
   green: '#00A92A',
   bg: '#FAF9FB', // warm near-white canvas (was lavender glass ground)
@@ -24,11 +27,11 @@ export const lightC = {
   glass: '#FFFFFF', // primary card surface
   glassLight: '#F3F1F7', // recessed / subtle container
   border: 'rgba(24, 20, 40, 0.06)', // real hairline for definition on near-white
-  borderPink: 'rgba(255, 77, 141, 0.30)',
+  borderPink: 'rgba(14, 165, 164, 0.32)', // primary-accent (teal) selected border
 
-  // Tinted alphas
-  pinkAlpha15: 'rgba(255, 77, 141, 0.15)',
-  pinkAlpha10: 'rgba(255, 77, 141, 0.10)',
+  // Tinted alphas (primary accent — teal)
+  pinkAlpha15: 'rgba(14, 165, 164, 0.15)',
+  pinkAlpha10: 'rgba(14, 165, 164, 0.10)',
   orangeAlpha15: 'rgba(255, 140, 66, 0.15)',
   orangeAlpha10: 'rgba(255, 140, 66, 0.10)',
   greenAlpha15: 'rgba(0, 169, 42, 0.15)',
@@ -67,7 +70,7 @@ export type Palette = {
 // deep violet ground with light-translucent glass and inverted text. Green is
 // brightened slightly for contrast on the dark ground.
 export const darkC: Palette = {
-  pink: '#FF4D8D',
+  pink: '#1FC2B5', // primary accent (teal), brightened for dark-ground contrast
   orange: '#FF8C42',
   green: '#1FBF44',
   bg: '#141220', // truer near-black violet ground
@@ -78,9 +81,9 @@ export const darkC: Palette = {
   glass: '#221D31', // solid raised surface (was translucent glass)
   glassLight: '#1B1726', // recessed surface
   border: 'rgba(255, 255, 255, 0.07)', // hairline on dark
-  borderPink: 'rgba(255, 77, 141, 0.45)',
-  pinkAlpha15: 'rgba(255, 77, 141, 0.22)',
-  pinkAlpha10: 'rgba(255, 77, 141, 0.15)',
+  borderPink: 'rgba(31, 194, 181, 0.50)',
+  pinkAlpha15: 'rgba(31, 194, 181, 0.24)',
+  pinkAlpha10: 'rgba(31, 194, 181, 0.16)',
   orangeAlpha15: 'rgba(255, 140, 66, 0.22)',
   orangeAlpha10: 'rgba(255, 140, 66, 0.15)',
   greenAlpha15: 'rgba(31, 191, 68, 0.24)',
@@ -112,7 +115,7 @@ export const AVATAR_GRADIENTS: ReadonlyArray<readonly [string, string]> = [
 // Named gradients for hero cards and primary CTAs. Mode-invariant brand colors
 // (they read well on both light and dark grounds).
 export const GRADIENTS = {
-  brand: ['#FF4D8D', '#FF8C42'] as const, // pink → orange (primary CTAs, approve)
+  brand: ['#0EA5A4', '#FF8C42'] as const, // teal → orange (hero, logo border, approve)
   violet: ['#7A5CFF', '#4D9FFF'] as const, // purple → blue (approval hero)
   sky: ['#4D9FFF', '#8C42FF'] as const, // blue → purple
 } as const;

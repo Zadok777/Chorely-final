@@ -262,7 +262,9 @@ The Lumina Bloom glassmorphism was tuned toward a calmer, more premium feel afte
 - **Canvas:** light `bg` is warm near-white `#FAF9FB` (was lavender `#F3F0FF`); dark ground deepened to `#141220`.
 - **Borders:** light `border` is a real hairline `rgba(24,20,40,0.06)` so solid cards have definition on near-white.
 - **Shadows** softened (md radius 12 / opacity 0.05; lg 24 / 0.07; pink glow 0.16) — premium = small, soft, low-opacity.
-- **One-accent rule.** Pink is the single accent. Orange is reserved for **points/rewards only**; green for **success only**. Do not color decorative UI (icons, tiles, backgrounds) with secondary hues.
+- **Primary accent is TEAL (`#0EA5A4`; dark `#1FC2B5`), not pink.** Pink read feminine for a family app used by boys too. The token key is still `pink` (the primary-accent slot — ~24 files read `C.pink`), but its value + `pinkAlpha*`/`borderPink` are teal. `GRADIENTS.brand` is `teal → orange` (hero, logo border).
+- **One-accent rule.** Teal is the single accent. Orange is reserved for **points/rewards only**; green for **success only**. Do not color decorative UI (icons, tiles, backgrounds) with secondary hues.
+- **Motion (subtle, "not-AI" craft).** The `ChorelyIcon` smiley winks + bobs via its `animated` prop (forwarded through `Avatar` for `AVATAR_FACE`); enabled on the dashboard header. Stat numbers count up via `useCountUp` (src/hooks). Keep motion small and cheap — see ChorelyIcon's own notes (bob < 4px). Available next: celebration wink on approval, spring press, active-tab pop.
 - **Avatar gradients** are one warm family (peach→pink→coral→amber), not a multi-hue rainbow.
 - **Hero gradient** uses `GRADIENTS.brand` (pink→orange); `GRADIENTS.violet`/`sky` are deprecated for hero use.
 - **Editorial typography:** big near-black display numbers + the new `typography.label` (11px, uppercase, tracked) for stat captions. Let data read through size, not color.

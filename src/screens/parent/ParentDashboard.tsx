@@ -23,6 +23,7 @@ import { GradientCard } from '../../components/ui/GradientCard';
 import { SkeletonRow } from '../../components/ui/SkeletonLoader';
 import { StreakFlame } from '../../components/ui/StreakFlame';
 import { useToast } from '../../components/ui/Toast';
+import { useCountUp } from '../../hooks/useCountUp';
 import { listActivity } from '../../services/activity';
 import { listChildren } from '../../services/children';
 import { listAssignmentsForFamily, listChores } from '../../services/chores';
@@ -207,6 +208,7 @@ export function ParentDashboard() {
                 gradientIndex={profile?.avatar_gradient ?? undefined}
                 icon={profile?.avatar_icon}
                 size="md"
+                animated
               />
             </Pressable>
           </View>
@@ -391,10 +393,11 @@ function SnapshotTile({
   // reserved — only Points (orange) pops, the rest stay neutral so the data
   // reads through size, not a rainbow of backgrounds.
   const valueColor = tone === 'orange' ? C.orange : C.textDark;
+  const display = useCountUp(value);
   return (
     <View style={styles.snapTile}>
       <Text style={[styles.snapValue, { color: valueColor }]} maxFontSizeMultiplier={1.3}>
-        {value}
+        {display}
       </Text>
       <Text style={styles.snapLabel} maxFontSizeMultiplier={1.2} numberOfLines={1}>
         {label}
