@@ -12,18 +12,18 @@ export const lightC = {
   pink: '#FF4D8D',
   orange: '#FF8C42',
   green: '#00A92A',
-  bg: '#F3F0FF',
+  bg: '#FAF9FB', // warm near-white canvas (was lavender glass ground)
 
   // Text
-  textDark: '#2D2D3A',
+  textDark: '#22222B',
   textMid: '#6B6B80',
   textLight: '#A8A8B8',
   textWhite: '#FFFFFF',
 
-  // Surface & glass
-  glass: 'rgba(255, 255, 255, 0.70)',
-  glassLight: 'rgba(255, 255, 255, 0.50)',
-  border: 'rgba(255, 255, 255, 0.50)',
+  // Surface — now SOLID surfaces with a hairline, not frosted glass.
+  glass: '#FFFFFF', // primary card surface
+  glassLight: '#F3F1F7', // recessed / subtle container
+  border: 'rgba(24, 20, 40, 0.06)', // real hairline for definition on near-white
   borderPink: 'rgba(255, 77, 141, 0.30)',
 
   // Tinted alphas
@@ -70,14 +70,14 @@ export const darkC: Palette = {
   pink: '#FF4D8D',
   orange: '#FF8C42',
   green: '#1FBF44',
-  bg: '#171423',
+  bg: '#141220', // truer near-black violet ground
   textDark: '#F2EEFF',
   textMid: '#A8A2BE',
   textLight: '#6F6986',
   textWhite: '#FFFFFF',
-  glass: 'rgba(255, 255, 255, 0.08)',
-  glassLight: 'rgba(255, 255, 255, 0.05)',
-  border: 'rgba(255, 255, 255, 0.14)',
+  glass: '#221D31', // solid raised surface (was translucent glass)
+  glassLight: '#1B1726', // recessed surface
+  border: 'rgba(255, 255, 255, 0.07)', // hairline on dark
   borderPink: 'rgba(255, 77, 141, 0.45)',
   pinkAlpha15: 'rgba(255, 77, 141, 0.22)',
   pinkAlpha10: 'rgba(255, 77, 141, 0.15)',
@@ -149,15 +149,15 @@ export const shadows: Record<'sm' | 'md' | 'lg' | 'xl2' | 'pink', Shadow> = {
   },
   md: {
     shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 16,
-    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOpacity: 0.05,
     shadowColor: '#000000',
     elevation: 3,
   },
   lg: {
     shadowOffset: { width: 0, height: 8 },
-    shadowRadius: 32,
-    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    shadowOpacity: 0.07,
     shadowColor: '#000000',
     elevation: 6,
   },
@@ -170,8 +170,8 @@ export const shadows: Record<'sm' | 'md' | 'lg' | 'xl2' | 'pink', Shadow> = {
   },
   pink: {
     shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 16,
-    shadowOpacity: 0.28,
+    shadowRadius: 12,
+    shadowOpacity: 0.16,
     shadowColor: C.pink,
     elevation: 4,
   },
@@ -221,6 +221,14 @@ export const typography = {
     fontFamily: 'DMSans_500Medium',
     fontSize: 12,
     letterSpacing: 0.1,
+  },
+  // Micro uppercase label — pairs with big display numbers for an editorial,
+  // premium feel (e.g. stat-tile captions). Keep copy short.
+  label: {
+    fontFamily: 'DMSans_700Bold',
+    fontSize: 11,
+    letterSpacing: 1.1,
+    textTransform: 'uppercase' as const,
   },
   button: {
     fontFamily: 'DMSans_700Bold',

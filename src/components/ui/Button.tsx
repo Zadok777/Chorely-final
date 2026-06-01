@@ -1,14 +1,12 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { BlurView } from 'expo-blur';
 
 import {
   radii,
@@ -88,21 +86,6 @@ export function Button({
         style,
       ]}
     >
-      {variant === 'secondary' && Platform.OS === 'ios' ? (
-        <BlurView
-          intensity={20}
-          tint={mode === 'dark' ? 'dark' : 'light'}
-          style={StyleSheet.absoluteFillObject}
-        />
-      ) : null}
-      {variant === 'secondary' ? (
-        <View
-          style={[
-            StyleSheet.absoluteFillObject,
-            { backgroundColor: C.glass },
-          ]}
-        />
-      ) : null}
       {loading ? (
         <ActivityIndicator color={textColorFor(C, mode, variant)} />
       ) : (
@@ -130,7 +113,7 @@ function variantContainerStyle(C: Palette, variant: ButtonVariant): ViewStyle {
       return { backgroundColor: C.pink };
     case 'secondary':
       return {
-        backgroundColor: 'transparent',
+        backgroundColor: C.glass,
         borderWidth: 1,
         borderColor: C.border,
         overflow: 'hidden',

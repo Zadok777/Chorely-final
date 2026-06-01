@@ -1,23 +1,23 @@
 import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { BlurView } from 'expo-blur';
 
 import { radii, shadows, spacing, useTheme, type Palette } from '../../theme';
 
-// The intentional glass — see DESIGN.md §10 anti-patterns. Two-layer pattern:
-// the outer wrapper carries the shadow, the inner wrapper clips children via
-// borderRadius + overflow. Without the split, iOS clips the shadow. The blur
-// tint and tint background both follow the active theme.
+// Refined surface card (was frosted glass — see DESIGN.md §10). Solid surface
+// + a single soft shadow + hairline border. Two-layer pattern: the outer
+// wrapper carries the shadow, the inner wrapper clips children via
+// borderRadius + overflow. The `tint` prop layers a subtle brand wash for
+// colored cards; `light` is the plain surface.
 
 type ShadowKey = keyof typeof shadows | 'none';
 type Tint = 'light' | 'pink' | 'orange' | 'green';
 
 interface GlassCardProps {
   children: React.ReactNode;
-  // BlurView intensity on iOS. DESIGN §9 recommends 12–20.
+  // Retained for API compatibility; no longer used now that cards are solid.
   intensity?: number;
-  // Designed tint over the blur. `light` is the default glass; the colored
+  // Designed tint over the surface. `light` is the plain surface; the colored
   // tints layer the matching themed alpha token.
   tint?: Tint;
   // Override the corner radius (defaults to r18 — standard cards).
@@ -44,7 +44,6 @@ function tintBackground(C: Palette, tint: Tint): string {
 
 export function GlassCard({
   children,
-  intensity = 16,
   tint = 'light',
   radius = radii.r18,
   padding = spacing.s16,
@@ -52,7 +51,7 @@ export function GlassCard({
   shadow = 'md',
   style,
 }: GlassCardProps) {
-  const { C, mode } = useTheme();
+  const { C } = useTheme();
   const shadowStyle = shadow === 'none' ? undefined : shadows[shadow];
   const resolvedBorder = borderColor ?? C.border;
 
@@ -61,23 +60,15 @@ export function GlassCard({
       <View
         style={[
           styles.inner,
-          { borderRadius: radius, borderColor: resolvedBorder },
+          {
+            borderRadius: radius,
+            borderColor: resolvedBorder,
+            backgroundColor: tintBackground(C, tint),
+            padding,
+          },
         ]}
       >
-        {Platform.OS === 'ios' ? (
-          <BlurView
-            intensity={intensity}
-            tint={mode === 'dark' ? 'dark' : 'light'}
-            style={StyleSheet.absoluteFillObject}
-          />
-        ) : null}
-        <View
-          style={[
-            StyleSheet.absoluteFillObject,
-            { backgroundColor: tintBackground(C, tint) },
-          ]}
-        />
-        <View style={{ padding }}>{children}</View>
+        {children}
       </View>
     </View>
   );
