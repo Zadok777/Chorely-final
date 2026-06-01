@@ -25,6 +25,12 @@ import { useAuthBootstrap } from './src/hooks/useAuthBootstrap';
 import { useFamilyBootstrap } from './src/hooks/useFamilyBootstrap';
 import { useSettingsBootstrap } from './src/hooks/useSettingsBootstrap';
 import { useSettingsStore } from './src/store/settingsStore';
+import { useAuthStore } from './src/store/authStore';
+import {
+  initPurchases,
+  identifyPurchaser,
+  logoutPurchaser,
+} from './src/lib/revenuecat';
 
 // Cap font scaling for accessibility without breaking layout.
 if ((Text as any).defaultProps == null) (Text as any).defaultProps = {};
@@ -64,6 +70,21 @@ export default function App() {
     if (!ready || Platform.OS === 'web') return;
     SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
+
+  // Configure RevenueCat once the app is ready (no-ops in Expo Go / web).
+  useEffect(() => {
+    if (!ready) return;
+    initPurchases();
+  }, [ready]);
+
+  // Keep RevenueCat's identity in sync with the signed-in parent so paid
+  // entitlements follow the account across devices.
+  const userId = useAuthStore((s) => s.session?.user?.id);
+  useEffect(() => {
+    if (!ready) return;
+    if (userId) identifyPurchaser(userId);
+    else logoutPurchaser();
+  }, [ready, userId]);
 
   if (!ready) {
     return (
