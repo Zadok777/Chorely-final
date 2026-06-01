@@ -1,7 +1,7 @@
 <!--
-Entity (DS Santiago LLC d/b/a Doulos Nexus) and contact email are filled in below.
-STILL TO DO before publishing: [Business Address], [Website URL], then host publicly.
-Governing law / venue defaults to Florida, USA. Template, not legal advice — have counsel review.
+Entity, contact email, and business address are filled in below.
+STILL TO DO: host publicly, then add the [Website URL]. Governing law / venue defaults to Florida, USA.
+Template, not legal advice — have counsel review.
 -->
 
 # Chorely Terms of Use
@@ -75,5 +75,5 @@ These Terms are governed by the laws of the State of Florida, USA, without regar
 ## 13. Contact
 
 **DS Santiago LLC (d/b/a Doulos Nexus)**
-[Business Address]
+10614 Liberty Bell Dr, Tampa, FL 33647
 Email: **doulosnexus@gmail.com**

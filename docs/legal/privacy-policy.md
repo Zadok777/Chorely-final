@@ -1,10 +1,7 @@
 <!--
-Entity (DS Santiago LLC d/b/a Doulos Nexus) and contact email are filled in below.
-STILL TO DO before publishing:
-- [Business Address]  — add a real mailing address
-- [Website URL]       — where these pages are hosted
-Then link the hosted privacy-policy URL inside the app, and in the App Store App Privacy /
-Google Play Data Safety forms. Governing law defaults to Florida, USA.
+Entity, contact email, and business address are filled in below.
+STILL TO DO: host these pages publicly, then put that [Website URL] inside the app and in the
+App Store App Privacy / Google Play Data Safety forms. Governing law defaults to Florida, USA.
 Template, not legal advice — have counsel review, especially the COPPA sections.
 -->
 
@@ -98,7 +95,7 @@ We may update this Privacy Policy from time to time. We will revise the "Last up
 Questions or requests regarding this policy or your data:
 
 **DS Santiago LLC (d/b/a Doulos Nexus)**
-[Business Address]
+10614 Liberty Bell Dr, Tampa, FL 33647
 Email: **doulosnexus@gmail.com**
 
 ---
