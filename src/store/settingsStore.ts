@@ -14,11 +14,7 @@ interface SettingsState {
   notificationChoreComplete: boolean;
   notificationRewardRedeemed: boolean;
   notificationDailySummary: boolean;
-  // Local-only (not backed by user_settings yet, so it does not sync across
-  // devices). Adding a server column would require a schema migration.
-  soundEnabled: boolean;
   setDarkMode(value: boolean): void;
-  setSoundEnabled(value: boolean): void;
   setNotificationsEnabled(value: boolean): void;
   setNotificationChoreComplete(value: boolean): void;
   setNotificationRewardRedeemed(value: boolean): void;
@@ -39,7 +35,6 @@ const defaults = {
   notificationChoreComplete: true,
   notificationRewardRedeemed: true,
   notificationDailySummary: true,
-  soundEnabled: true,
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -47,7 +42,6 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       ...defaults,
       setDarkMode: (darkMode) => set({ darkMode }),
-      setSoundEnabled: (soundEnabled) => set({ soundEnabled }),
       setNotificationsEnabled: (notificationsEnabled) =>
         set({ notificationsEnabled }),
       setNotificationChoreComplete: (notificationChoreComplete) =>

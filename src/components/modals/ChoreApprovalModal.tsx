@@ -10,7 +10,6 @@ import { useToast } from '../ui/Toast';
 import { ModalSheet } from './ModalSheet';
 import { approveChore, rejectChore } from '../../services/rpc';
 import { hapticSuccess, hapticWarning } from '../../utils/haptics';
-import { playSound } from '../../utils/sounds';
 import {
   GRADIENTS,
   radii,
@@ -72,7 +71,6 @@ export function ChoreApprovalModal({
       return;
     }
     hapticSuccess();
-    playSound('success');
     toast.show({ message: 'Approved — points awarded.', tone: 'success' });
     onResolved();
     close();

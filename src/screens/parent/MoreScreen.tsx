@@ -52,7 +52,6 @@ export function MoreScreen() {
   const session = useAuthStore((s) => s.session);
   const family = useFamilyStore((s) => s.family);
   const darkMode = useSettingsStore((s) => s.darkMode);
-  const soundEnabled = useSettingsStore((s) => s.soundEnabled);
   const notificationsEnabled = useSettingsStore((s) => s.notificationsEnabled);
 
   const [editingName, setEditingName] = useState(false);
@@ -67,10 +66,6 @@ export function MoreScreen() {
     useSettingsStore.getState().setDarkMode(v);
     const res = await updateMySettings({ dark_mode: v });
     if (!res.success) toast.show({ message: res.error, tone: 'error' });
-  };
-
-  const onToggleSound = (v: boolean) => {
-    useSettingsStore.getState().setSoundEnabled(v);
   };
 
   const onToggleNotifications = async (v: boolean) => {
@@ -184,20 +179,6 @@ export function MoreScreen() {
             <Switch
               value={darkMode}
               onValueChange={onToggleDark}
-              trackColor={{ false: C.mutedAlpha20, true: C.pink }}
-              thumbColor={C.textWhite}
-            />
-          }
-        />
-        <Divider />
-        <Row
-          icon="volume-high-outline"
-          label="Sound effects"
-          sub="Play a sound on celebrations and approvals"
-          right={
-            <Switch
-              value={soundEnabled}
-              onValueChange={onToggleSound}
               trackColor={{ false: C.mutedAlpha20, true: C.pink }}
               thumbColor={C.textWhite}
             />
