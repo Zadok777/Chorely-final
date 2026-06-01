@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -22,6 +22,16 @@ import {
   useThemedStyles,
   type Palette,
 } from '../../theme';
+import {
+  AGE_TIERS,
+  effectiveTier,
+  tierShortLabel,
+  type AgeTier,
+} from '../../utils/ageTier';
+import {
+  REWARD_SUGGESTIONS,
+  type RewardSuggestion,
+} from '../../data/rewardSuggestions';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -99,21 +109,37 @@ export function CreateRewardModal({
   const { C } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const family = useFamilyStore((s) => s.family);
+  const children = useFamilyStore((s) => s.children);
   const session = useAuthStore((s) => s.session);
 
   const [icon, setIcon] = useState<IoniconName>('gift');
   const [color, setColor] = useState<string>(C.orange);
   const [submitting, setSubmitting] = useState(false);
+  // Rewards are family-level, so let the parent pick which tier to browse
+  // suggestions for (defaults to the first child's tier).
+  const [suggestTier, setSuggestTier] = useState<AgeTier>(() =>
+    children[0] ? effectiveTier(children[0]) : 'lower'
+  );
 
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: { title: '', description: '', pointCost: '' },
   });
+
+  const rewardSuggestions = REWARD_SUGGESTIONS[suggestTier];
+
+  const applyReward = (s: RewardSuggestion) => {
+    setValue('title', s.title, { shouldValidate: true });
+    setValue('pointCost', String(s.cost), { shouldValidate: true });
+    setIcon(s.icon as IoniconName);
+    hapticLight();
+  };
 
   const resetAll = () => {
     reset({ title: '', description: '', pointCost: '' });
@@ -209,6 +235,50 @@ export function CreateRewardModal({
       />
 
       <View>
+        <Text style={styles.fieldLabel}>Suggestions</Text>
+        <View style={styles.tierRow}>
+          {AGE_TIERS.map((t) => {
+            const active = suggestTier === t;
+            return (
+              <Pressable
+                key={t}
+                onPress={() => setSuggestTier(t)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+                style={[styles.tierChip, active && styles.tierChipActive]}
+              >
+                <Text
+                  style={[styles.tierChipText, active && styles.tierChipTextActive]}
+                >
+                  {tierShortLabel(t)}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.suggestRow}
+        >
+          {rewardSuggestions.map((s) => (
+            <Pressable
+              key={s.title}
+              onPress={() => applyReward(s)}
+              accessibilityRole="button"
+              accessibilityLabel={`Use reward: ${s.title}, ${s.cost} points`}
+              style={styles.suggestChip}
+            >
+              <Text style={styles.suggestChipText} numberOfLines={1}>
+                {s.title}
+              </Text>
+              <Text style={styles.suggestChipPts}>{s.cost} pts</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
+
+      <View>
         <Text style={styles.fieldLabel}>Icon</Text>
         <View style={styles.chipWrap}>
           {ICONS.map((name) => {
@@ -293,6 +363,54 @@ const makeStyles = (C: Palette) =>
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.s8,
+  },
+  tierRow: {
+    flexDirection: 'row',
+    gap: spacing.s8,
+    marginBottom: spacing.s12,
+  },
+  tierChip: {
+    paddingHorizontal: spacing.s12,
+    paddingVertical: spacing.s8,
+    borderRadius: radii.r12,
+    borderWidth: 1,
+    borderColor: C.border,
+    backgroundColor: C.glassLight,
+  },
+  tierChipActive: {
+    backgroundColor: C.pink,
+    borderColor: C.pink,
+  },
+  tierChipText: {
+    ...typography.caption,
+    color: C.textMid,
+  },
+  tierChipTextActive: {
+    color: C.textWhite,
+  },
+  suggestRow: {
+    gap: spacing.s8,
+    paddingRight: spacing.s4,
+  },
+  suggestChip: {
+    backgroundColor: C.pinkAlpha10,
+    borderWidth: 1,
+    borderColor: C.borderPink,
+    borderRadius: radii.r12,
+    paddingHorizontal: spacing.s12,
+    paddingVertical: spacing.s8,
+    alignItems: 'flex-start',
+    maxWidth: 180,
+  },
+  suggestChipText: {
+    ...typography.button,
+    fontSize: 13,
+    color: C.textDark,
+  },
+  suggestChipPts: {
+    ...typography.caption,
+    color: C.pink,
+    marginTop: 2,
   },
   iconChip: {
     width: 44,

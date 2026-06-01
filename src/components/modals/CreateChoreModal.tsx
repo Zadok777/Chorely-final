@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -25,6 +25,11 @@ import {
   type Palette,
 } from '../../theme';
 import type { ChoreCategory, ChoreFrequency } from '../../types/app.types';
+import { effectiveTier, tierLabel } from '../../utils/ageTier';
+import {
+  CHORE_SUGGESTIONS,
+  type ChoreSuggestion,
+} from '../../data/choreSuggestions';
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -103,6 +108,7 @@ export function CreateChoreModal({
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
@@ -133,6 +139,20 @@ export function CreateChoreModal({
     setChildIds((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
+  };
+
+  // Suggestions follow the selected child's tier (or the first child if none is
+  // selected yet). Suggestions only — they prefill the form, never restrict it.
+  const tierChild =
+    children.find((c) => c.id === childIds[0]) ?? children[0] ?? null;
+  const suggestionTier = tierChild ? effectiveTier(tierChild) : null;
+  const suggestions = suggestionTier ? CHORE_SUGGESTIONS[suggestionTier] : [];
+
+  const applySuggestion = (s: ChoreSuggestion) => {
+    setValue('title', s.title, { shouldValidate: true });
+    setValue('points', String(s.points), { shouldValidate: true });
+    setCategory(s.category);
+    hapticLight();
   };
 
   const onSubmit = async (values: FormValues) => {
@@ -273,6 +293,34 @@ export function CreateChoreModal({
         )}
       </View>
 
+      {suggestions.length > 0 && suggestionTier ? (
+        <View>
+          <Text style={styles.fieldLabel}>
+            Suggested for {tierLabel(suggestionTier)}
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.suggestRow}
+          >
+            {suggestions.map((s) => (
+              <Pressable
+                key={s.title}
+                onPress={() => applySuggestion(s)}
+                accessibilityRole="button"
+                accessibilityLabel={`Use suggestion: ${s.title}, ${s.points} points`}
+                style={styles.suggestChip}
+              >
+                <Text style={styles.suggestChipText} numberOfLines={1}>
+                  {s.title}
+                </Text>
+                <Text style={styles.suggestChipPts}>{s.points} pts</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
+      ) : null}
+
       <Controller
         name="points"
         control={control}
@@ -380,6 +428,30 @@ const makeStyles = (C: Palette) =>
   helper: {
     ...typography.body,
     color: C.textMid,
+  },
+  suggestRow: {
+    gap: spacing.s8,
+    paddingRight: spacing.s4,
+  },
+  suggestChip: {
+    backgroundColor: C.pinkAlpha10,
+    borderWidth: 1,
+    borderColor: C.borderPink,
+    borderRadius: radii.r12,
+    paddingHorizontal: spacing.s12,
+    paddingVertical: spacing.s8,
+    alignItems: 'flex-start',
+    maxWidth: 180,
+  },
+  suggestChipText: {
+    ...typography.button,
+    fontSize: 13,
+    color: C.textDark,
+  },
+  suggestChipPts: {
+    ...typography.caption,
+    color: C.pink,
+    marginTop: 2,
   },
   chipWrap: {
     flexDirection: 'row',

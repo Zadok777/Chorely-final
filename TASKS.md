@@ -256,3 +256,19 @@ Ran a full security / dead-code / correctness audit. Findings + actions:
 - Applied **migration 013**: wrapped `auth.uid()` → `(select auth.uid())` in RLS policies (advisor `auth_rls_initplan`) + added 6 FK covering indexes (`unindexed_foreign_keys`).
 - Removed the dev **ComponentShowcase** screen + its nav route/links (was shipping in the bundle).
 - Security verdict: no critical vulns. No hardcoded secrets, no `console.log`, RLS verified. Remaining: enable leaked-password protection (Pro plan — see above); the "authenticated can call SECURITY DEFINER" advisor warnings are by-design (our RPC API, auth-checked internally).
+
+## Phase 11: Age/Grade-Tier Chores & Rewards (v1.0 — decided 2026-06-01)
+
+Tailor chore & reward SUGGESTIONS (and default point values) to a child's age/grade tier. **Suggestions only — never restrict** what a parent can assign. Tier auto-derived from `date_of_birth`, with an optional per-child override.
+
+**Tiers (4):** `early` Pre-K–2nd (~5–7) · `lower` Grades 3–6 (~8–11) · `middle` Grades 7–9 (~12–14) · `upper` Grades 10–12 (~15–18).
+
+- [x] `src/utils/ageTier.ts` — `getAgeTier(dob)`, `effectiveTier(child)`, `ageFromDob`, `tierLabel`/`tierShortLabel`, `AGE_TIERS`.
+- [x] `src/data/choreSuggestions.ts` — `CHORE_SUGGESTIONS: Record<AgeTier, ChoreSuggestion[]>` (title/category/points; points scale by tier).
+- [x] `src/data/rewardSuggestions.ts` — `REWARD_SUGGESTIONS: Record<AgeTier, RewardSuggestion[]>` (title/cost/icon).
+- [ ] CreateChoreModal — "Suggested for {tier}" tap-to-add chips for the selected child's tier; tapping prefills title/category/points.
+- [ ] CreateRewardModal — suggested rewards for the selected child's tier; tapping prefills title/cost/icon.
+- [ ] Consolidate duplicated `ageFromDob`/`bracketLabel` (FamilyScreen + ParentDashboard) onto `ageTier.ts`; relabel age → grade-tier labels.
+- [ ] Migration 016 — `children.age_tier_override` (nullable text + CHECK in early/lower/middle/upper); apply remote + local mirror; regen `database.types.ts`.
+- [ ] Tier override picker in AddChild / ProfileEdit (auto-detected tier shown, tap to change).
+- [ ] (v1.1) Kid-facing visual tiers — expand `bracketThemes` from the old 3-bracket/pre-teal system to 4 tiers + teal.
