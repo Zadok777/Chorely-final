@@ -38,26 +38,9 @@ import {
 import type { ActivityLog, Child } from '../../types/app.types';
 import { formatRelativeTime } from '../../utils/date';
 import { TAB_BAR_CLEARANCE } from './layout';
+import { ageFromDob, effectiveTier, tierLabel } from '../../utils/ageTier';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
-
-function bracketLabel(age: number | null): string | null {
-  if (age === null) return null;
-  if (age <= 10) return 'Elementary';
-  if (age <= 14) return 'Middle School';
-  return 'High School';
-}
-
-function ageFromDob(dob: string | null): number | null {
-  if (dob === null || dob === '') return null;
-  const d = new Date(`${dob}T00:00:00`);
-  if (Number.isNaN(d.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - d.getFullYear();
-  const m = now.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
-  return age;
-}
 
 export function FamilyScreen() {
   const toast = useToast();
@@ -213,7 +196,7 @@ export function FamilyScreen() {
           <View style={styles.list}>
             {children.map((child, index) => {
               const age = ageFromDob(child.date_of_birth);
-              const bracket = bracketLabel(age);
+              const tierName = tierLabel(effectiveTier(child));
               return (
                 <GlassCard key={child.id} style={styles.kidCard}>
                   <View style={styles.kidTop}>
@@ -239,8 +222,7 @@ export function FamilyScreen() {
                       </Text>
                       {age !== null ? (
                         <Text style={styles.kidSub} maxFontSizeMultiplier={1.3}>
-                          Age {age}
-                          {bracket !== null ? ` · ${bracket}` : ''}
+                          Age {age} · {tierName}
                         </Text>
                       ) : null}
                     </View>

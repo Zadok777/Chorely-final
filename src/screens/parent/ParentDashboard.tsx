@@ -24,6 +24,7 @@ import { SkeletonRow } from '../../components/ui/SkeletonLoader';
 import { StreakFlame } from '../../components/ui/StreakFlame';
 import { useToast } from '../../components/ui/Toast';
 import { useCountUp } from '../../hooks/useCountUp';
+import { ageFromDob } from '../../utils/ageTier';
 import { listActivity } from '../../services/activity';
 import { listChildren } from '../../services/children';
 import { listAssignmentsForFamily, listChores } from '../../services/chores';
@@ -552,17 +553,6 @@ function GoalRow({
       </View>
     </View>
   );
-}
-
-function ageFromDob(dob: string | null): number | null {
-  if (dob === null || dob === '') return null;
-  const d = new Date(`${dob}T00:00:00`);
-  if (Number.isNaN(d.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - d.getFullYear();
-  const m = now.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
-  return age;
 }
 
 const makeStyles = (C: Palette) =>

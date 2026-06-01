@@ -266,9 +266,9 @@ Tailor chore & reward SUGGESTIONS (and default point values) to a child's age/gr
 - [x] `src/utils/ageTier.ts` — `getAgeTier(dob)`, `effectiveTier(child)`, `ageFromDob`, `tierLabel`/`tierShortLabel`, `AGE_TIERS`.
 - [x] `src/data/choreSuggestions.ts` — `CHORE_SUGGESTIONS: Record<AgeTier, ChoreSuggestion[]>` (title/category/points; points scale by tier).
 - [x] `src/data/rewardSuggestions.ts` — `REWARD_SUGGESTIONS: Record<AgeTier, RewardSuggestion[]>` (title/cost/icon).
-- [ ] CreateChoreModal — "Suggested for {tier}" tap-to-add chips for the selected child's tier; tapping prefills title/category/points.
-- [ ] CreateRewardModal — suggested rewards for the selected child's tier; tapping prefills title/cost/icon.
-- [ ] Consolidate duplicated `ageFromDob`/`bracketLabel` (FamilyScreen + ParentDashboard) onto `ageTier.ts`; relabel age → grade-tier labels.
-- [ ] Migration 016 — `children.age_tier_override` (nullable text + CHECK in early/lower/middle/upper); apply remote + local mirror; regen `database.types.ts`.
-- [ ] Tier override picker in AddChild / ProfileEdit (auto-detected tier shown, tap to change).
+- [x] CreateChoreModal — "Suggested for {tier}" tap-to-add chips for the selected child's tier; tapping prefills title/category/points.
+- [x] CreateRewardModal — suggested rewards via a tier picker (rewards are family-level); tapping prefills title/cost/icon.
+- [x] Consolidate duplicated `ageFromDob`/`bracketLabel` (FamilyScreen + ParentDashboard) onto `ageTier.ts`; FamilyScreen now shows the grade-tier label (respects override).
+- [x] Migration 016 — `children.age_tier_override` (nullable text + CHECK in early/lower/middle/upper); applied remote + local mirror; `database.types.ts` updated.
+- [x] Tier override picker in ProfileEditModal ("Age group": Auto + 4 tiers; tap a kid's avatar to edit).
 - [ ] (v1.1) Kid-facing visual tiers — expand `bracketThemes` from the old 3-bracket/pre-teal system to 4 tiers + teal.
