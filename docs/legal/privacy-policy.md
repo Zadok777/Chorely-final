@@ -95,7 +95,7 @@ We may update this Privacy Policy from time to time. We will revise the "Last up
 Questions or requests regarding this policy or your data:
 
 **DS Santiago LLC (d/b/a Doulos Nexus)**
-10614 Liberty Bell Dr, Tampa, FL 33647
+2780 E. Fowler Ave #421, Tampa, FL 33612
 Email: **doulosnexus@gmail.com**
 
 ---

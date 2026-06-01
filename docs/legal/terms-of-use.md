@@ -75,5 +75,5 @@ These Terms are governed by the laws of the State of Florida, USA, without regar
 ## 13. Contact
 
 **DS Santiago LLC (d/b/a Doulos Nexus)**
-10614 Liberty Bell Dr, Tampa, FL 33647
+2780 E. Fowler Ave #421, Tampa, FL 33612
 Email: **doulosnexus@gmail.com**
