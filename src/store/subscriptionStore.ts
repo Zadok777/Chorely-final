@@ -9,7 +9,8 @@ import { create } from 'zustand';
 interface SubscriptionState {
   isPro: boolean;
   isReady: boolean;
-  setPro(isPro: boolean): void;
+  activeProductIdentifier: string | null;
+  setPro(isPro: boolean, activeProductIdentifier?: string | null): void;
   setReady(): void;
   reset(): void;
 }
@@ -17,7 +18,10 @@ interface SubscriptionState {
 export const useSubscriptionStore = create<SubscriptionState>((set) => ({
   isPro: false,
   isReady: false,
-  setPro: (isPro) => set({ isPro, isReady: true }),
+  activeProductIdentifier: null,
+  setPro: (isPro, activeProductIdentifier = null) =>
+    set({ isPro, activeProductIdentifier, isReady: true }),
   setReady: () => set({ isReady: true }),
-  reset: () => set({ isPro: false, isReady: false }),
+  reset: () =>
+    set({ isPro: false, activeProductIdentifier: null, isReady: false }),
 }));

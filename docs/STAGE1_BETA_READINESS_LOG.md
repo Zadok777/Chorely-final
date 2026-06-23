@@ -236,6 +236,41 @@ purchases, and update local entitlement state when RevenueCat reports the
   `goog_...` SDK keys.
 - If offering a launch trial, configure it in the store dashboards / RevenueCat
   as a 7-day introductory offer, preferably attached to yearly.
+
+---
+
+## Step 6b — Allow Plus users to switch monthly/yearly plans · 2026-06-23 · ✅ Code Done
+
+### Objective
+Keep plan options visible after a user already has Chorely Plus, so a monthly
+subscriber can move to yearly later without needing a reset or new account.
+
+### Investigation (how we concluded)
+- The paywall rendered an active-status card when `isPro === true` and skipped
+  the package list entirely. That explained why the user could not see yearly
+  after completing a monthly test purchase.
+- RevenueCat `CustomerInfo` includes the active entitlement's
+  `productIdentifier`, so the app can identify which package is the current
+  plan while still showing the other packages.
+
+### Decision / Change
+- Store the active RevenueCat product id in `subscriptionStore`.
+- Keep the Chorely Plus active-status card, but still render the monthly/yearly
+  package cards underneath.
+- Label the active package as **Current plan** and disable re-purchasing that
+  same package.
+- For a different selected package, show **Change plan** and call the same
+  RevenueCat purchase flow. The actual upgrade/downgrade/crossgrade behavior is
+  handled by the App Store / Google Play subscription systems.
+
+### Verification
+- `npm run typecheck`: clean.
+- `npm test`: 20/20 passing.
+
+### Follow-ups
+- Verify monthly → yearly and yearly → monthly in RevenueCat Test Store.
+- Re-verify in real App Store / Google Play sandbox builds once store products
+  exist.
 - Verify Terms + Privacy URLs are live before store review.
 - Run a real-device sandbox purchase and restore test. Expo Go and the iOS
   Simulator are not enough for final IAP verification.

@@ -31,8 +31,10 @@ export function purchasesAvailable(): boolean {
 
 // Push the entitlement state into the subscription store (also marks it ready).
 function syncEntitlement(info: CustomerInfo): void {
-  const active = info.entitlements.active[ENTITLEMENT_ID] !== undefined;
-  useSubscriptionStore.getState().setPro(active);
+  const entitlement = info.entitlements.active[ENTITLEMENT_ID];
+  useSubscriptionStore
+    .getState()
+    .setPro(entitlement !== undefined, entitlement?.productIdentifier ?? null);
 }
 
 /**

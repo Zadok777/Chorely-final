@@ -74,6 +74,9 @@ export function PaywallScreen() {
   const styles = useThemedStyles(makeStyles);
 
   const isPro = useSubscriptionStore((s) => s.isPro);
+  const activeProductIdentifier = useSubscriptionStore(
+    (s) => s.activeProductIdentifier
+  );
 
   const [loading, setLoading] = useState(true);
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
@@ -143,6 +146,10 @@ export function PaywallScreen() {
   }, [working, toast, nav]);
 
   const selectedPkg = packages.find((p) => p.identifier === selectedId) ?? null;
+  const selectedIsCurrent =
+    selectedPkg !== null &&
+    activeProductIdentifier !== null &&
+    selectedPkg.product.identifier === activeProductIdentifier;
 
   return (
     <ScreenContainer scroll edges={['top', 'bottom']}>
@@ -175,10 +182,12 @@ export function PaywallScreen() {
         <View style={styles.activeCard}>
           <Ionicons name="checkmark-circle" size={22} color={C.green} />
           <Text style={styles.activeText} maxFontSizeMultiplier={1.3}>
-            {`You're on Chorely Plus. Manage or cancel anytime in your ${platformStore()} subscription settings.`}
+            {`You're on Chorely Plus. You can switch plans below, or manage/cancel anytime in your ${platformStore()} subscription settings.`}
           </Text>
         </View>
-      ) : loading ? (
+      ) : null}
+
+      {loading ? (
         <View style={styles.loading}>
           <ActivityIndicator color={C.pink} />
         </View>
@@ -226,6 +235,9 @@ export function PaywallScreen() {
                       {isAnnual ? (
                         <Text style={styles.planBadge}>Best value</Text>
                       ) : null}
+                      {pkg.product.identifier === activeProductIdentifier ? (
+                        <Text style={styles.planCurrent}>Current plan</Text>
+                      ) : null}
                     </View>
                   </View>
                   <Text style={styles.planPrice} maxFontSizeMultiplier={1.3}>
@@ -238,13 +250,19 @@ export function PaywallScreen() {
 
           <Button
             label={
-              selectedPkg
-                ? `Subscribe — ${selectedPkg.product.priceString}`
-                : 'Subscribe'
+              selectedIsCurrent
+                ? 'Current plan'
+                : selectedPkg
+                  ? isPro
+                    ? `Change plan — ${selectedPkg.product.priceString}`
+                    : `Subscribe — ${selectedPkg.product.priceString}`
+                  : isPro
+                    ? 'Change plan'
+                    : 'Subscribe'
             }
             onPress={onSubscribe}
             loading={working}
-            disabled={!selectedPkg}
+            disabled={!selectedPkg || selectedIsCurrent}
             fullWidth
             size="lg"
           />
@@ -262,7 +280,7 @@ export function PaywallScreen() {
             Payment is charged to your {platformStore()} account at confirmation.
             Subscriptions renew automatically unless cancelled at least 24 hours
             before the end of the period. Manage or cancel in your account
-            settings.
+            settings. Plan changes are handled by {platformStore()}.
           </Text>
 
           <View style={styles.legalRow}>
@@ -354,6 +372,7 @@ const makeStyles = (C: Palette) =>
       backgroundColor: C.glassLight,
       borderWidth: 1,
       borderColor: C.border,
+      marginBottom: spacing.s20,
     },
     activeText: {
       ...typography.body,
@@ -403,6 +422,11 @@ const makeStyles = (C: Palette) =>
     planBadge: {
       ...typography.caption,
       color: C.pink,
+      marginTop: 2,
+    },
+    planCurrent: {
+      ...typography.caption,
+      color: C.green,
       marginTop: 2,
     },
     planPrice: {
