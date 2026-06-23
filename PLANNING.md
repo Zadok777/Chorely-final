@@ -11,7 +11,7 @@ This is a **fresh build**, not a rebuild. The folder starts with the Expo skelet
 ### What exists ahead of time
 
 - **Supabase backend**: the live project at the Supabase URL (provided when wiring Phase 2) already has migrations 001–010 applied, all RPC functions deployed, and RLS policies enforced. The schema is documented in CLAUDE.md §5. We connect to it from the new app; we do not re-create it.
-- **GitHub repo**: `https://github.com/doulosnexus-lang/Chorely.git` exists and is empty. Phase 1 wires the local folder to this remote and pushes the first commit.
+- **GitHub repo**: hosted on the personal GitHub account as of the 2026-06-23 migration. Phase 1 wires the local folder to the remote and pushes the first commit.
 - **Brand asset**: `assets/chorely-logo.png` is the pink→orange smiley used by the `ChorelyLogo` and `ChorelyIcon` components.
 - **App.tsx**: stubs in font loading (Nunito + DM Sans), `SafeAreaProvider`, `GestureHandlerRootView`, `NavigationContainer`, and `ThemeProvider` + `RootNavigator`. The imports it references (`./src/theme`, `./src/navigation/RootNavigator`) are created in Phase 1 / Phase 4.
 

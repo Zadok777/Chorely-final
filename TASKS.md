@@ -15,7 +15,7 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 
 ## Phase 1: Foundation (repo + skeleton) — completed 2026-05-27
 
-- [x] Get GitHub repo URL from user (`https://github.com/doulosnexus-lang/Chorely.git`)
+- [x] Get GitHub repo URL from user (personal account repo — migrated 2026-06-23)
 - [x] `git init` in `Chorely 2/`, add remote, set default branch to `main`
 - [x] Add `.gitignore` (Node, Expo, EAS, `.env`, `.DS_Store`, `ios/`, `android/`)
 - [x] Add `.env.example` (4 env vars from CLAUDE.md §3)
@@ -39,7 +39,7 @@ Legend: `[ ]` pending, `[x]` complete, `[-]` skipped
 - [x] Author migrations 001-010 implementing CLAUDE.md §5 schema (tables, FKs, RLS policies, RPCs)
 - [x] Author migration 011 (set search_path on helpers, revoke PUBLIC on SECURITY DEFINER fns)
 - [x] Author migration 012 (revoke anon EXECUTE on RPCs at GRANT layer; defense-in-depth)
-- [x] Apply migrations 001-012 to `kwwhuwegzdaqstqhmths` via MCP (all 12 succeeded)
+- [x] Apply migrations 001-016 to `zinbukzmkorkawbgckkh` (Chorely App, personal account) via MCP
 - [x] Verify all 11 tables exist with RLS enabled
 - [x] Verify anon role has zero SECURITY DEFINER access; authenticated has user-callable RPCs only
 - [x] Generate `src/types/database.types.ts` from live schema via MCP

@@ -397,7 +397,8 @@ Record all architectural decisions here. Format: date and one-sentence reason.
 
 | Date | Decision | Reason |
 |---|---|---|
-| 2026-05-27 | Fresh build in `~/Desktop/Chorely 2/`, new repo at `github.com/doulosnexus-lang/Chorely.git` | Previous `~/Desktop/Chorely-new` and other artifacts archived; this is a clean start matching the Lumina Bloom prototype |
+| 2026-05-27 | Fresh build in `~/Desktop/Chorely 2/` | Previous `~/Desktop/Chorely-new` and other artifacts archived; this is a clean start matching the Lumina Bloom prototype |
+| 2026-06-23 | Migrated backend to new Supabase project `zinbukzmkorkawbgckkh` ("Chorely App") on the personal account + moving to a new GitHub repo; retired the previous project and repo | Consolidating Chorely under the personal account. All 16 migrations re-applied to the new project; `.env.local` and types updated. |
 | 2026-05-27 | Visual system split into DESIGN.md | Reduces CLAUDE.md session-load footprint; matches the "design.md" pattern from `ai-design-prompt-template.md` |
 | 2026-05-27 | Fonts: Nunito + DM Sans (not Plus Jakarta + Manrope) | Already loaded in App.tsx; neither is in banned-fonts list; Nunito's rounded forms match elementary bracket |
 | 2026-05-28 | Upgraded to Expo SDK 54 (RN 0.81 / React 19 / Reanimated 4) | Workspace got the bump from `npx expo install --fix` and runs cleanly in Expo Go; reverting would risk breaking the working dev loop. Future SDK changes should go through `npx expo install --fix` together, not piecemeal. |

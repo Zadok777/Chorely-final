@@ -33,5 +33,9 @@ build/
 .gradle/
 .tmp/
 
+# Supabase CLI
+supabase/.temp/
+supabase/.branches/
+
 # Logs
 *.log
