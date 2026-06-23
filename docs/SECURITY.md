@@ -31,6 +31,14 @@ Security model for Chorely. See also CLAUDE.md §7 (auth), §10 (code standards)
 - Audience is adults 18+ (not the Kids/Families category).
 - In-app account deletion via `delete_user_account()` cascades all user data.
 
+## Applied hardening
+
+- **Migration 017 (2026-06-23):** revoked `authenticated` UPDATE on
+  `children.points` / `streak_days` / `last_streak_date` / `is_under_13` and the
+  identity columns; points/streaks now change only via the SECURITY DEFINER RPCs.
+  Reimplemented `generate_invite_code` with `pgcrypto` (`gen_random_bytes`).
+  Full rationale + verification in [STAGE1_BETA_READINESS_LOG.md](./STAGE1_BETA_READINESS_LOG.md) (Step 1).
+
 ## Known advisor notes (by design)
 
 Supabase flags `authenticated`-executable `SECURITY DEFINER` functions. These are

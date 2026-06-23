@@ -124,7 +124,7 @@ Chorely 2/
 
 ## 5. Database Schema
 
-These are the tables in the Supabase backend (migrations 001–015). Do not create new tables without updating this file. The frontend must align with this schema exactly. (Migrations 011–013 are security/perf hardening — function security, anon RPC revokes, RLS perf + FK indexes — and add no new tables. Migration 015 adds nullable `avatar_gradient integer` + `avatar_icon text` to profiles and children for customizable avatars — `avatar_gradient` indexes `AVATAR_GRADIENTS`, `avatar_icon` is an Ionicon name or `'face'` for the Chorely smiley.)
+These are the tables in the Supabase backend (migrations 001–017). Do not create new tables without updating this file. The frontend must align with this schema exactly. (Migrations 011–013 are security/perf hardening — function security, anon RPC revokes, RLS perf + FK indexes — and add no new tables. Migration 015 adds nullable `avatar_gradient integer` + `avatar_icon text` to profiles and children for customizable avatars — `avatar_gradient` indexes `AVATAR_GRADIENTS`, `avatar_icon` is an Ionicon name or `'face'` for the Chorely smiley. Migration 016 adds `children.age_tier_override`. Migration 017 is security hardening — revokes `authenticated` UPDATE on `children.points`/`streak_days`/identity columns so points change only via RPCs, and makes `generate_invite_code` crypto-secure; adds no new tables. See docs/STAGE1_BETA_READINESS_LOG.md.)
 
 ### profiles (001)
 ```sql

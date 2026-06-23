@@ -50,10 +50,11 @@ auth.users ─1:1─ profiles ─1:N─ family_members ─N:1─ families
 
 ## Migrations
 
-Numbered `001`–`016` in `supabase/migrations/`. Highlights: 001 profiles +
+Numbered `001`–`017` in `supabase/migrations/`. Highlights: 001 profiles +
 trigger; 002 families + `is_family_member`; 008–009 RPCs; 010 COPPA fields;
 011–012 function-security hardening; 013 RLS perf + FK indexes; 014 goals;
-015 customizable avatars; 016 age-tier override.
+015 customizable avatars; 016 age-tier override; 017 security hardening
+(column-level UPDATE lockdown on `children` + crypto-secure invite codes).
 
 ## Conventions
 
