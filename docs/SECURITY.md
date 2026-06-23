@@ -39,6 +39,33 @@ Security model for Chorely. See also CLAUDE.md §7 (auth), §10 (code standards)
   Reimplemented `generate_invite_code` with `pgcrypto` (`gen_random_bytes`).
   Full rationale + verification in [STAGE1_BETA_READINESS_LOG.md](./STAGE1_BETA_READINESS_LOG.md) (Step 1).
 
+## Static security re-audit (2026-06-23)
+
+Re-ran the code/migration-level checks; all passed:
+
+- `.env`, `.env.local`, `.env.*.local` are gitignored; no `service_role` key in
+  app or repo (only a comment reference in migration 012).
+- No hardcoded Supabase/RevenueCat secrets in `src` (the `test_…` RevenueCat key
+  in `lib/revenuecat.ts` is a public Test Store key, replaced by real public
+  `EXPO_PUBLIC_…` keys at build time).
+- RLS enabled on all 12 tables (12 `enable row level security` for 12
+  `create table`); 35 policies across them.
+- Screens never import `lib/supabase` directly — all DB access goes through
+  `src/services/`.
+- No client-side point/streak mutation: the only `updateChild` caller writes
+  cosmetic columns (`avatar_gradient`, `avatar_icon`, `age_tier_override`); points
+  and streaks change only via the SECURITY DEFINER RPCs, and migration 017 revokes
+  `authenticated` UPDATE on those columns at the DB grant layer.
+- Startup validates `EXPO_PUBLIC_SUPABASE_URL` + `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+  and throws if missing.
+- Only 5 `console.*` calls, all `__DEV__`-guarded `console.warn` in
+  `lib/revenuecat.ts`; none log sensitive data and all are stripped from
+  production builds.
+
+**Still requires a live run (needs DB access, not verifiable statically):** the
+Supabase **security + performance advisors** — run from the project's Advisors
+tab in the Supabase dashboard after any DDL change, and before TestFlight.
+
 ## Known advisor notes (by design)
 
 Supabase flags `authenticated`-executable `SECURITY DEFINER` functions. These are
