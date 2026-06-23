@@ -47,7 +47,8 @@
     "owner": "zad0k777",
     "plugins": [
       "expo-secure-store",
-      "expo-font"
+      "expo-font",
+      "expo-asset"
     ],
     "updates": {
       "url": "https://u.expo.dev/81f24291-8c8a-497a-a464-6b09d6454468"
