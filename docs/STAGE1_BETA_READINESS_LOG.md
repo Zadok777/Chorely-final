@@ -276,3 +276,36 @@ subscriber can move to yearly later without needing a reset or new account.
 - Verify Terms + Privacy URLs are live before store review.
 - Run a real-device sandbox purchase and restore test. Expo Go and the iOS
   Simulator are not enough for final IAP verification.
+
+---
+
+## Step 6c — Show store-configured free trial on the paywall · 2026-06-23 · ✅ Code Done
+
+### Objective
+When a free trial is configured at the store/RevenueCat layer, surface it on the
+paywall (badge, CTA, and disclosure) without building any app-side trial logic.
+
+### Investigation (how we concluded)
+- The trial decision (2026-06-23) was to keep trials at the store layer, but the
+  paywall had no UI to reflect a configured trial, so a 7-day yearly trial would
+  not have been visible to users.
+- RevenueCat exposes a configured introductory offer as the product's
+  `introPrice`. A free trial is an `introPrice` with `price === 0`; its length is
+  `periodUnit` (DAY/WEEK/MONTH/YEAR) × `periodNumberOfUnits`.
+
+### Decision / Change
+- Added `src/utils/trial.ts`: `freeTrialLabelFromIntro` / `freeTrialLabel` turn
+  RevenueCat's `introPrice` into copy like "7-day free trial" (null when there is
+  no free trial). Unit-tested in `tests/utils/trial.test.ts`.
+- Paywall now shows a trial badge on the plan card, a "Start 7-day free trial"
+  CTA, and a trial-aware disclosure (free for the trial, then price; charged at
+  the end of the trial) — only for non-Plus users, since trials apply to new
+  subscribers.
+
+### Verification
+- `npm run typecheck`: clean.
+- `npm test`: 27/27 passing (added 7 trial-helper tests).
+
+### Follow-ups
+- Configure the 7-day yearly intro offer in App Store Connect / Google Play and
+  attach it to the RevenueCat offering, then confirm the copy renders in a build.

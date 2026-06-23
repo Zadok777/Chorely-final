@@ -27,6 +27,7 @@ import {
   restorePurchases,
 } from '../../lib/revenuecat';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
+import { freeTrialLabel } from '../../utils/trial';
 import {
   GRADIENTS,
   radii,
@@ -150,6 +151,10 @@ export function PaywallScreen() {
     selectedPkg !== null &&
     activeProductIdentifier !== null &&
     selectedPkg.product.identifier === activeProductIdentifier;
+  // A store-configured free trial only applies to a new subscriber, so suppress
+  // the trial copy once the user is already on Plus.
+  const selectedTrial =
+    !isPro && selectedPkg ? freeTrialLabel(selectedPkg) : null;
 
   return (
     <ScreenContainer scroll edges={['top', 'bottom']}>
@@ -205,6 +210,7 @@ export function PaywallScreen() {
             {packages.map((pkg) => {
               const selected = pkg.identifier === selectedId;
               const isAnnual = pkg.packageType === 'ANNUAL';
+              const trial = isPro ? null : freeTrialLabel(pkg);
               return (
                 <Pressable
                   key={pkg.identifier}
@@ -235,6 +241,9 @@ export function PaywallScreen() {
                       {isAnnual ? (
                         <Text style={styles.planBadge}>Best value</Text>
                       ) : null}
+                      {trial ? (
+                        <Text style={styles.planTrial}>{trial}</Text>
+                      ) : null}
                       {pkg.product.identifier === activeProductIdentifier ? (
                         <Text style={styles.planCurrent}>Current plan</Text>
                       ) : null}
@@ -255,7 +264,9 @@ export function PaywallScreen() {
                 : selectedPkg
                   ? isPro
                     ? `Change plan — ${selectedPkg.product.priceString}`
-                    : `Subscribe — ${selectedPkg.product.priceString}`
+                    : selectedTrial
+                      ? `Start ${selectedTrial}`
+                      : `Subscribe — ${selectedPkg.product.priceString}`
                   : isPro
                     ? 'Change plan'
                     : 'Subscribe'
@@ -274,10 +285,13 @@ export function PaywallScreen() {
           />
 
           <Text style={styles.disclosure} maxFontSizeMultiplier={1.4}>
-            {selectedPkg
-              ? `${selectedPkg.product.priceString} per ${periodLabel(selectedPkg).toLowerCase().replace('ly', '')} period. `
-              : ''}
-            Payment is charged to your {platformStore()} account at confirmation.
+            {selectedTrial && selectedPkg
+              ? `Free for the first ${selectedTrial.replace(' free trial', '')}, then ${selectedPkg.product.priceString} per ${periodLabel(selectedPkg).toLowerCase().replace('ly', '')} period unless cancelled during the trial. `
+              : selectedPkg
+                ? `${selectedPkg.product.priceString} per ${periodLabel(selectedPkg).toLowerCase().replace('ly', '')} period. `
+                : ''}
+            Payment is charged to your {platformStore()} account
+            {selectedTrial ? ' at the end of the free trial' : ' at confirmation'}.
             Subscriptions renew automatically unless cancelled at least 24 hours
             before the end of the period. Manage or cancel in your account
             settings. Plan changes are handled by {platformStore()}.
@@ -425,6 +439,11 @@ const makeStyles = (C: Palette) =>
       marginTop: 2,
     },
     planCurrent: {
+      ...typography.caption,
+      color: C.green,
+      marginTop: 2,
+    },
+    planTrial: {
       ...typography.caption,
       color: C.green,
       marginTop: 2,

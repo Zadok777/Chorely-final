@@ -27,6 +27,11 @@ TASKS.md (Phase 10), [docs/store/](./store/), [docs/launch/](./launch/),
 - [x] Build the custom paywall screen; verify entitlement string `Chorely Pro`.
 - [x] Keep monthly/yearly plan choices visible for existing Plus users so they
       can switch plans later through the store purchase flow.
+- [x] Paywall shows a free-trial badge + trial-aware CTA/disclosure when a
+      store-configured introductory free trial exists (driven by RevenueCat
+      `introPrice`; no app-side trial timer).
+- [ ] Configure the **7-day intro trial on yearly** in App Store Connect /
+      Google Play / RevenueCat, then verify the trial copy appears in a build.
 - [ ] Run a **sandbox purchase test** end-to-end.
 - [x] Confirm free-tier limits (1 child / 4 active chores per child) + the
       feature-flag fallback.
