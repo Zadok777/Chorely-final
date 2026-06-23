@@ -260,8 +260,10 @@ subscriber can move to yearly later without needing a reset or new account.
 - Label the active package as **Current plan** and disable re-purchasing that
   same package.
 - For a different selected package, show **Change plan** and call the same
-  RevenueCat purchase flow. The actual upgrade/downgrade/crossgrade behavior is
-  handled by the App Store / Google Play subscription systems.
+  RevenueCat purchase flow. On Android, pass the active product id as
+  `oldProductIdentifier` so Google Play can process the subscription product
+  change. The actual upgrade/downgrade/crossgrade behavior is handled by the App
+  Store / Google Play subscription systems.
 
 ### Verification
 - `npm run typecheck`: clean.

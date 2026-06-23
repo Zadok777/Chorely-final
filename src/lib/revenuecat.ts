@@ -123,7 +123,22 @@ export async function purchase(pkg: PurchasesPackage): Promise<PurchaseResult> {
     return { ok: false, error: 'Purchases are unavailable in this build.' };
   }
   try {
-    const { customerInfo } = await Purchases.purchasePackage(pkg);
+    const activeProductIdentifier =
+      useSubscriptionStore.getState().activeProductIdentifier;
+    const productChangeInfo =
+      Platform.OS === 'android' &&
+      activeProductIdentifier !== null &&
+      activeProductIdentifier !== pkg.product.identifier
+        ? {
+            oldProductIdentifier: activeProductIdentifier,
+            replacementMode: Purchases.STORE_REPLACEMENT_MODE.WITHOUT_PRORATION,
+          }
+        : null;
+    const { customerInfo } = await Purchases.purchasePackage(
+      pkg,
+      null,
+      productChangeInfo
+    );
     syncEntitlement(customerInfo);
     return { ok: customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined };
   } catch (e: unknown) {
