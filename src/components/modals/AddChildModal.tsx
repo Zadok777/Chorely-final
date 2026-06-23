@@ -2,13 +2,18 @@ import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useToast } from '../ui/Toast';
 import { ModalSheet } from './ModalSheet';
+import { FREE_LIMITS } from '../../config/entitlements';
 import { createChild } from '../../services/children';
 import { useFamilyStore } from '../../store/familyStore';
+import { useSubscriptionStore } from '../../store/subscriptionStore';
+import type { RootStackParamList } from '../../types/app.types';
 import { hapticLight } from '../../utils/haptics';
 
 // COPPA: we collect a child's display name and (optional) date of birth only —
@@ -63,6 +68,8 @@ interface AddChildModalProps {
 export function AddChildModal({ visible, onClose, onAdded }: AddChildModalProps) {
   const toast = useToast();
   const family = useFamilyStore((s) => s.family);
+  const children = useFamilyStore((s) => s.children);
+  const nav = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -84,6 +91,13 @@ export function AddChildModal({ visible, onClose, onAdded }: AddChildModalProps)
     if (submitting) return;
     if (family === null) {
       toast.show({ message: 'No family loaded.', tone: 'error' });
+      return;
+    }
+    // Free-tier gate: check both subscription status AND the limit (CLAUDE.md §12).
+    const isPro = useSubscriptionStore.getState().isPro;
+    if (!isPro && children.length >= FREE_LIMITS.maxChildren) {
+      close();
+      nav.navigate('Paywall', { reason: 'children' });
       return;
     }
     setSubmitting(true);

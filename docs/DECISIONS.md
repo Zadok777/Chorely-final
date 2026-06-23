@@ -7,6 +7,7 @@
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-06-23 | Use a custom in-app Chorely Plus paywall instead of RevenueCat's prebuilt dashboard paywall | Keeps Lumina Bloom styling, store disclosure, Restore Purchases, and free-tier gate behavior in code |
 | 2026-06-23 | Migrated backend to new Supabase project `zinbukzmkorkawbgckkh` ("Chorely App", personal account) + new repo `Chorely-final`; retired the previous project/repo | Lost access to the old project; consolidating under the personal account |
 | 2026-06-01 | One paid tier "Chorely Plus" (monthly $4.99 / yearly $29.99, same features); entitlement id `Chorely Pro` | Store-standard model; avoids reviewer/user confusion |
 | 2026-06-01 | Age/grade tiers **suggest, never restrict**; derived from DOB with optional per-child override | Keeps parent freedom while tailoring suggestions |

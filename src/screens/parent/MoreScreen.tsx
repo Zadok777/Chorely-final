@@ -295,7 +295,7 @@ export function MoreScreen() {
           icon="star-outline"
           label="Chorely Plus"
           sub="Unlimited kids & chores"
-          onPress={() => soon('Subscriptions')}
+          onPress={() => nav.navigate('Paywall')}
         />
         <Divider />
         <Row

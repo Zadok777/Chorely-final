@@ -15,10 +15,13 @@ record; this is the human-readable summary.
   Removed old remotes and scrubbed old project/repo references from docs.
 - Added the project documentation set (README, AGENTS.md, `docs/*`, `seed.sql`,
   `tests/` scaffold).
+- Added Stage 1 security hardening (migration 017), dependency cleanup, and the
+  custom Chorely Plus paywall/free-tier gate implementation.
 
 ## 2026-06-01 — RevenueCat + design refresh + legal/store prep
 
-- Integrated RevenueCat SDK (entitlement `Chorely Pro`); paywall still deferred.
+- Integrated RevenueCat SDK (entitlement `Chorely Pro`); paywall was deferred
+  until the 2026-06-23 beta-readiness pass.
 - "Calm & Refined" design pass: de-glassed solid surfaces, teal accent, motion.
 - Age/grade-tier chore & reward suggestions (migration 016).
 - Help Center, legal drafts (`docs/legal/`), store copy (`docs/store/`).

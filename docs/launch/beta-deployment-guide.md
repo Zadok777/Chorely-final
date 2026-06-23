@@ -20,25 +20,25 @@ Based on a real review of your current code.
 | Authentication | ✅ PASS | Email + password sign-in works; the app remembers you after closing. |
 | Login | ✅ PASS | Login screen validates input. |
 | Registration | ⚠️ FIX FIRST | Sign-up works, but **email confirmation is turned OFF** in the database. Turn it ON before real testers (so people verify their email). |
-| **Password Reset** | ❌ MISSING | There is **no "Forgot password?"** option. Testers *will* forget passwords. **Add this before beta.** (Small task — ask Claude to build it.) |
+| **Password Reset** | ✅ PASS | "Forgot password?" and reset-code screens are present. |
 | User Profiles | ✅ PASS | Parent + child profiles, avatars, age-group editing. |
 | Navigation | ✅ PASS | Tabs + screens work. |
 | Database Connections | ✅ PASS | Supabase connected; row-level security on. (Re-enable email confirmation; optionally move to a dedicated production project.) |
 | Push Notifications | ⬜ N/A | Not built (planned for v1.1). Fine for beta — just declare "no notifications." |
-| Subscription Features | ⚠️ INCOMPLETE | RevenueCat is wired, but there's **no paywall screen yet** and no real in-app-purchase products in the stores. **Recommendation: run your first beta as FREE** (skip purchases), add purchase testing later. |
-| Premium Features (limits) | ⚠️ INCOMPLETE | Free-tier limits (2 kids / 5 chores) are **not enforced yet** — everything is unlocked. Fine for a free beta. |
+| Subscription Features | ⚠️ TESTING NEEDED | RevenueCat is wired and the custom Chorely Plus paywall exists. Real App Store / Play products still need to be created and tested in a real build. |
+| Premium Features (limits) | ✅ CODED | Free-tier gates are implemented: 2 children and 5 active chores per child unless the `Chorely Pro` entitlement is active. Verify manually in QA. |
 | Offline Functionality | ⚠️ LIMITED | App needs internet (it's normal for this kind of app). It remembers your login offline but needs a connection to load data. Acceptable for beta. |
 | Error Handling | ✅ PASS (basic) | Friendly error messages appear; no crash-reporting tool yet (optional: add Sentry later to see crashes testers hit). |
 | Privacy Compliance | ⚠️ FIX FIRST | Legal pages are written but **not yet published online**. Apple & Google require a public **Privacy Policy URL**. Host the pages (see Phase 5). |
 
 ### Must-fix before inviting testers
-1. **Add a "Forgot password?" flow** (so testers can recover accounts).
-2. **Re-enable email confirmation** in Supabase.
-3. **Host the legal pages** and get a public Privacy Policy URL.
-4. **Create the Apple + Google accounts** (Phases 2 & 3).
+1. **Re-enable email confirmation** in Supabase.
+2. **Host the legal pages** and get public Terms + Privacy URLs.
+3. **Create App Store / Play in-app-purchase products** and connect them in RevenueCat.
+4. **Run a real-device sandbox purchase + restore test.**
 
 ### Safe to defer for the first beta
-- Paywall / in-app purchases (run beta free first).
+- Full monetized beta, if store products are not approved yet (the app can still be tested free).
 - Push notifications.
 - Crash reporting (nice to have).
 

@@ -66,6 +66,7 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "watchman": false,
     "testMatch": [
       "**/tests/**/*.test.ts",
       "**/tests/**/*.test.tsx"

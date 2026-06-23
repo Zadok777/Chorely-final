@@ -5,6 +5,7 @@
 
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
+import type { PaywallReason } from '../config/entitlements';
 import type { Tables } from './database.types';
 
 export type Profile = Tables<'profiles'>;
@@ -74,6 +75,8 @@ export type RootStackParamList = {
   Rewards: undefined;
   // Help center — pushed from the More tab.
   Help: undefined;
+  // Chorely Plus paywall — pushed from More or when a free-tier limit is hit.
+  Paywall: { reason?: PaywallReason } | undefined;
 };
 
 // Bottom-tab routes inside the Main shell (parent navigation), matching the

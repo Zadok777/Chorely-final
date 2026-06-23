@@ -24,9 +24,9 @@ TASKS.md (Phase 10), [docs/store/](./store/), [docs/launch/](./launch/),
 
 - [ ] Create App Store Connect + Play Console IAP products.
 - [ ] Build a **dev/EAS build** (IAP doesn't work in Expo Go / Simulator).
-- [ ] Design the paywall offering; verify entitlement `Chorely Pro`.
+- [x] Build the custom paywall screen; verify entitlement string `Chorely Pro`.
 - [ ] Run a **sandbox purchase test** end-to-end.
-- [ ] Confirm free-tier limits (2 children / 5 active chores per child) + the
+- [x] Confirm free-tier limits (2 children / 5 active chores per child) + the
       feature-flag fallback.
 
 ## 4. Legal & privacy

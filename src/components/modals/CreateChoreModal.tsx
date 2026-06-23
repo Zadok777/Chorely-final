@@ -4,6 +4,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
@@ -24,8 +26,15 @@ import {
   useThemedStyles,
   type Palette,
 } from '../../theme';
-import type { ChoreCategory, ChoreFrequency } from '../../types/app.types';
+import type {
+  ChoreCategory,
+  ChoreFrequency,
+  RootStackParamList,
+} from '../../types/app.types';
 import { effectiveTier, tierLabel } from '../../utils/ageTier';
+import { activeChoreCountForChild } from '../../utils/entitlements';
+import { FREE_LIMITS } from '../../config/entitlements';
+import { useSubscriptionStore } from '../../store/subscriptionStore';
 import {
   CHORE_SUGGESTIONS,
   type ChoreSuggestion,
@@ -98,6 +107,7 @@ export function CreateChoreModal({
   const family = useFamilyStore((s) => s.family);
   const children = useFamilyStore((s) => s.children);
   const session = useAuthStore((s) => s.session);
+  const nav = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const [frequency, setFrequency] = useState<ChoreFrequency>('once');
   const [category, setCategory] = useState<ChoreCategory | null>(null);
@@ -164,6 +174,22 @@ export function CreateChoreModal({
     if (childIds.length === 0) {
       toast.show({ message: 'Assign the chore to at least one child.', tone: 'error' });
       return;
+    }
+    // Free-tier gate: a new chore adds one active chore to each selected child.
+    // Check both subscription status AND the per-child limit (CLAUDE.md §12).
+    const isPro = useSubscriptionStore.getState().isPro;
+    if (!isPro) {
+      const { chores, assignments } = useChoreStore.getState();
+      const wouldExceed = childIds.some(
+        (id) =>
+          activeChoreCountForChild(id, chores, assignments) >=
+          FREE_LIMITS.maxActiveChoresPerChild
+      );
+      if (wouldExceed) {
+        close();
+        nav.navigate('Paywall', { reason: 'chores' });
+        return;
+      }
     }
 
     setSubmitting(true);

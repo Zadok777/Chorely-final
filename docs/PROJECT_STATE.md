@@ -12,9 +12,10 @@ _Last updated: 2026-06-23_
 - **App folder:** `~/Desktop/Chorely 2/` (package name `chorely`).
 - **Repo:** `https://github.com/Zadok777/Chorely-final.git` (`origin`, branch `main`).
 - **Supabase:** project **Chorely App** (`zinbukzmkorkawbgckkh`), personal account.
-  16 migrations applied; 12 tables (RLS on) + 12 RPCs.
-- **RevenueCat:** SDK wired; entitlement `Chorely Pro`; paywall design + sandbox
-  purchase test still pending (needs a dev build).
+  17 migrations applied; 12 tables (RLS on) + 12 RPCs.
+- **RevenueCat:** SDK wired; entitlement `Chorely Pro`; custom paywall + free-tier
+  gates implemented locally. Real App Store / Play products and sandbox purchase
+  testing are still pending (needs a real device build).
 
 ## Recently completed
 
@@ -25,21 +26,26 @@ _Last updated: 2026-06-23_
 - Moved to the new GitHub repo (`Chorely-final`); removed old remotes; scrubbed
   old project/repo references from the docs.
 - Added project documentation set (this file, README, AGENTS.md, docs/*).
+- Completed Stage 1 security hardening, icon verification, Expo dependency hygiene,
+  and custom RevenueCat paywall/free-tier-gate implementation.
 
 ## Pending (resume here)
 
-1. **Flip email confirmation OFF** for dev on the new Supabase project
-   (Authentication → Sign In/Providers → Email → uncheck "Confirm email").
-2. **Delete old artifacts** — old GitHub repo `doulosnexus-lang/Chorely` and the
+1. **RevenueCat store setup** — create App Store Connect + Play Console IAP
+   products, connect them in RevenueCat, add real SDK keys, then run sandbox
+   purchase/restore tests in a real build.
+2. **Build for devices** — run EAS iOS/Android builds after the RevenueCat
+   product setup is ready.
+3. **Email confirmation** — turn confirmation ON before real testers.
+4. **Host legal pages** and verify the Terms/Privacy URLs used by the paywall.
+5. **Delete old artifacts** — old GitHub repo `doulosnexus-lang/Chorely` and the
    old Supabase project `kwwhuwegzdaqstqhmths` (different account; delete in its
    own dashboard).
-3. **RevenueCat paywall** — design the offering, build a dev build, run a sandbox
-   purchase test.
-4. **Store readiness** — production Supabase decision + re-enable email
+6. **Store readiness** — production Supabase decision + re-enable email
    confirmation; Apple Developer + Google Play accounts, app records, App
    Privacy / Data Safety forms; screenshots + metadata.
-5. **Tests** — stand up the Jest suite (see [TEST_PLAN.md](./TEST_PLAN.md));
-   currently minimal coverage.
+7. **Tests** — grow the Jest suite beyond the current utility coverage (see
+   [TEST_PLAN.md](./TEST_PLAN.md)).
 
 ## Known gotchas
 

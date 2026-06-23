@@ -14,7 +14,7 @@ Repo: `Zadok777/Chorely-final`.
 1. [x] **Security fixes** — lock down direct point edits + invite-code generation
 2. [x] **App icons** — verified real branded icon, Apple-compliant (no replacement needed)
 3. [x] **Code hygiene** — console logs reviewed; expo-doctor 18/18 (fixed peer deps)
-4. [ ] Apple Developer + Google Play accounts
+4. [x] Apple Developer + Google Play accounts (user confirmed both accounts exist)
 5. [ ] EAS production/preview build (iOS + Android)
 6. [ ] Finish RevenueCat paywall + IAP products + sandbox purchase test
 7. [ ] Re-enable email confirmation for real testers
@@ -168,3 +168,72 @@ prerequisite for a successful EAS build (Step 5). No production debug logging.
 Running `expo install` can prune transitive build deps; always re-run
 `expo-doctor` + `npm test` after dependency changes, and pin build-critical
 packages (like `babel-preset-expo`) explicitly via `expo install`, not `npm install`.
+
+---
+
+## Step 6a — RevenueCat custom paywall + free-tier gates · 2026-06-23 · ✅ Code Done
+
+### Objective
+Finish the in-app subscription code that can be completed before real store
+products exist: entitlement sync, custom paywall screen, purchase/restore calls,
+free-tier gates, and public env-key wiring.
+
+### Investigation (how we concluded)
+- Grepped the app for RevenueCat/paywall references. The SDK was installed and
+  initialized, and app identity sync existed, but no code read
+  `customerInfo.entitlements.active['Chorely Pro']`, no screen presented
+  offerings, no purchase/restore actions existed, and the More tab still showed
+  a "coming soon" toast.
+- Confirmed product rules in `CLAUDE.md` and store copy: one paid tier,
+  **Chorely Plus**, with monthly/yearly billing; entitlement id is exactly
+  `Chorely Pro`; free tier is 2 children and 5 active chores per child.
+- Found an env mismatch: `src/lib/revenuecat.ts` reads
+  `EXPO_PUBLIC_REVENUECAT_*`, but `.env.example` and `.env.local` still used
+  unprefixed `REVENUECAT_*`, which Expo does not expose to the client bundle.
+
+### Decision
+Use a custom paywall screen instead of RevenueCat's dashboard-designed paywall.
+Reason: it matches the Lumina Bloom UI, keeps store-required disclosure and
+Restore Purchases in code, and avoids a dashboard styling dependency.
+
+### Change
+- Added `src/config/entitlements.ts` with entitlement id + free-tier limits.
+- Added `src/store/subscriptionStore.ts` for live `isPro` state.
+- Expanded `src/lib/revenuecat.ts` to fetch customer info, sync entitlement
+  state, load current offerings, purchase a package, and restore purchases.
+- Added `src/screens/parent/PaywallScreen.tsx`, including:
+  - reason-specific copy when a user hits a free limit;
+  - annual/monthly package selection from RevenueCat offerings;
+  - purchase and restore actions;
+  - App Store / Google Play auto-renew disclosure;
+  - Terms + Privacy links.
+- Wired navigation:
+  - More → Chorely Plus opens Paywall;
+  - Add Child opens Paywall after 2 free children;
+  - Create Chore opens Paywall when a selected child already has 5 active chores.
+- Updated `.env.example` and `.env.local` to use
+  `EXPO_PUBLIC_REVENUECAT_IOS_API_KEY` and
+  `EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY`.
+- Added `tests/utils/entitlements.test.ts` for the active-chore counting helper.
+- Set Jest `watchman: false` so `npm test` works in restricted local/sandboxed
+  environments where Watchman cannot be reached.
+
+### Verification
+- `npx tsc --noEmit`: clean.
+- `npm test`: **20/20 passing**.
+- `npx --yes expo-doctor`: **18/18 checks passed** (required network access for
+  Expo/React Native directory metadata).
+
+### Result
+The RevenueCat app-side code is ready for a native build. The app can show the
+custom paywall, enforce free-tier limits, purchase a selected package, restore
+purchases, and update local entitlement state when RevenueCat reports the
+`Chorely Pro` entitlement active.
+
+### Follow-ups
+- Create real App Store Connect and Google Play subscription products.
+- Connect those products to RevenueCat offerings and add the real `appl_...` /
+  `goog_...` SDK keys.
+- Verify Terms + Privacy URLs are live before store review.
+- Run a real-device sandbox purchase and restore test. Expo Go and the iOS
+  Simulator are not enough for final IAP verification.
