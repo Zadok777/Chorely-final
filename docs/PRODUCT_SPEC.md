@@ -45,11 +45,15 @@ pushed from More (not a tab).
 
 One paid tier, **"Chorely Plus"** (RevenueCat entitlement id `Chorely Pro`):
 
-- Free: up to **2 children** and **5 active chores per child**.
+- Free: up to **1 child** and **4 active chores per child**.
 - Plus: unlimited children + chores + premium features.
 - Pricing: monthly **$4.99** / yearly **$29.99** (same features; yearly is just
   cheaper). Never hard-gate on subscription status alone — check status **and** a
   feature flag so limits can change without an app update.
+- Trial strategy: no app-side trial logic. If offered, configure a **7-day
+  introductory trial on yearly** in App Store Connect / Google Play / RevenueCat.
+  Keep monthly paid immediately for launch tests unless conversion data says
+  otherwise.
 
 ## Out of scope for v1.0 (see CLAUDE.md §9)
 

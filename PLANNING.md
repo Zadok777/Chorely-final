@@ -165,7 +165,7 @@ src/components/          ← NEW (rebuilt)
 
 ### Phase 7: Polish & Paywall
 - Add RevenueCat SDK and paywall screen
-- Implement free tier limits (2 children, 5 active chores)
+- Implement free tier limits (1 child, 4 active chores)
 - Add skeleton loading states to all screens
 - Add pull-to-refresh on all list screens
 - Add haptic feedback on key interactions

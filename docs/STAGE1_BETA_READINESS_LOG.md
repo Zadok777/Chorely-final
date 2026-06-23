@@ -186,7 +186,7 @@ free-tier gates, and public env-key wiring.
   a "coming soon" toast.
 - Confirmed product rules in `CLAUDE.md` and store copy: one paid tier,
   **Chorely Plus**, with monthly/yearly billing; entitlement id is exactly
-  `Chorely Pro`; free tier is 2 children and 5 active chores per child.
+  `Chorely Pro`; free tier is 1 child and 4 active chores per child.
 - Found an env mismatch: `src/lib/revenuecat.ts` reads
   `EXPO_PUBLIC_REVENUECAT_*`, but `.env.example` and `.env.local` still used
   unprefixed `REVENUECAT_*`, which Expo does not expose to the client bundle.
@@ -209,8 +209,8 @@ Restore Purchases in code, and avoids a dashboard styling dependency.
   - Terms + Privacy links.
 - Wired navigation:
   - More → Chorely Plus opens Paywall;
-  - Add Child opens Paywall after 2 free children;
-  - Create Chore opens Paywall when a selected child already has 5 active chores.
+  - Add Child opens Paywall after 1 free child;
+  - Create Chore opens Paywall when a selected child already has 4 active chores.
 - Updated `.env.example` and `.env.local` to use
   `EXPO_PUBLIC_REVENUECAT_IOS_API_KEY` and
   `EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY`.
@@ -234,6 +234,8 @@ purchases, and update local entitlement state when RevenueCat reports the
 - Create real App Store Connect and Google Play subscription products.
 - Connect those products to RevenueCat offerings and add the real `appl_...` /
   `goog_...` SDK keys.
+- If offering a launch trial, configure it in the store dashboards / RevenueCat
+  as a 7-day introductory offer, preferably attached to yearly.
 - Verify Terms + Privacy URLs are live before store review.
 - Run a real-device sandbox purchase and restore test. Expo Go and the iOS
   Simulator are not enough for final IAP verification.

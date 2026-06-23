@@ -335,7 +335,7 @@ The following features constitute the v1.0 MVP. Do not build v1.1 features until
 - Points awarded automatically on approval via server-side RPC (`approve_chore`)
 - Reward creation (parent): title, point cost, optional description
 - Reward redemption: parent redeems on behalf of child (no child auth in v1.0)
-- RevenueCat paywall: free tier (up to 2 children, 5 active chores per child), monthly plan, yearly plan
+- RevenueCat paywall: free tier (up to 1 child, 4 active chores per child), monthly plan, yearly plan
 - Basic settings: rename family, manage children, sign out, delete account, dark-mode toggle
 
 ---
@@ -385,8 +385,9 @@ If a user or prompt asks you to build any of these before v1.0 is submitted, dec
 - Initialize RevenueCat in `src/lib/revenuecat.ts` before the app mounts.
 - iOS API key and Android API key are separate environment variables.
 - The paywall screen must be tested on a real device. Simulator IAP does not work reliably.
-- Free tier limits: 2 children, 5 active chores per child.
+- Free tier limits: 1 child, 4 active chores per child.
 - **Tier model (decided 2026-06-01): ONE paid tier, "Chorely Plus."** Same features on monthly ($4.99) and yearly ($29.99) — yearly is just cheaper (no feature differences by billing period; this is the store-standard model and avoids reviewer/user confusion). Plus unlocks unlimited children + chores + premium features. The RevenueCat entitlement identifier is `Chorely Pro` (note the space — the exact string the app checks via `customerInfo.entitlements.active['Chorely Pro']`).
+- **Trial strategy (decided 2026-06-23):** no app-side trial logic. If we offer a trial, configure it as a store/RevenueCat introductory offer, preferably **7 days on yearly** to drive annual conversion. Monthly can stay paid immediately during the first launch tests.
 - Never hard-gate features on subscription status alone. Always check both subscription status AND the feature flag, so limits can be adjusted without an app update.
 
 ---
@@ -400,6 +401,7 @@ Record all architectural decisions here. Format: date and one-sentence reason.
 | 2026-05-27 | Fresh build in `~/Desktop/Chorely 2/` | Previous `~/Desktop/Chorely-new` and other artifacts archived; this is a clean start matching the Lumina Bloom prototype |
 | 2026-06-23 | Migrated backend to new Supabase project `zinbukzmkorkawbgckkh` ("Chorely App") on the personal account + moving to a new GitHub repo; retired the previous project and repo | Consolidating Chorely under the personal account. All 16 migrations re-applied to the new project; `.env.local` and types updated. |
 | 2026-06-23 | Custom Chorely Plus paywall over RevenueCat's prebuilt dashboard paywall | Keeps Lumina Bloom styling, store disclosure, Restore Purchases, and free-tier gate behavior in code while RevenueCat supplies offerings, purchases, restores, and entitlement state. |
+| 2026-06-23 | Tighten free tier to 1 child / 4 active chores per child; if using a free trial, prefer 7 days on yearly only | Gives parents enough to understand the app while pushing normal multi-child families toward Plus; yearly-only trial improves annual conversion without making the monthly plan feel free by default. |
 | 2026-05-27 | Visual system split into DESIGN.md | Reduces CLAUDE.md session-load footprint; matches the "design.md" pattern from `ai-design-prompt-template.md` |
 | 2026-05-27 | Fonts: Nunito + DM Sans (not Plus Jakarta + Manrope) | Already loaded in App.tsx; neither is in banned-fonts list; Nunito's rounded forms match elementary bracket |
 | 2026-05-28 | Upgraded to Expo SDK 54 (RN 0.81 / React 19 / Reanimated 4) | Workspace got the bump from `npx expo install --fix` and runs cleanly in Expo Go; reverting would risk breaking the working dev loop. Future SDK changes should go through `npx expo install --fix` together, not piecemeal. |

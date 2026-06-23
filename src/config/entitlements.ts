@@ -12,9 +12,9 @@ export const ENTITLEMENT_ID = 'Chorely Pro';
 
 export const FREE_LIMITS = {
   /** Max children a free family can create. */
-  maxChildren: 2,
+  maxChildren: 1,
   /** Max active chores assignable to a single child on the free tier. */
-  maxActiveChoresPerChild: 5,
+  maxActiveChoresPerChild: 4,
 } as const;
 
 export type PaywallReason = 'children' | 'chores' | 'generic';

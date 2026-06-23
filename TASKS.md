@@ -229,8 +229,8 @@ Aligned the parent app to the prototype screenshots (the original design intent)
 
 - [ ] Install `react-native-purchases`
 - [ ] `src/lib/revenuecat.ts` — initialize before app mounts
-- [ ] `screens/parent/PaywallScreen.tsx` — free / weekly / yearly tiers
-- [ ] Hard limits read from a feature-flag map (free: 2 children, 5 active chores per child) — not direct subscription check
+- [ ] `screens/parent/PaywallScreen.tsx` — free / monthly / yearly tiers
+- [ ] Hard limits read from a feature-flag map (free: 1 child, 4 active chores per child) — not direct subscription check
 - [ ] Test on a real device — simulator IAP is unreliable
 
 ## Phase 10: Polish + Pre-Submission

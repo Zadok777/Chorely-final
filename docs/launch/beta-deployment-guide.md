@@ -26,7 +26,7 @@ Based on a real review of your current code.
 | Database Connections | ✅ PASS | Supabase connected; row-level security on. (Re-enable email confirmation; optionally move to a dedicated production project.) |
 | Push Notifications | ⬜ N/A | Not built (planned for v1.1). Fine for beta — just declare "no notifications." |
 | Subscription Features | ⚠️ TESTING NEEDED | RevenueCat is wired and the custom Chorely Plus paywall exists. Real App Store / Play products still need to be created and tested in a real build. |
-| Premium Features (limits) | ✅ CODED | Free-tier gates are implemented: 2 children and 5 active chores per child unless the `Chorely Pro` entitlement is active. Verify manually in QA. |
+| Premium Features (limits) | ✅ CODED | Free-tier gates are implemented: 1 child and 4 active chores per child unless the `Chorely Pro` entitlement is active. Verify manually in QA. |
 | Offline Functionality | ⚠️ LIMITED | App needs internet (it's normal for this kind of app). It remembers your login offline but needs a connection to load data. Acceptable for beta. |
 | Error Handling | ✅ PASS (basic) | Friendly error messages appear; no crash-reporting tool yet (optional: add Sentry later to see crashes testers hit). |
 | Privacy Compliance | ⚠️ FIX FIRST | Legal pages are written but **not yet published online**. Apple & Google require a public **Privacy Policy URL**. Host the pages (see Phase 5). |
