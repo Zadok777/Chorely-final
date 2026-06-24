@@ -1,6 +1,8 @@
 import {
   freeTrialLabelFromIntro,
+  trialLabelForDisplay,
   type IntroPriceLike,
+  type PackageTrialInfo,
 } from '../../src/utils/trial';
 
 function intro(over: Partial<IntroPriceLike>): IntroPriceLike {
@@ -51,5 +53,31 @@ describe('freeTrialLabelFromIntro', () => {
     expect(
       freeTrialLabelFromIntro(intro({ periodUnit: 'UNKNOWN', periodNumberOfUnits: 3 }))
     ).toBeNull();
+  });
+});
+
+function pkg(
+  packageType: string,
+  introPrice: IntroPriceLike | null
+): PackageTrialInfo {
+  return { packageType, product: { introPrice } };
+}
+
+describe('trialLabelForDisplay', () => {
+  it('prefers the real store trial when present (regardless of preview)', () => {
+    const annual = pkg('ANNUAL', intro({ periodNumberOfUnits: 14 }));
+    expect(trialLabelForDisplay(annual, false)).toBe('14-day free trial');
+    expect(trialLabelForDisplay(annual, true)).toBe('14-day free trial');
+  });
+
+  it('returns null with no real trial and preview off', () => {
+    expect(trialLabelForDisplay(pkg('ANNUAL', null), false)).toBeNull();
+    expect(trialLabelForDisplay(pkg('MONTHLY', null), false)).toBeNull();
+  });
+
+  it('synthesizes a 7-day annual trial only when preview is on', () => {
+    expect(trialLabelForDisplay(pkg('ANNUAL', null), true)).toBe('7-day free trial');
+    // Preview never invents a trial on the monthly plan.
+    expect(trialLabelForDisplay(pkg('MONTHLY', null), true)).toBeNull();
   });
 });

@@ -27,7 +27,14 @@ import {
   restorePurchases,
 } from '../../lib/revenuecat';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
-import { freeTrialLabel } from '../../utils/trial';
+import { trialLabelForDisplay } from '../../utils/trial';
+
+// DEV-ONLY preview: shows the trial badge/CTA/disclosure on the annual plan even
+// when no real store trial exists yet (RevenueCat Test Store has none), so the
+// trial UI can be verified in a simulator/dev build. Always false in production
+// builds (`__DEV__` is false). Flip the `&& true` to disable while keeping the
+// build dev. This affects display copy only — never the purchase call.
+const PREVIEW_TRIAL = __DEV__ && true;
 import {
   GRADIENTS,
   radii,
@@ -154,7 +161,9 @@ export function PaywallScreen() {
   // A store-configured free trial only applies to a new subscriber, so suppress
   // the trial copy once the user is already on Plus.
   const selectedTrial =
-    !isPro && selectedPkg ? freeTrialLabel(selectedPkg) : null;
+    !isPro && selectedPkg
+      ? trialLabelForDisplay(selectedPkg, PREVIEW_TRIAL)
+      : null;
 
   return (
     <ScreenContainer scroll edges={['top', 'bottom']}>
@@ -210,7 +219,7 @@ export function PaywallScreen() {
             {packages.map((pkg) => {
               const selected = pkg.identifier === selectedId;
               const isAnnual = pkg.packageType === 'ANNUAL';
-              const trial = isPro ? null : freeTrialLabel(pkg);
+              const trial = isPro ? null : trialLabelForDisplay(pkg, PREVIEW_TRIAL);
               return (
                 <Pressable
                   key={pkg.identifier}

@@ -42,3 +42,28 @@ export function freeTrialLabelFromIntro(
 export function freeTrialLabel(pkg: PurchasesPackage): string | null {
   return freeTrialLabelFromIntro(pkg.product.introPrice);
 }
+
+/** Minimal structural shape we read off a package to label its trial. */
+export interface PackageTrialInfo {
+  packageType: string;
+  product: { introPrice: IntroPriceLike | null };
+}
+
+/**
+ * Display label for a package's free trial.
+ *
+ * Uses the real, store-configured trial whenever one is present. When `preview`
+ * is true it falls back to a synthetic "7-day free trial" on the annual plan so
+ * the trial UI can be eyeballed before a real store offer exists. `preview` is
+ * only ever passed `true` under `__DEV__`, and this affects DISPLAY COPY ONLY —
+ * the purchase call always uses the unmodified RevenueCat package.
+ */
+export function trialLabelForDisplay(
+  pkg: PackageTrialInfo,
+  preview: boolean
+): string | null {
+  const real = freeTrialLabelFromIntro(pkg.product.introPrice);
+  if (real) return real;
+  if (preview && pkg.packageType === 'ANNUAL') return '7-day free trial';
+  return null;
+}
