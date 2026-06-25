@@ -104,7 +104,7 @@ export const C = lightC;
 // One cohesive warm family (peach → pink → coral → amber) instead of a
 // rainbow. Kids stay distinguishable via hue spread, but the set reads as a
 // single designed palette, not "an AI picked five random gradients."
-export const AVATAR_GRADIENTS: ReadonlyArray<readonly [string, string]> = [
+export const AVATAR_GRADIENTS: readonly (readonly [string, string])[] = [
   ['#FF8C42', '#FF4D8D'], // Peach  -> Pink   (child 1)
   ['#FF6F91', '#FF4D8D'], // Rose   -> Pink   (child 2)
   ['#FFB36B', '#FF7A59'], // Amber  -> Coral  (child 3)

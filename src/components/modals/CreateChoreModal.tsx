@@ -46,11 +46,11 @@ const FREQUENCY_OPTIONS = [
   { value: 'once', label: 'Once' },
   { value: 'daily', label: 'Daily' },
   { value: 'weekly', label: 'Weekly' },
-] as const satisfies ReadonlyArray<{ value: ChoreFrequency; label: string }>;
+] as const satisfies readonly { value: ChoreFrequency; label: string }[];
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
-const CATEGORIES: ReadonlyArray<{ value: ChoreCategory; icon: IoniconName }> = [
+const CATEGORIES: readonly { value: ChoreCategory; icon: IoniconName }[] = [
   { value: 'bedroom', icon: 'bed-outline' },
   { value: 'kitchen', icon: 'restaurant-outline' },
   { value: 'bathroom', icon: 'water-outline' },

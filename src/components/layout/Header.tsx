@@ -33,7 +33,7 @@ interface HeaderProps {
   // When provided, renders a back chevron that calls this handler.
   onBack?: () => void;
   // Up to ~3 trailing icon buttons.
-  actions?: ReadonlyArray<HeaderAction>;
+  actions?: readonly HeaderAction[];
   style?: StyleProp<ViewStyle>;
 }
 

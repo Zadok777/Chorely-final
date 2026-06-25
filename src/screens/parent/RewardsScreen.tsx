@@ -38,7 +38,7 @@ const FILTERS = [
   { value: 'all', label: 'All' },
   { value: 'available', label: 'Available' },
   { value: 'locked', label: 'Locked' },
-] as const satisfies ReadonlyArray<{ value: Filter; label: string }>;
+] as const satisfies readonly { value: Filter; label: string }[];
 
 export function RewardsScreen() {
   const family = useFamilyStore((s) => s.family);
@@ -188,7 +188,7 @@ export function RewardsScreen() {
               <View style={styles.balanceRow}>
                 <View>
                   <Text style={styles.balanceLabel} maxFontSizeMultiplier={1.3}>
-                    {selectedChild?.name ?? 'Child'}'s balance
+                    {`${selectedChild?.name ?? 'Child'}'s balance`}
                   </Text>
                   <Text style={styles.balanceValue} maxFontSizeMultiplier={1.3}>
                     {displayBalance}

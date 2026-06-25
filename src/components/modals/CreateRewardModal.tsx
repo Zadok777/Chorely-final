@@ -37,7 +37,7 @@ type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 // Curated reward icons + accent colors so the data stays clean (no arbitrary
 // values reach the DB). icon_name / color are plain strings in the schema.
-const ICONS: ReadonlyArray<IoniconName> = [
+const ICONS: readonly IoniconName[] = [
   'gift',
   'game-controller',
   'ice-cream',
@@ -63,7 +63,7 @@ const ICONS: ReadonlyArray<IoniconName> = [
 // Fixed accent choices stored on the reward row — mode-independent literals.
 // Refreshed for the teal brand: dropped the off-palette purple/cyan, kept
 // enough variety for users to tell rewards apart.
-const COLORS: ReadonlyArray<string> = [
+const COLORS: readonly string[] = [
   '#0EA5A4', // teal (brand)
   '#FF8C42', // orange
   '#00A92A', // green

@@ -34,7 +34,7 @@ type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 // Curated, kid-friendly icon options. `null` = initials; AVATAR_FACE = the
 // Chorely smiley; anything else is an Ionicon name.
-const ICON_OPTIONS: ReadonlyArray<string | null> = [
+const ICON_OPTIONS: readonly (string | null)[] = [
   null,
   AVATAR_FACE,
   'happy',

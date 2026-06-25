@@ -138,7 +138,7 @@ export function OnboardingWizard() {
       {step === 0 ? (
         <View style={styles.block}>
           <Text style={styles.title} maxFontSizeMultiplier={1.5}>
-            Let's set up your family
+            {"Let's set up your family"}
           </Text>
           <Text style={styles.subtitle} maxFontSizeMultiplier={1.5}>
             Pick a name everyone will recognize. You can change it later in

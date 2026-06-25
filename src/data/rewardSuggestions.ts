@@ -12,7 +12,7 @@ export interface RewardSuggestion {
   icon: string;
 }
 
-export const REWARD_SUGGESTIONS: Record<AgeTier, ReadonlyArray<RewardSuggestion>> = {
+export const REWARD_SUGGESTIONS: Record<AgeTier, readonly RewardSuggestion[]> = {
   early: [
     { title: 'Extra bedtime story', cost: 10, icon: 'book' },
     { title: 'Sticker pack', cost: 15, icon: 'star' },

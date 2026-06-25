@@ -30,7 +30,7 @@ interface QA {
   a: string;
 }
 
-const SECTIONS: ReadonlyArray<{ title: string; items: ReadonlyArray<QA> }> = [
+const SECTIONS: readonly { title: string; items: readonly QA[] }[] = [
   {
     title: 'Getting started',
     items: [

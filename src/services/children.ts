@@ -3,6 +3,7 @@ import type { Child } from '../types/app.types';
 import type { TablesInsert, TablesUpdate } from '../types/database.types';
 import type { ServiceResult } from '../types/result';
 import { fail, fromError, ok } from '../types/result';
+import { pickAllowedChildUpdate } from '../utils/childUpdate';
 
 export async function listChildren(
   familyId: string
@@ -57,9 +58,12 @@ export async function updateChild(
   patch: TablesUpdate<'children'>
 ): Promise<ServiceResult<Child>> {
   try {
+    // Defense-in-depth: only allow client-writable columns through. Points,
+    // streaks, and identity columns change exclusively via the RPCs (and are
+    // revoked at the DB grant layer in migration 017).
     const { data, error } = await supabase
       .from('children')
-      .update(patch)
+      .update(pickAllowedChildUpdate(patch))
       .eq('id', id)
       .select('*')
       .single();

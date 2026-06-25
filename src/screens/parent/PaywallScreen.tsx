@@ -28,13 +28,6 @@ import {
 } from '../../lib/revenuecat';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { trialLabelForDisplay } from '../../utils/trial';
-
-// DEV-ONLY preview: shows the trial badge/CTA/disclosure on the annual plan even
-// when no real store trial exists yet (RevenueCat Test Store has none), so the
-// trial UI can be verified in a simulator/dev build. Always false in production
-// builds (`__DEV__` is false). Flip the `&& true` to disable while keeping the
-// build dev. This affects display copy only — never the purchase call.
-const PREVIEW_TRIAL = __DEV__ && true;
 import {
   GRADIENTS,
   radii,
@@ -46,6 +39,13 @@ import {
 } from '../../theme';
 import type { RootStackParamList } from '../../types/app.types';
 import { hapticLight } from '../../utils/haptics';
+
+// DEV-ONLY preview: shows the trial badge/CTA/disclosure on the annual plan even
+// when no real store trial exists yet (RevenueCat Test Store has none), so the
+// trial UI can be verified in a simulator/dev build. Always false in production
+// builds (`__DEV__` is false). Flip the `&& true` to disable while keeping the
+// build dev. This affects display copy only — never the purchase call.
+const PREVIEW_TRIAL = __DEV__ && true;
 
 // These must be live, publicly-hosted pages before App Store / Play submission
 // (see docs/RELEASE_CHECKLIST.md). Apple requires functional Terms + Privacy

@@ -12,7 +12,7 @@ export interface ChoreSuggestion {
   points: number;
 }
 
-export const CHORE_SUGGESTIONS: Record<AgeTier, ReadonlyArray<ChoreSuggestion>> = {
+export const CHORE_SUGGESTIONS: Record<AgeTier, readonly ChoreSuggestion[]> = {
   early: [
     { title: 'Put toys away', category: 'bedroom', points: 5 },
     { title: 'Make your bed', category: 'bedroom', points: 5 },

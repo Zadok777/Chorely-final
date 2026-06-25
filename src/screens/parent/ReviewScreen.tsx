@@ -16,7 +16,6 @@ import { listAssignmentsForFamily, listChores } from '../../services/chores';
 import { useChoreStore } from '../../store/choreStore';
 import { useFamilyStore } from '../../store/familyStore';
 import {
-  radii,
   spacing,
   typography,
   useTheme,

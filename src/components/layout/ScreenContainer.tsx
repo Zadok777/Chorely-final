@@ -19,7 +19,7 @@ interface ScreenContainerProps {
   // Wraps content in a ScrollView with sensible defaults for forms + long lists.
   scroll?: boolean;
   // Which edges the SafeAreaView pads. Defaults to all four.
-  edges?: ReadonlyArray<Edge>;
+  edges?: readonly Edge[];
   // 16px horizontal padding (DESIGN §6) is applied by default. Opt out for
   // full-bleed children like custom headers or media.
   noHorizontalPadding?: boolean;

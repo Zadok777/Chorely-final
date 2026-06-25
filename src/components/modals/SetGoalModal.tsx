@@ -28,7 +28,7 @@ import type { GoalKind, Reward } from '../../types/app.types';
 const KIND_OPTIONS = [
   { value: 'reward', label: 'Reward' },
   { value: 'points', label: 'Points' },
-] as const satisfies ReadonlyArray<{ value: GoalKind; label: string }>;
+] as const satisfies readonly { value: GoalKind; label: string }[];
 
 interface SetGoalModalProps {
   visible: boolean;

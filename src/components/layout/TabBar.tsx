@@ -27,7 +27,7 @@ export interface TabItem {
 }
 
 interface TabBarProps {
-  tabs: ReadonlyArray<TabItem>;
+  tabs: readonly TabItem[];
   activeKey: string;
   onChange: (key: string) => void;
   style?: StyleProp<ViewStyle>;

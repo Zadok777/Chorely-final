@@ -16,7 +16,7 @@ interface CelebrationOverlayProps {
 // Animated (no confetti library): a spring-in success badge plus a burst of
 // emoji particles that fan out and fade. Auto-dismisses after ~1.6s.
 
-const PARTICLES: ReadonlyArray<{ dx: number; dy: number; emoji: string }> = [
+const PARTICLES: readonly { dx: number; dy: number; emoji: string }[] = [
   { dx: -90, dy: -110, emoji: '🎉' },
   { dx: 90, dy: -100, emoji: '⭐️' },
   { dx: -120, dy: -10, emoji: '✨' },

@@ -34,7 +34,7 @@ const FILTERS = [
   { value: 'all', label: 'All' },
   { value: 'assigned', label: 'To do' },
   { value: 'submitted', label: 'Pending' },
-] as const satisfies ReadonlyArray<{ value: Filter; label: string }>;
+] as const satisfies readonly { value: Filter; label: string }[];
 
 export function ChoresScreen() {
   const toast = useToast();

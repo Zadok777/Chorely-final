@@ -38,6 +38,16 @@ Security model for Chorely. See also CLAUDE.md §7 (auth), §10 (code standards)
   identity columns; points/streaks now change only via the SECURITY DEFINER RPCs.
   Reimplemented `generate_invite_code` with `pgcrypto` (`gen_random_bytes`).
   Full rationale + verification in [STAGE1_BETA_READINESS_LOG.md](./STAGE1_BETA_READINESS_LOG.md) (Step 1).
+- **Migration 018 (2026-06-25):** added `goals` FK covering indexes
+  (`created_by`, `reward_id`) — clears the performance advisor warnings.
+- **Migration 019 (2026-06-25):** revoked the broad table-level INSERT on
+  `children` and re-granted INSERT on every column **except** `points` /
+  `streak_days`, so a client can't seed a child with an arbitrary starting
+  balance at creation time (audit follow-up; complements migration 017's UPDATE
+  revoke).
+- **`updateChild` boundary whitelist (2026-06-25):** the service filters patches
+  through `pickAllowedChildUpdate` (`src/utils/childUpdate.ts`) so the app only
+  ever sends client-writable columns — defense-in-depth above the DB grants.
 
 ## Static security re-audit (2026-06-23)
 
