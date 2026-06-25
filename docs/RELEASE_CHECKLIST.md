@@ -9,7 +9,8 @@ TASKS.md (Phase 10), [docs/store/](./store/), [docs/launch/](./launch/),
 - [ ] Decide production vs. dev Supabase project for launch.
 - [ ] Re-enable **email confirmation** (currently OFF in dev).
 - [ ] Enable **leaked-password protection** (requires Supabase Pro).
-- [ ] Re-run security + performance advisors; confirm only by-design warnings.
+- [x] Re-run security + performance advisors (2026-06-25); only by-design
+      warnings + the tracked leaked-password item. See SECURITY.md.
 - [ ] Verify RLS on every table; confirm cross-family isolation.
 
 ## 2. App configuration

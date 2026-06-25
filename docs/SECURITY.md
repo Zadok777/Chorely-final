@@ -62,9 +62,29 @@ Re-ran the code/migration-level checks; all passed:
   `lib/revenuecat.ts`; none log sensitive data and all are stripped from
   production builds.
 
-**Still requires a live run (needs DB access, not verifiable statically):** the
-Supabase **security + performance advisors** — run from the project's Advisors
-tab in the Supabase dashboard after any DDL change, and before TestFlight.
+## Live advisor run (2026-06-25)
+
+Ran the Supabase security + performance advisors against the live "Chorely App"
+project (`zinbukzmkorkawbgckkh`, Postgres 17). Results matched the static audit —
+no surprises:
+
+- **Security (10 warnings, all expected):**
+  - 9 × "Signed-In Users Can Execute SECURITY DEFINER Function" — the by-design
+    RPC API (`approve_chore`, `submit_chore`, `reject_chore`, `redeem_reward`,
+    `update_streak`, `complete_onboarding`, `join_family_by_code`,
+    `delete_user_account`, `is_family_member`); each checks `is_family_member()`.
+  - 1 × Leaked Password Protection Disabled — tracked below (needs Supabase Pro).
+  - No missing-RLS or unexpected findings.
+- **Performance (informational / minor):**
+  - 2 × unindexed FK on `goals` (`created_by`, `reward_id`) — optional cheap fix.
+  - ~18 × "unused index" — noise on a near-empty DB; do **not** drop, revisit
+    under real traffic.
+  - `profiles` has two overlapping permissive SELECT policies
+    (`profiles_family_member_select` + `profiles_self_select`) — optional RLS
+    consolidation, low impact.
+
+Re-run after any DDL change and before TestFlight (Advisors tab or the Supabase
+MCP `get_advisors`).
 
 ## Known advisor notes (by design)
 
